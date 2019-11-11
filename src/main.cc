@@ -1,12 +1,14 @@
 #include <iostream>
 #include <z3++.h>
 
+#include "cvm/node.h"
+
 using namespace z3;
 
 int main() {
   std::cout << "z3_prover initialize" << std::endl;
 
-  context c;
+  z3::context c;
   expr x = c.bool_const("x");
   expr y = c.bool_const("y");
   expr conjecture = (!(x && y)) == (!x || !y);

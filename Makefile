@@ -11,7 +11,7 @@ z3_prover: 3rdparty/z3/build/libz3.so
 	rm 3rdparty/z3/src/util/z3_version.h
 
 clean:
-	cd 3rdparty/z3; rm -rf build
+	rm -rf build
 
 run:
 	@cd build && ./z3_prover
