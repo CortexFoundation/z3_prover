@@ -2,7 +2,7 @@
 all: z3_prover
 
 z3_prover: 3rdparty/z3/build/libz3.so
-	cmake build
+	mkdir -p build; cd build; cmake ..
 	+make -C build
 
 3rdparty/z3/build/libz3.so:
