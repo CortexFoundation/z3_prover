@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "cvm/op.h"
-#include "cvm/registry.h"
 
 namespace z3 {
 namespace utils {

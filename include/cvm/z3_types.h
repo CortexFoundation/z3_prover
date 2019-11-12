@@ -2,26 +2,43 @@
 #define Z3_ATTR_TYPE_H
 
 #include <vector>
+#include <memory>
 #include <exception>
 
-#include <z3++.h>
+#include "z3++.h"
 
 namespace z3 {
 namespace type {
 
-context& Z3Context() {
-  static context inst;
-  return inst;
-}
+class TypeRef;
+using TypePtr = std::shared_ptr<TypeRef>;
+
+context& Z3Context();
 #define C Z3Context()
 
-struct IntPrim {
-  IntPrim() :
-    name(""),
-    val(C),
-    prec(C) {} 
+expr InClosedInterval(expr x, expr start, expr end);
+expr InClosedInterval(expr x, int start, int end);
+expr BitRange(expr prec);
 
-  std::string name; // Data name
+static const int _INT32_MAX = z3::pw(C.int_val(2), 31) - 1;
+class IntPrim {    // Z3 Int Primitive
+ public:
+  IntPrim(expr v = expr(C),
+          expr p = expr(C))
+    : val(v), prec(p)
+    {}
+
+  inline expr constraints() {
+    expr r = BitRange(prec);
+    std::cout << (val <= r) << std::endl;
+    return InClosedInterval(prec, 1, 32) &&
+           InClosedInterval(val, -r, r);
+  }
+
+  inline expr deterministic() {
+    return InClosedInterval(val, -_INT32_MAX, _INT32_MAX);
+  }
+
   expr val;         // data value
   expr prec;        // data precision
 };
@@ -36,23 +53,58 @@ class TypeRef {
     throw std::runtime_error("TypeRef is not scalar.");
   }
 
+  inline expr constraints() {
+    expr cstr = C.bool_val(true);
+    for (IntPrim &d : data_) {
+      cstr = cstr && d.constraints();
+    }
+    return cstr;
+  }
+
+  inline expr deterministic() {
+    expr dmst = C.bool_val(true);
+    for (IntPrim &d : data_) {
+      dmst = dmst && d.deterministic();
+    }
+    return dmst;
+  }
+
+  IntPrim operator[](size_t index) {
+    return data_[index];
+  }
+
  protected:
   std::vector<IntPrim> data_;
+
+  TypeRef() = default;
 };
 
-class Scalar : TypeRef {
+class Scalar final : public TypeRef {
  public:
-  Scalar(std::string name, int prec=-1) {
-    IntPrim ip;
-    ip.val = C.int_const(name.c_str());
+  static TypePtr Make(std::string name, int prec=-1) {
+    return std::make_shared<Scalar>(Scalar(name, prec));
+  }
 
+  static TypePtr Make(expr v, expr p) {
+    return std::make_shared<Scalar>(Scalar(v, p));
+  }
+
+ private:
+  explicit Scalar(std::string name, int prec=-1) {
+    expr v = C.int_const(name.c_str());
+    expr p(C);
     if (prec == -1) {
-      ip.prec = C.int_val(prec);
+      p = C.int_const(("p_" + name).c_str());
     } else {
-      ip.prec = C.int_const(("p_" + name).c_str());
+      p = C.int_val(prec);
     }
 
-    data_.push_back(std::move(ip));
+    data_.emplace_back(IntPrim(v, p));
+  }
+
+  explicit Scalar(expr v, expr p) {
+    data_.emplace_back(IntPrim(v, p));
+  
   }
 };
 

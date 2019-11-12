@@ -1,9 +1,11 @@
+#ifndef Z3_CVM_NODE_H
+#define Z3_CVM_NODE_H
+
 #include <memory>
 #include <vector>
 #include <unordered_map>
 
-#include <z3++.h>
-
+#include "z3++.h"
 #include "op.h"
 
 namespace z3 {
@@ -53,6 +55,7 @@ using NodeEntryMap = std::unordered_map<NodeEntry, ValueType, NodeEntryHash, Nod
 
 struct NodeAttrs {
   const Op *op{nullptr};
+  std::string name;
   std::unordered_map<std::string, std::string> dict;
 };
 
@@ -81,23 +84,48 @@ class Node {
   }
 };
 
-// inline NodeEntry MakeNode(
-//     const char* op_name,
-//     std::string node_name,
-//     std::vector<NodeEntry> inputs,
-//     std::unordered_map<std::string, std::string> attrs =
-//     std::unordered_map<std::string, std::string>()) {
-//   NodePtr p = Node::Create();
-//   p->attrs.op = cvm::Op::Get(op_name);
-//   p->attrs.name = std::move(node_name);
-//   p->attrs.dict = attrs;
-//   if (p->attrs.op->attr_parser) {
-//     p->attrs.op->attr_parser(&(p->attrs));
-//   }
-//   p->inputs = std::move(inputs);
-//   return NodeEntry(p, 0, 0);
-// }
+inline NodeEntry MakeNode(
+    const char* op_name,
+    std::string node_name,
+    std::vector<NodeEntry> inputs,
+    std::unordered_map<std::string, std::string> attrs =
+    std::unordered_map<std::string, std::string>()) {
+  NodePtr p = Node::Create();
+  p->attrs.op = cvm::Op::Get(op_name);
+  p->attrs.name = std::move(node_name);
+  p->attrs.dict = attrs;
+  p->inputs = std::move(inputs);
+  return NodeEntry(p, 0, 0);
+}
+
+inline const Op* Node::op() const {
+  return this->attrs.op;
+}
+
+inline bool Node::is_variable() const {
+  return this->op() == nullptr;
+}
+
+inline uint32_t Node::num_outputs() const {
+  if (is_variable()) return 1;
+  if (this->op()->get_num_outputs == nullptr) {
+    return this->op()->num_outputs;
+  } else {
+    return this->op()->get_num_outputs(this->attrs);
+  }
+}
+
+inline uint32_t Node::num_inputs() const {
+  if (is_variable()) return 1;
+  if (this->op()->get_num_inputs == nullptr) {
+    return this->op()->num_inputs;
+  } else {
+    return this->op()->get_num_inputs(this->attrs);
+  }
+}
 
 
 }
 }
+
+#endif // Z3_CVM_NODE_H

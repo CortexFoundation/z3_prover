@@ -3,9 +3,14 @@
 namespace z3 {
 namespace cvm {
 
-std::vector<Op> _scalar_add(const NodeAttrs& attrs,
-                std::vector<Op>& inputs) {
-  
+std::vector<TypePtr> _scalar_add(const NodeAttrs& attrs,
+                std::vector<TypePtr>& inputs) {
+  IntPrim &&a = inputs.at(0)->asscalar();
+  IntPrim &&b = inputs.at(1)->asscalar();
+  return {
+    Scalar::Make(a.val + b.val, 
+                 z3::max(a.prec, b.prec) + 1)
+  };
 }
       
 
