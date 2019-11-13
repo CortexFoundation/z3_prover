@@ -20,19 +20,27 @@ expr InClosedInterval(expr x, expr start, expr end);
 expr InClosedInterval(expr x, int start, int end);
 expr BitRange(expr prec);
 
-static const int _INT32_MAX = z3::pw(C.int_val(2), 31) - 1;
+static const int32_t 
+_INT32_MAX = (int32_t{1} << 31) - 1;
+
 class IntPrim {    // Z3 Int Primitive
  public:
-  IntPrim(expr v = expr(C),
-          expr p = expr(C))
-    : val(v), prec(p)
-    {}
+  IntPrim(expr v, expr p) : 
+    val(v), prec(p) {}
+
+  IntPrim(std::string name) :
+    val(C.int_const(name.c_str())),
+    prec(C.int_const(("p_"+name).c_str())) 
+  {}
 
   inline expr constraints() {
     expr r = BitRange(prec);
-    std::cout << (val <= r) << std::endl;
     return InClosedInterval(prec, 1, 32) &&
            InClosedInterval(val, -r, r);
+  }
+
+  inline expr assign_constraints(const IntPrim &t) {
+    return ((t.val == val) && (t.prec == prec));
   }
 
   inline expr deterministic() {
@@ -44,6 +52,7 @@ class IntPrim {    // Z3 Int Primitive
 };
 
 class TypeRef {
+  // TODO(wlt): Assign operator
  public:
   inline IntPrim asscalar() {
     if (data_.size() == 1) {
@@ -53,12 +62,36 @@ class TypeRef {
     throw std::runtime_error("TypeRef is not scalar.");
   }
 
-  inline expr constraints() {
-    expr cstr = C.bool_val(true);
-    for (IntPrim &d : data_) {
-      cstr = cstr && d.constraints();
+  inline TypePtr copy(std::string name) {
+    TypeRef cp;
+    for (size_t i = 0; i < this->data_.size(); ++i) {
+      cp.data_.push_back(IntPrim(name+"_"+std::to_string(i)));
+    }
+    cp.shape_ = this->shape_;
+    return std::make_shared<TypeRef>(cp);
+  }
+
+  inline expr assign_constraints(const TypePtr &t) {
+    if (t->data_.size() != data_.size()) {
+      throw std::runtime_error("TypeRef assign error");
+    }
+    if (data_.size() == 0) return C.bool_val(true);
+
+    expr cstr = data_[0].assign_constraints(t->data_[0]);
+    for (size_t i = 1; i < data_.size(); ++i) {
+      cstr = cstr && data_[i].assign_constraints(t->data_[i]);
     }
     return cstr;
+  }
+
+  inline expr constraints() {
+    if (data_.size() ==  0) return C.bool_val(true);
+
+    expr cstr = data_[0].constraints();
+    for (size_t i = 1; i < data_.size(); ++i) 
+      cstr = cstr && data_[i].constraints();
+    return cstr;
+    // return (C.bool_val(false) || cstr);
   }
 
   inline expr deterministic() {
@@ -75,6 +108,7 @@ class TypeRef {
 
  protected:
   std::vector<IntPrim> data_;
+  std::vector<int32_t> shape_;
 
   TypeRef() = default;
 };
@@ -100,10 +134,12 @@ class Scalar final : public TypeRef {
     }
 
     data_.emplace_back(IntPrim(v, p));
+    // shape is ()
   }
 
   explicit Scalar(expr v, expr p) {
     data_.emplace_back(IntPrim(v, p));
+    // shape is ()
   
   }
 };

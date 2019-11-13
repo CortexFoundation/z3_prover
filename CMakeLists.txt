@@ -12,6 +12,7 @@ include_directories("${Z3_DIR}/src/api/c++")
 
 file(GLOB Z3_PROVER_SRCS 
       src/main.cc
+      src/cvm/core/*.cc
       src/cvm/top/*.cc
       src/cvm/top/*/*.cc)
 

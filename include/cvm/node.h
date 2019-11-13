@@ -12,46 +12,8 @@ namespace z3 {
 namespace cvm {
 
 class Node;
-class Symbol;
-
+class NodeEntry;
 using NodePtr = std::shared_ptr<Node>;
-
-struct NodeEntry {
-  NodeEntry(NodePtr node, uint32_t index, uint32_t version):
-    node(std::move(node)),
-    index(index),
-    version(version)
-  {}
-
-  NodeEntry():
-    node(),
-    index(),
-    version()
-  {}
-
-  NodePtr node;
-  uint32_t index;
-  uint32_t version;
-};
-
-struct NodeEntryHash {
-  size_t operator()(const NodeEntry& e) const {
-    return std::hash<Node*>()(e.node.get()) ^
-          (std::hash<size_t>()(e.index) << 1 >> 1) ^
-          (std::hash<size_t>()(e.version) << 1);
-  }
-};
-
-struct NodeEntryEqual {
-  size_t operator()(const NodeEntry& a, const NodeEntry& b) const {
-    return (a.node.get() == b.node.get()) &&
-           (a.index == b.index) &&
-           (a.version == b.version);
-  }
-};
-
-template<typename ValueType>
-using NodeEntryMap = std::unordered_map<NodeEntry, ValueType, NodeEntryHash, NodeEntryEqual>;
 
 struct NodeAttrs {
   const Op *op{nullptr};
@@ -61,11 +23,6 @@ struct NodeAttrs {
 
 class Node {
  public:
-  Node() = default;
-  Node(const Op* op, const std::string name) {
-    this->attrs.op = op;
-  }
-
   NodeAttrs attrs;
   std::vector<NodeEntry> inputs;
 
@@ -78,25 +35,54 @@ class Node {
   inline uint32_t num_inputs() const;
   inline uint32_t num_outputs() const;
 
-  template<class ...Args>
-  static NodePtr Create(Args&&... args) {
-    return std::make_shared<Node>(std::forward<Args>(args)...);
+  expr constraints() const;
+  // expr deterministic() const;
+
+  template<typename ValueType>
+  static NodeEntry CreateVariable(const std::string &name);
+
+  static NodeEntry CreateOperator(
+      const char *op_name,
+      const std::string &name,
+      std::vector<NodeEntry> inputs,
+      std::unordered_map<std::string, std::string> attrs = 
+      std::unordered_map<std::string, std::string>());
+
+ private:
+  friend class NodeEntry;
+  std::vector<type::TypePtr> data_;
+  expr constraints_{C};
+  expr deterministic_{C};
+
+  Node() = default;
+  static NodePtr Create() {
+    return std::make_shared<Node>(Node());
   }
+
 };
 
-inline NodeEntry MakeNode(
-    const char* op_name,
-    std::string node_name,
-    std::vector<NodeEntry> inputs,
-    std::unordered_map<std::string, std::string> attrs =
-    std::unordered_map<std::string, std::string>()) {
-  NodePtr p = Node::Create();
-  p->attrs.op = cvm::Op::Get(op_name);
-  p->attrs.name = std::move(node_name);
-  p->attrs.dict = attrs;
-  p->inputs = std::move(inputs);
-  return NodeEntry(p, 0, 0);
-}
+class NodeEntry {
+ public:
+  NodeEntry(NodePtr node, uint32_t index, uint32_t version):
+    node(std::move(node)),
+    index(index),
+    version(version)
+  {}
+
+  NodeEntry():
+    node(),
+    index(),
+    version()
+  {}
+
+  inline const TypePtr operator->() {
+    return this->node->data_[index];
+  }
+
+  NodePtr node;
+  uint32_t index;
+  uint32_t version;
+};
 
 inline const Op* Node::op() const {
   return this->attrs.op;
@@ -122,6 +108,18 @@ inline uint32_t Node::num_inputs() const {
   } else {
     return this->op()->get_num_inputs(this->attrs);
   }
+}
+
+template <typename ValueType>
+NodeEntry Node::CreateVariable(const std::string &name) {
+  NodePtr n = Node::Create();
+  n->attrs.op = nullptr;
+  n->attrs.name = name;
+  n->data_.emplace_back(ValueType::Make(name));
+  // append TypeRef's constraints
+  n->constraints_ = n->data_[0]->constraints();
+  n->deterministic_ = n->data_[0]->deterministic();
+  return NodeEntry{n, 0, 0};
 }
 
 

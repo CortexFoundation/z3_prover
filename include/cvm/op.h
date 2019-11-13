@@ -12,14 +12,8 @@ namespace z3 {
 namespace cvm {
 
 struct NodeAttrs;
-class Op;
-template<typename ValueType>
-class OpMap;
 
 using namespace z3::type;
-using Forward = std::function<
-  std::vector<TypePtr>(const NodeAttrs& attrs,
-                  std::vector<TypePtr>& inputs)>;
 
 class Op {
  public:
@@ -51,14 +45,30 @@ class Op {
     return *this;
   }
 
-  inline Op& set_forward(const Forward& forward_func) {
-    this->forward_ = forward_func;
+  std::function<std::vector<TypePtr>(
+      const NodeAttrs&,
+      std::vector<TypePtr>&)> 
+  forward_func = nullptr;
+
+  inline Op& set_forward(
+      std::function<std::vector<TypePtr>(
+          const NodeAttrs&, std::vector<TypePtr>&)
+      > forward_func) {
+    this->forward_func = forward_func;
     return *this;
   }
 
-  inline std::vector<TypePtr>
-  operator()(const NodeAttrs &attrs,
-             std::vector<TypePtr> inputs) const;
+  std::function<expr(const NodeAttrs&, std::vector<TypePtr>&)> 
+  constraints = 
+  [](const NodeAttrs& attrs, std::vector<TypePtr>& inputs){ 
+    return C.bool_val(true); 
+  };
+
+  inline Op& set_constraints(
+      std::function<expr(const NodeAttrs&, std::vector<TypePtr>&)> fn) {
+    this->constraints = fn;
+    return *this;
+  }
 
   static const Op* Get(const std::string& op_name);
 
@@ -66,7 +76,6 @@ class Op {
   friend class utils::Registry<Op>;
 
   uint32_t index_{0};
-  Forward forward_{nullptr};
   Op();
 };
 
@@ -76,17 +85,6 @@ class Op {
 #define Z3_REGISTER_OP(OpName)                                     \
   Z3UTIL_STR_CONCAT(Z3_REGISTER_VAR_DEF(OpName), __COUNTER__) = \
       ::z3::utils::Registry<::z3::cvm::Op>::Get()->__REGISTER_OR_GET__(#OpName)
-
-std::vector<TypePtr>
-Op::operator()(const NodeAttrs &attrs,
-               std::vector<TypePtr> inputs) const {
-  if (this->forward_ == nullptr) {
-    throw std::runtime_error(
-        "Operator " + this->name +
-        " forward function not registered");
-  }
-  return this->forward_(attrs, inputs);
-}
 
 }
 }
