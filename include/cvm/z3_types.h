@@ -16,131 +16,169 @@ using TypePtr = std::shared_ptr<TypeRef>;
 context& Z3Context();
 #define C Z3Context()
 
-expr InClosedInterval(expr x, expr start, expr end);
-expr InClosedInterval(expr x, int start, int end);
-expr BitRange(expr prec);
+// Helper function for Z3 Data type creator.
+expr _Int(std::string name);
+expr _IntVal(int32_t val);
+expr _BoolVal(bool b);
 
-static const int32_t 
-_INT32_MAX = (int32_t{1} << 31) - 1;
+// Helper function for Z3-Int data type operation,
+//  and we suppose the basic mathmatic operation is deterministic
+expr _Add(const expr &a, const expr &b);
+expr _Sub(const expr &a, const expr &b);
+expr _Mul(const expr &a, const expr &b);
+expr _Div(const expr &a, const expr &b);
+expr _Neg(const expr &a);
+expr _Shl(const expr &a);
 
-class IntPrim {    // Z3 Int Primitive
+expr _AddCstr(const expr &a, const expr &b);
+expr _SubCstr(const expr &a, const expr &b);
+expr _MulCstr(const expr &a, const expr &b);
+expr _DivCstr(const expr &a, const expr &b);
+expr _NegCstr(const expr &a);
+expr _ShlCstr(const expr &a);
+expr _AssignCstr(const expr &a, const expr &b);
+
+bool is_expr_true(const expr &e);
+
+#define CONCAT_(a, b) a ## b
+#define CONCAT(a, b) CONCAT_(a, b)
+
+#define FARG_1() const z3_expr &t1
+#define FARG_2() FARG_1(), const z3_expr &t2
+#define FVAL_1() t1.val
+#define FVAL_2() FVAL_1(), t2.val
+
+#define FMAP_OP(__f, __op, __args) \
+  inline z3_expr __f(CONCAT(FARG_, __args)()) { \
+    expr v = _ ## __op(CONCAT(FVAL_, __args)());     \
+    expr c = _ ## __op ## Cstr(CONCAT(FVAL_, __args)()); \
+    if (!is_expr_true(t1.cstr)) { \
+      c = t1.cstr && c; \
+    } \
+    return z3_expr(v, c); \
+  }
+
+#define FMAP(__f, __args) \
+  inline z3_expr __f(CONCAT(FARG_, __args)()) { \
+    return z3_expr(z3::__f(CONCAT(FVAL_, __args)())); \
+  }
+
+#define FRENAME(__old, __new, __args) \
+  inline z3_expr __new(CONCAT(FARG_, __args)()) { \
+    return z3_expr(__old(CONCAT(FVAL, __args)())) \
+  }
+
+class z3_expr {
  public:
-  IntPrim(expr v, expr p) : 
-    val(v), prec(p) {}
+  expr val;
+  expr cstr;
 
-  IntPrim(std::string name) :
-    val(C.int_const(name.c_str())),
-    prec(C.int_const(("p_"+name).c_str())) 
-  {}
+  z3_expr(std::string name) :
+    val(_Int(name)), cstr(_BoolVal(true)) {}
+  z3_expr(int num) :
+    val(_IntVal(num)), cstr(_BoolVal(true)) {}
+  z3_expr(expr val) :
+    val(val), cstr(_BoolVal(true)) {}
+  z3_expr(expr val, expr cstr) :
+    val(val), cstr(cstr) {}
 
-  inline expr constraints() {
-    expr r = BitRange(prec);
-    return InClosedInterval(prec, 1, 32) &&
-           InClosedInterval(val, -r, r);
+  inline z3_expr assign(const z3_expr &t) {
+    return _AssignCstr(val, t.val);
   }
 
-  inline expr assign_constraints(const IntPrim &t) {
-    return ((t.val == val) && (t.prec == prec));
-  }
-
-  inline expr deterministic() {
-    return InClosedInterval(val, -_INT32_MAX, _INT32_MAX);
-  }
-
-  expr val;         // data value
-  expr prec;        // data precision
+  z3_expr closed_interval(z3_expr start, z3_expr end);
+  z3_expr bit_range();
 };
 
+FMAP_OP(operator+, Add, 2);
+FMAP_OP(operator-, Sub, 2);
+FMAP_OP(operator-, Neg, 1);
+FMAP_OP(operator*, Mul, 2);
+FMAP_OP(operator/, Div, 2);
+FMAP_OP(one_shift_left, Shl, 1);
+
+FMAP(max, 2);
+FMAP(operator<, 2);
+FMAP(operator<=, 2);
+FMAP(operator&&, 2);
+
+static const int32_t 
+_INT32_MAX = (int64_t{1} << 31) - 1;
+
 class TypeRef {
-  // TODO(wlt): Assign operator
  public:
-  inline IntPrim asscalar() {
-    if (data_.size() == 1) {
-      return data_[0];
+  std::vector<z3_expr> data;
+  z3_expr prec;
+
+  // Shape indicates the orginization structure of data, 
+  //  which equals with data.size().
+  std::vector<int32_t> shape; 
+
+  inline z3_expr asscalar() {
+    if (data.size() == 1) {
+      return data[0];
     }
 
     throw std::runtime_error("TypeRef is not scalar.");
   }
 
-  inline TypePtr copy(std::string name) {
-    TypeRef cp;
-    for (size_t i = 0; i < this->data_.size(); ++i) {
-      cp.data_.push_back(IntPrim(name+"_"+std::to_string(i)));
-    }
-    cp.shape_ = this->shape_;
-    return std::make_shared<TypeRef>(cp);
-  }
+  /*
+   * Copy current TypeRef's shape and data placeholder 
+   *  into new one, which indicates that the real expression
+   *  stored is not copied.
+   **/
+  TypePtr copy_placeholder(std::string name);
 
-  inline expr assign_constraints(const TypePtr &t) {
-    if (t->data_.size() != data_.size()) {
-      throw std::runtime_error("TypeRef assign error");
-    }
-    if (data_.size() == 0) return C.bool_val(true);
+  /*
+   * Basic operation constraints
+   **/
+  z3_expr assign(const TypePtr &t);
 
-    expr cstr = data_[0].assign_constraints(t->data_[0]);
-    for (size_t i = 1; i < data_.size(); ++i) {
-      cstr = cstr && data_[i].assign_constraints(t->data_[i]);
-    }
-    return cstr;
-  }
+  /*
+   * Collect current stored data's constriants.
+   **/
+  z3_expr constraints();
 
-  inline expr constraints() {
-    if (data_.size() ==  0) return C.bool_val(true);
-
-    expr cstr = data_[0].constraints();
-    for (size_t i = 1; i < data_.size(); ++i) 
-      cstr = cstr && data_[i].constraints();
-    return cstr;
-    // return (C.bool_val(false) || cstr);
-  }
-
-  inline expr deterministic() {
-    expr dmst = C.bool_val(true);
-    for (IntPrim &d : data_) {
-      dmst = dmst && d.deterministic();
-    }
-    return dmst;
-  }
-
-  IntPrim operator[](size_t index) {
-    return data_[index];
+  inline z3_expr operator[](size_t index) {
+    return data[index];
   }
 
  protected:
-  std::vector<IntPrim> data_;
-  std::vector<int32_t> shape_;
-
-  TypeRef() = default;
+  TypeRef(z3_expr prec) : prec(prec) {}
 };
 
+/*
+ * Scalar's shape is empty, which is (), named as scalar.
+ *  It's data only contains single z3_expr.
+ **/
 class Scalar final : public TypeRef {
  public:
-  static TypePtr Make(std::string name, int prec=-1) {
+  static TypePtr Make(const std::string &name) {
+    return std::make_shared<Scalar>(Scalar(name));
+  }
+  static TypePtr Make(const std::string &name, int prec) {
     return std::make_shared<Scalar>(Scalar(name, prec));
   }
 
-  static TypePtr Make(expr v, expr p) {
+  static TypePtr Make(const z3_expr &v, const z3_expr &p) {
     return std::make_shared<Scalar>(Scalar(v, p));
   }
 
  private:
-  explicit Scalar(std::string name, int prec=-1) {
-    expr v = C.int_const(name.c_str());
-    expr p(C);
-    if (prec == -1) {
-      p = C.int_const(("p_" + name).c_str());
-    } else {
-      p = C.int_val(prec);
-    }
-
-    data_.emplace_back(IntPrim(v, p));
-    // shape is ()
+  Scalar(const std::string &name) :
+    TypeRef("p_"+name) 
+  {
+    data.emplace_back(name);
   }
-
-  explicit Scalar(expr v, expr p) {
-    data_.emplace_back(IntPrim(v, p));
-    // shape is ()
-  
+  Scalar(const std::string &name, int prec) :
+    TypeRef(prec) 
+  {
+    data.emplace_back(name);
+  }
+  Scalar(const z3_expr &v, const z3_expr &p) :
+    TypeRef(p) 
+  {
+    data.emplace_back(v);
   }
 };
 

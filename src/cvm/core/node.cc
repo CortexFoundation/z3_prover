@@ -46,22 +46,29 @@ NodeEntry Node::CreateOperator(
   for (auto &ne : p->inputs) {
     data.emplace_back(ne.operator->());
   }
-  expr cstr = p->op()->constraints(p->attrs, data);
-  data = p->op()->forward_func(p->attrs, data);
-  for (size_t i = 0; i < data.size(); ++i) {
-    TypePtr &&tmp = data[i]->copy(
-        node_name + "_assign" + std::to_string(i));
-    cstr = cstr && tmp->assign_constraints(data[i]);
-    p->data_.emplace_back(tmp);
+  // z3_expr cstr = p->op()->constraints(p->attrs, data);
+  std::vector<TypePtr> outs;
+  z3_expr cstr = p->op()->forward_func(p->attrs, data, outs);
+  
+  if ((attrs.count("data_assign") == 0) ||
+      (attrs.at("data_assign") == "true")) {
+    for (size_t i = 0; i < outs.size(); ++i) {
+      TypePtr &&tmp = outs[i]->copy_placeholder(
+          node_name + "_assign" + std::to_string(i));
+      cstr = cstr && tmp->assign(data[i]);
+      p->data_.emplace_back(tmp);
+    }
+  } else {
+    p->data_ = data;
   }
   p->constraints_ = cstr;
   return NodeEntry(p, 0, 0);
 }
 
-expr Node::constraints() const {
-  expr cstr = this->constraints_; // operator's constraint
+z3_expr Node::constraints() const {
+  z3_expr cstr = this->constraints_; // operator's constraint
   if (inputs.size() > 0) {
-    expr t = inputs[0].node->constraints();
+    z3_expr t = inputs[0].node->constraints();
     for (size_t i = 1; i < inputs.size(); ++i) {
       t = t && inputs[i].node->constraints();
     }

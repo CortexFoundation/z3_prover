@@ -4,23 +4,29 @@
 namespace z3 {
 namespace cvm {
 
-std::vector<TypePtr> _scalar_add(
+z3_expr _scalar_add(
     const NodeAttrs &attrs,
-    std::vector<TypePtr> &inputs) {
-  const IntPrim &a = inputs.at(0)->asscalar();
-  const IntPrim &b = inputs.at(1)->asscalar();
-  return {
-    Scalar::Make(a.val + b.val,
-                 z3::max(a.prec, b.prec) + 1)
-  };
+    std::vector<TypePtr> &inputs,
+    std::vector<TypePtr> &outputs) {
+  const TypePtr &a = inputs.at(0);
+  const TypePtr &b = inputs.at(1);
+
+  const z3_expr &v = a->asscalar() + b->asscalar();
+  const z3_expr &p = z3::type::max(a->prec, b->prec) + 1;
+  outputs.emplace_back(Scalar::Make(v, p));
+
+  z3_expr cstr = (a->prec < 32) && (b->prec < 32);
+  if (!type::is_expr_true(p.cstr)) { cstr = cstr && p.cstr; }
+  if (!type::is_expr_true(v.cstr)) { cstr = cstr && v.cstr; }
+  return cstr;
 }
 
-expr _constraints(
+z3_expr _constraints(
     const NodeAttrs &attrs,
     std::vector<TypePtr> &inputs) {
-  const IntPrim &a = inputs.at(0)->asscalar();
-  const IntPrim &b = inputs.at(1)->asscalar();
-  return (a.prec < 32) && (b.prec < 32);
+  const TypePtr &a = inputs.at(0);
+  const TypePtr &b = inputs.at(1);
+  return (a->prec < 32) && (b->prec < 32);
 }
       
 

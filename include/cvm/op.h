@@ -45,27 +45,30 @@ class Op {
     return *this;
   }
 
-  std::function<std::vector<TypePtr>(
-      const NodeAttrs&,
-      std::vector<TypePtr>&)> 
+  std::function<z3_expr(
+      const NodeAttrs &attrs,
+      std::vector<TypePtr> &inputs,
+      std::vector<TypePtr> &outputs)> 
   forward_func = nullptr;
 
   inline Op& set_forward(
-      std::function<std::vector<TypePtr>(
-          const NodeAttrs&, std::vector<TypePtr>&)
+      std::function<z3_expr(
+          const NodeAttrs&, 
+          std::vector<TypePtr>&,
+          std::vector<TypePtr>&)
       > forward_func) {
     this->forward_func = forward_func;
     return *this;
   }
 
-  std::function<expr(const NodeAttrs&, std::vector<TypePtr>&)> 
+  std::function<z3_expr(const NodeAttrs&, std::vector<TypePtr>&)> 
   constraints = 
   [](const NodeAttrs& attrs, std::vector<TypePtr>& inputs){ 
     return C.bool_val(true); 
   };
 
   inline Op& set_constraints(
-      std::function<expr(const NodeAttrs&, std::vector<TypePtr>&)> fn) {
+      std::function<z3_expr(const NodeAttrs&, std::vector<TypePtr>&)> fn) {
     this->constraints = fn;
     return *this;
   }

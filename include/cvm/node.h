@@ -35,8 +35,7 @@ class Node {
   inline uint32_t num_inputs() const;
   inline uint32_t num_outputs() const;
 
-  expr constraints() const;
-  // expr deterministic() const;
+  z3_expr constraints() const;
 
   template<typename ValueType>
   static NodeEntry CreateVariable(const std::string &name);
@@ -51,8 +50,7 @@ class Node {
  private:
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
-  expr constraints_{C};
-  expr deterministic_{C};
+  z3_expr constraints_{C};
 
   Node() = default;
   static NodePtr Create() {
@@ -118,7 +116,6 @@ NodeEntry Node::CreateVariable(const std::string &name) {
   n->data_.emplace_back(ValueType::Make(name));
   // append TypeRef's constraints
   n->constraints_ = n->data_[0]->constraints();
-  n->deterministic_ = n->data_[0]->deterministic();
   return NodeEntry{n, 0, 0};
 }
 
