@@ -8,6 +8,14 @@
 #include "z3++.h"
 
 namespace z3 {
+namespace utils {
+
+bool is_expr_true(const expr &a);
+
+}
+}
+
+namespace z3 {
 namespace type {
 
 class TypeRef;
@@ -16,94 +24,67 @@ using TypePtr = std::shared_ptr<TypeRef>;
 context& Z3Context();
 #define C Z3Context()
 
-// Helper function for Z3 Data type creator.
-expr _Int(std::string name);
-expr _IntVal(int32_t val);
-expr _BoolVal(bool b);
-
-// Helper function for Z3-Int data type operation,
-//  and we suppose the basic mathmatic operation is deterministic
-expr _Add(const expr &a, const expr &b);
-expr _Sub(const expr &a, const expr &b);
-expr _Mul(const expr &a, const expr &b);
-expr _Div(const expr &a, const expr &b);
-expr _Neg(const expr &a);
-expr _Shl(const expr &a);
-
-expr _AddCstr(const expr &a, const expr &b);
-expr _SubCstr(const expr &a, const expr &b);
-expr _MulCstr(const expr &a, const expr &b);
-expr _DivCstr(const expr &a, const expr &b);
-expr _NegCstr(const expr &a);
-expr _ShlCstr(const expr &a);
-expr _AssignCstr(const expr &a, const expr &b);
-
-bool is_expr_true(const expr &e);
 
 #define CONCAT_(a, b) a ## b
 #define CONCAT(a, b) CONCAT_(a, b)
 
 #define FARG_1() const z3_expr &t1
 #define FARG_2() FARG_1(), const z3_expr &t2
-#define FVAL_1() t1.val
-#define FVAL_2() FVAL_1(), t2.val
 
-#define FMAP_OP(__f, __op, __args) \
-  inline z3_expr __f(CONCAT(FARG_, __args)()) { \
-    expr v = _ ## __op(CONCAT(FVAL_, __args)());     \
-    expr c = _ ## __op ## Cstr(CONCAT(FVAL_, __args)()); \
-    if (!is_expr_true(t1.cstr)) { \
-      c = t1.cstr && c; \
-    } \
-    return z3_expr(v, c); \
-  }
+#define FEXPR_MAP_DECL(__f, __args) \
+  z3_expr __f(CONCAT(FARG_, __args)())
 
-#define FMAP(__f, __args) \
-  inline z3_expr __f(CONCAT(FARG_, __args)()) { \
-    return z3_expr(z3::__f(CONCAT(FVAL_, __args)())); \
-  }
+class z3_cstr;
 
-#define FRENAME(__old, __new, __args) \
-  inline z3_expr __new(CONCAT(FARG_, __args)()) { \
-    return z3_expr(__old(CONCAT(FVAL, __args)())) \
-  }
+class z3_data : public expr {
+ public:
+  z3_data(int num = 0);
+  z3_data(std::string name);
+  z3_data(expr val);
+
+  z3_cstr deterministic();
+};
+
+class z3_cstr : public expr {
+ public:
+  z3_cstr();
+  z3_cstr(expr cstr);
+};
+
+z3_cstr operator&&(const z3_cstr&, const z3_cstr&);
+z3_cstr operator||(const z3_cstr&, const z3_cstr&);
 
 class z3_expr {
  public:
-  expr val;
-  expr cstr;
+  z3_data data;
+  z3_cstr cstr;
 
-  z3_expr(std::string name) :
-    val(_Int(name)), cstr(_BoolVal(true)) {}
-  z3_expr(int num) :
-    val(_IntVal(num)), cstr(_BoolVal(true)) {}
-  z3_expr(expr val) :
-    val(val), cstr(_BoolVal(true)) {}
-  z3_expr(expr val, expr cstr) :
-    val(val), cstr(cstr) {}
+  z3_expr(std::string name);
+  z3_expr(int num);
+  z3_expr(bool flag);
+  explicit z3_expr(z3_data data);
+  explicit z3_expr(z3_cstr cstr);
+  explicit z3_expr(z3_data data, z3_cstr cstr);
 
-  inline z3_expr assign(const z3_expr &t) {
-    return _AssignCstr(val, t.val);
-  }
-
+  // get constraints in closed interval.
   z3_expr closed_interval(z3_expr start, z3_expr end);
+
+  // get the positive range of self representation.
   z3_expr bit_range();
 };
 
-FMAP_OP(operator+, Add, 2);
-FMAP_OP(operator-, Sub, 2);
-FMAP_OP(operator-, Neg, 1);
-FMAP_OP(operator*, Mul, 2);
-FMAP_OP(operator/, Div, 2);
-FMAP_OP(one_shift_left, Shl, 1);
+FEXPR_MAP_DECL(operator+, 2);
+FEXPR_MAP_DECL(operator-, 2);
+FEXPR_MAP_DECL(operator-, 1);
+FEXPR_MAP_DECL(operator*, 2);
+FEXPR_MAP_DECL(operator/, 2);
+FEXPR_MAP_DECL(op_1_shift_left, 1);
 
-FMAP(max, 2);
-FMAP(operator<, 2);
-FMAP(operator<=, 2);
-FMAP(operator&&, 2);
-
-static const int32_t 
-_INT32_MAX = (int64_t{1} << 31) - 1;
+FEXPR_MAP_DECL(max, 2);
+FEXPR_MAP_DECL(operator<, 2);
+FEXPR_MAP_DECL(operator<=, 2);
+FEXPR_MAP_DECL(operator==, 2);
+FEXPR_MAP_DECL(operator&&, 2);
 
 class TypeRef {
  public:

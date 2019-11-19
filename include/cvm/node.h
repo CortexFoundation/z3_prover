@@ -50,7 +50,7 @@ class Node {
  private:
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
-  z3_expr constraints_{C};
+  z3_expr constraints_{true};
 
   Node() = default;
   static NodePtr Create() {

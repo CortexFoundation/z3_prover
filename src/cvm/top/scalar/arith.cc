@@ -16,8 +16,7 @@ z3_expr _scalar_add(
   outputs.emplace_back(Scalar::Make(v, p));
 
   z3_expr cstr = (a->prec < 32) && (b->prec < 32);
-  if (!type::is_expr_true(p.cstr)) { cstr = cstr && p.cstr; }
-  if (!type::is_expr_true(v.cstr)) { cstr = cstr && v.cstr; }
+  cstr = cstr && p && v;
   return cstr;
 }
 

@@ -64,7 +64,7 @@ class Op {
   std::function<z3_expr(const NodeAttrs&, std::vector<TypePtr>&)> 
   constraints = 
   [](const NodeAttrs& attrs, std::vector<TypePtr>& inputs){ 
-    return C.bool_val(true); 
+    return z3_expr(true);
   };
 
   inline Op& set_constraints(

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "z3++.h"
 #include "cvm/z3_types.h"
 #include "cvm/op.h"
 #include "cvm/node.h"
@@ -10,9 +9,12 @@ using namespace z3::cvm;
 using namespace z3::type;
 using namespace std;
 
-void z3_prover(z3::expr cond) {
+static const int32_t 
+_INT32_MAX = (int64_t{1} << 31) - 1;
+
+void z3_prover(z3_cstr cstr) {
   z3::solver s(C);
-  s.add(!cond);
+  s.add(!cstr);
 
   std::cout << "=== z3_prover ===\n" << s << std::endl;
   switch (s.check()) {
@@ -43,7 +45,15 @@ void z3_prover(z3::expr cond) {
   }
 }
 
+void z3_expr_deterministic() {
+  z3_expr a("a"), b("b");
+  z3_expr res = a + b;
+}
+
 int main() {
+  z3_expr_deterministic();
+  return 0;
+
   auto a = Node::CreateVariable<Scalar>("a");
   auto b = Node::CreateVariable<Scalar>("b");
 
@@ -55,9 +65,9 @@ int main() {
 
   z3_expr cstr = c.node->constraints();
   z3_expr stmt = c->constraints();
-  std::cout << cstr.val << "\n\n" << stmt.val << std::endl;
+  std::cout << cstr.cstr << "\n\n" << stmt.cstr << std::endl;
 
-  z3::expr p1 = z3::implies(cstr.val, stmt.val);
+  z3::expr p1 = z3::implies(cstr.cstr, stmt.cstr);
   z3_prover(p1);
   return 0;
 
