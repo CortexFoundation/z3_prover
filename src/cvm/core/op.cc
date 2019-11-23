@@ -35,9 +35,8 @@ Op::Op() {
 
 const Op* Op::Get(const std::string &name) {
   const Op* op = utils::Registry<Op>::Find(name);
-  if (op == nullptr) {
-    throw std::runtime_error("Operator " + name + " is not registered.");
-  }
+  VERIFY_NE(op, nullptr)
+    << "Operator " << name << " is not registered";
   return op;
 }
 

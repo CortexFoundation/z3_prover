@@ -31,6 +31,22 @@ Node::~Node() {
   }
 }
 
+NodeEntry Node::CreateVariable(
+    const std::string &name,
+    const Shape &shape) {
+  NodePtr n = Node::Create();
+  n->attrs.op = nullptr;
+  n->attrs.name = name;
+  n->data_.emplace_back(TypeRef::Make(name, shape));
+  // append TypeRef's constraints
+  n->csrt_ = n->data_[0]->constraints();
+  n->asrt_ = n->data_[0]->assertions();
+  // n->asrt_ = n->data_[0]->constraints() &&
+    // n->data_[0]->assertions();
+  return NodeEntry{n, 0, 0};
+}
+
+
 NodeEntry Node::CreateOperator(
     const char *op_name,
     const std::string &node_name,
@@ -42,39 +58,45 @@ NodeEntry Node::CreateOperator(
   p->attrs.dict = attrs;
   p->inputs = std::move(inputs);
 
+  VERIFY(p->inputs.size() == p->num_inputs())
+    << "operator " << op_name << "(" << node_name << ")"
+    << " inputs' size "
+    << "not equals with " << p->num_inputs() << " vs. "
+    << p->inputs.size();
+
   std::vector<TypePtr> data;
   for (auto &ne : p->inputs) {
     data.emplace_back(ne.operator->());
   }
-  // z3_expr cstr = p->op()->constraints(p->attrs, data);
   std::vector<TypePtr> outs;
-  z3_expr cstr = p->op()->forward_func(p->attrs, data, outs);
+  p->csrt_ = p->op()->forward_func(p->attrs, data, outs);
   
-  if ((attrs.count("data_assign") == 0) ||
-      (attrs.at("data_assign") == "true")) {
-    for (size_t i = 0; i < outs.size(); ++i) {
-      TypePtr &&tmp = outs[i]->copy_placeholder(
-          node_name + "_assign" + std::to_string(i));
-      cstr = cstr && tmp->assign(data[i]);
-      p->data_.emplace_back(tmp);
-    }
-  } else {
-    p->data_ = data;
+  for (size_t i = 0; i < outs.size(); ++i) {
+    TypePtr &&tmp = TypeRef::Make(
+        node_name+"_out"+std::to_string(i), outs[i]->shape);
+    p->data_.emplace_back(tmp);
+    p->csrt_ = p->csrt_ && tmp->assign(data[i]);
+    p->asrt_ = p->asrt_ && outs[i]->constraints() &&
+      outs[i]->assertions();
   }
-  p->constraints_ = cstr;
   return NodeEntry(p, 0, 0);
 }
 
 z3_expr Node::constraints() const {
-  z3_expr cstr = this->constraints_; // operator's constraint
-  if (inputs.size() > 0) {
-    z3_expr t = inputs[0].node->constraints();
-    for (size_t i = 1; i < inputs.size(); ++i) {
-      t = t && inputs[i].node->constraints();
-    }
-    cstr = t && cstr;
+  z3_expr cstr(true);
+  for (auto &ne : inputs) {
+    cstr = cstr && ne.node->constraints();
   }
+  cstr = cstr && this->csrt_;
   return cstr;
+}
+
+z3_expr Node::assertions() const {
+  z3_expr asrt = this->asrt_;
+  for (auto &ne : inputs) {
+    asrt = asrt && ne.node->assertions();
+  }
+  return asrt;
 }
 
 

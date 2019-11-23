@@ -2,4 +2,7 @@
 .ycm_extra_conf.py
 build/
 
+# python
+__pycache__
+
 compile_commands.json

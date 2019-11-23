@@ -6,14 +6,7 @@
 #include <exception>
 
 #include "z3++.h"
-
-namespace z3 {
-namespace utils {
-
-bool is_expr_true(const expr &a);
-
-}
-}
+#include "base.h"
 
 namespace z3 {
 namespace type {
@@ -38,15 +31,22 @@ class z3_cstr;
 
 class z3_data : public expr {
  public:
-  z3_data(int num = 0);
-  z3_data(std::string name);
-  z3_data(expr val);
+  // Avoid implicit convension
+  template<typename T>
+  z3_data(T t) = delete;
 
-  z3_cstr deterministic();
+  z3_data(int num = 0);
+  z3_data(const char *name);
+  z3_data(const std::string &name);
+  z3_data(expr val);
 };
 
 class z3_cstr : public expr {
  public:
+  // Avoid implicit convension
+  template<typename T>
+  z3_cstr(T t) = delete;
+
   z3_cstr();
   z3_cstr(expr cstr);
 };
@@ -59,56 +59,83 @@ class z3_expr {
   z3_data data;
   z3_cstr cstr;
 
-  z3_expr(std::string name);
+  // Avoid implicit convension
+  template<typename T>
+  z3_expr(T t) = delete;
+
+  // initial data
   z3_expr(int num);
+  z3_expr(const char *name);
+  z3_expr(const std::string &name);
+  z3_expr(z3_data data);
+
+  // initial constraints
   z3_expr(bool flag);
-  explicit z3_expr(z3_data data);
-  explicit z3_expr(z3_cstr cstr);
-  explicit z3_expr(z3_data data, z3_cstr cstr);
+  z3_expr(z3_cstr cstr);
+
+  // initial both
+  z3_expr(z3_data data, z3_cstr cstr);
 
   // get constraints in closed interval.
   z3_expr closed_interval(z3_expr start, z3_expr end);
+  z3_expr deterministic();
 
   // get the positive range of self representation.
   z3_expr bit_range();
 };
 
+// data operator, will collect constraints auto.
 FEXPR_MAP_DECL(operator+, 2);
 FEXPR_MAP_DECL(operator-, 2);
 FEXPR_MAP_DECL(operator-, 1);
 FEXPR_MAP_DECL(operator*, 2);
 FEXPR_MAP_DECL(operator/, 2);
 FEXPR_MAP_DECL(op_1_shift_left, 1);
+FEXPR_MAP_DECL(op_max, 2);
 
-FEXPR_MAP_DECL(max, 2);
+// generate constraints
 FEXPR_MAP_DECL(operator<, 2);
 FEXPR_MAP_DECL(operator<=, 2);
 FEXPR_MAP_DECL(operator==, 2);
 FEXPR_MAP_DECL(operator&&, 2);
+FEXPR_MAP_DECL(implies, 2);
+
+// typedef std::vector<int32_t> Shape;
+class Shape : public std::vector<int32_t> {
+ public:
+  Shape(std::initializer_list<int32_t> init) 
+      : std::vector<int32_t>(init) { }
+
+  inline bool operator==(const Shape &shp) const {
+    return std::equal(begin(), end(), shp.begin());
+  }
+  inline bool operator!=(const Shape &shp) const {
+    return !(*this == shp);
+  }
+
+  size_t Size() const;
+  std::string to_string() const;
+};
 
 class TypeRef {
  public:
-  std::vector<z3_expr> data;
   z3_expr prec;
 
   // Shape indicates the orginization structure of data, 
   //  which equals with data.size().
-  std::vector<int32_t> shape; 
+  const Shape shape; 
 
   inline z3_expr asscalar() {
-    if (data.size() == 1) {
-      return data[0];
-    }
-
-    throw std::runtime_error("TypeRef is not scalar.");
+    VERIFY(shape.empty())
+      << "TypeRef is not scalar";
+    return data[0];
   }
-
-  /*
-   * Copy current TypeRef's shape and data placeholder 
-   *  into new one, which indicates that the real expression
-   *  stored is not copied.
-   **/
-  TypePtr copy_placeholder(std::string name);
+  inline z3_expr at(size_t index) const {
+    VERIFY((0 <= index) && (index < data.size()))
+      << "Index " << index 
+      << " out of TypeRef size " << data.size();
+    return data[index];
+  }
 
   /*
    * Basic operation constraints
@@ -120,12 +147,19 @@ class TypeRef {
    **/
   z3_expr constraints();
 
-  inline z3_expr operator[](size_t index) {
-    return data[index];
-  }
+  z3_expr assertions();
+
+  static TypePtr Make(const std::string &name, const Shape &shape);
+  static TypePtr Make(
+      const std::vector<z3_expr> &data, 
+      const z3_expr &prec,
+      const Shape &shape);
 
  protected:
-  TypeRef(z3_expr prec) : prec(prec) {}
+  std::vector<z3_expr> data;
+
+  TypeRef(const z3_expr &prec, const Shape &shp) : 
+    prec(prec), shape(shp) {}
 };
 
 /*
@@ -135,31 +169,11 @@ class TypeRef {
 class Scalar final : public TypeRef {
  public:
   static TypePtr Make(const std::string &name) {
-    return std::make_shared<Scalar>(Scalar(name));
+    return TypeRef::Make(name, {});
   }
-  static TypePtr Make(const std::string &name, int prec) {
-    return std::make_shared<Scalar>(Scalar(name, prec));
-  }
-
-  static TypePtr Make(const z3_expr &v, const z3_expr &p) {
-    return std::make_shared<Scalar>(Scalar(v, p));
-  }
-
- private:
-  Scalar(const std::string &name) :
-    TypeRef("p_"+name) 
-  {
-    data.emplace_back(name);
-  }
-  Scalar(const std::string &name, int prec) :
-    TypeRef(prec) 
-  {
-    data.emplace_back(name);
-  }
-  Scalar(const z3_expr &v, const z3_expr &p) :
-    TypeRef(p) 
-  {
-    data.emplace_back(v);
+  static TypePtr Make(
+      const z3_expr &v, const z3_expr &p) {
+    return TypeRef::Make({v}, p, {});
   }
 };
 

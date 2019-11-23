@@ -36,9 +36,11 @@ class Node {
   inline uint32_t num_outputs() const;
 
   z3_expr constraints() const;
+  z3_expr assertions() const;
 
-  template<typename ValueType>
-  static NodeEntry CreateVariable(const std::string &name);
+  static NodeEntry CreateVariable(
+      const std::string &name,
+      const Shape &shape);
 
   static NodeEntry CreateOperator(
       const char *op_name,
@@ -50,7 +52,8 @@ class Node {
  private:
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
-  z3_expr constraints_{true};
+  z3_expr asrt_{true};
+  z3_expr csrt_{true};
 
   Node() = default;
   static NodePtr Create() {
@@ -106,17 +109,6 @@ inline uint32_t Node::num_inputs() const {
   } else {
     return this->op()->get_num_inputs(this->attrs);
   }
-}
-
-template <typename ValueType>
-NodeEntry Node::CreateVariable(const std::string &name) {
-  NodePtr n = Node::Create();
-  n->attrs.op = nullptr;
-  n->attrs.name = name;
-  n->data_.emplace_back(ValueType::Make(name));
-  // append TypeRef's constraints
-  n->constraints_ = n->data_[0]->constraints();
-  return NodeEntry{n, 0, 0};
 }
 
 

@@ -9,20 +9,17 @@ using namespace z3::cvm;
 using namespace z3::type;
 using namespace std;
 
-static const int32_t 
-_INT32_MAX = (int64_t{1} << 31) - 1;
-
-void z3_prover(z3_cstr cstr) {
+void z3_prover(z3_cstr cstr, ostream &os=cout) {
   z3::solver s(C);
   s.add(!cstr);
 
-  std::cout << "=== z3_prover ===\n" << s << std::endl;
+  os << "===== z3_prover =====\n" << s << std::endl;
   switch (s.check()) {
     case z3::unsat: 
-      std::cout << "the model is deterministic." << std::endl;
+      os << "the model is deterministic." << std::endl;
       break;
     case z3::sat: {
-      std::cout << "The model is undeterministic." << std::endl;
+      os << "The model is undeterministic." << std::endl;
       z3::model m = s.get_model();
       for (unsigned i = 0; i < m.size(); i++) {
         z3::func_decl v = m[i];
@@ -38,7 +35,7 @@ void z3_prover(z3_cstr cstr) {
       break;
     }
     case z3::unknown: {
-      std::cout << "The models is unknown" << std::endl;
+      os << "The models is unknown" << std::endl;
       break;
     }
 
@@ -47,15 +44,34 @@ void z3_prover(z3_cstr cstr) {
 
 void z3_expr_deterministic() {
   z3_expr a("a"), b("b");
-  z3_expr res = a + b;
+  z3_expr cstr = a.deterministic() && b.deterministic();
+  z3_expr res(true);
+
+  res = a + b;
+  z3_prover(implies(cstr, res).cstr);
+  res = a - b;
+  z3_prover(implies(cstr, res).cstr);
+  res = a * b;
+  z3_prover(implies(cstr, res).cstr);
+  res = a / b;
+  z3_prover(implies(cstr, res).cstr);
+  res = op_max(a, b);
+  z3_prover(implies(cstr, res).cstr);
+
+  res = - a;
+  z3_prover(implies(a.deterministic(), res).cstr);
+
+  // shift left operator must bewteen [1, 31]
+  // res = op_1_shift_left(a);
+  // z3_prover(implies(a.deterministic(), res).cstr);
 }
 
 int main() {
-  z3_expr_deterministic();
-  return 0;
+  // z3_expr_deterministic();
+  // return 0;
 
-  auto a = Node::CreateVariable<Scalar>("a");
-  auto b = Node::CreateVariable<Scalar>("b");
+  auto a = Node::CreateVariable("a", {});
+  auto b = Node::CreateVariable("b", {});
 
   auto c = Node::CreateOperator(
       "scalar_add", "add", {a, b},
@@ -64,11 +80,9 @@ int main() {
       });
 
   z3_expr cstr = c.node->constraints();
-  z3_expr stmt = c->constraints();
-  std::cout << cstr.cstr << "\n\n" << stmt.cstr << std::endl;
+  z3_expr asrt = c.node->assertions();
 
-  z3::expr p1 = z3::implies(cstr.cstr, stmt.cstr);
-  z3_prover(p1);
+  z3_prover(implies(cstr, asrt).cstr);
   return 0;
 
 
