@@ -41,10 +41,44 @@ static bool _IsBool(expr val) { return val.is_bool(); }
 static expr _Add(const expr &a, const expr &b) { return a + b; }
 static expr _Sub(const expr &a, const expr &b) { return a - b; }
 static expr _Mul(const expr &a, const expr &b) { return a * b; }
-static expr _Div(const expr &a, const expr &b) { return a / b; }
+
+static func_decl func_safe_div() {
+  expr a = _Int("a"), b = _Int("b");
+  sort I = _IntSort();
+  z3::func_decl f = C.recfun("safe_div", I, I, I);
+  expr_vector args(C);
+  args.push_back(a);
+  args.push_back(b);
+  C.recdef(f, args,
+      z3::ite(b == 0, _IntVal(0), a / b));
+  return f;
+}
+static expr _Div(const expr &a, const expr &b) { 
+#if SIMPLIFY_LEVEL <= 4
+  static func_decl safe_div = func_safe_div();
+  return safe_div(a, b);
+#else
+  return z3::ite(b == 0, _IntVal(0), a / b);
+#endif
+}
 static expr _Neg(const expr &a) { return -a; }
 static expr _Shl(const expr &a) { return z3::shl(1, a); }
 static expr _Max(const expr &a, const expr &b) { return z3::max(a, b); }
+
+static func_decl func_one_shift() {
+  expr a = _Int("a"), b = _Int("b");
+  sort I = _IntSort();
+  z3::func_decl f = C.recfun("one_shift", I, I);
+  expr_vector args(C);
+  args.push_back(a);
+  C.recdef(f, args,
+      (z3::shl(1, a-1) - 1));
+  return f;
+}
+static expr _OneShift(const expr &a) {
+  static func_decl one_shift = func_one_shift();
+  return one_shift(a);
+}
 
 static expr _AddCstr(const expr &a, const expr &b) {
   return (z3::bvadd_no_overflow(a, b, true) &&
@@ -64,6 +98,7 @@ static expr _DivCstr(const expr &a, const expr &b) {
 static expr _NegCstr(const expr &a) { return z3::bvneg_no_overflow(a); }
 static expr _ShlCstr(const expr &a) { return (0 <= a) && (a <= 31); }
 static expr _MaxCstr(const expr &a, const expr &b) { return _BoolVal(true); }
+static expr _OneShiftCstr(const expr &a) { return (0 <= a) && (a <= 32); }
 
 // ===== z3 data & cstr =====
 
@@ -87,22 +122,30 @@ z3_cstr::z3_cstr(expr val) : expr(val) {
 }
 
 z3_cstr operator&&(const z3_cstr &a, const z3_cstr &b) {
+  if (a.is_true()) return b;
+  else if (b.is_true()) return a;
+#if SIMPLIFY_LEVEL >= 7
   const expr &a_sim = a.simplify();
   const expr &b_sim = b.simplify();
   if (a_sim.is_true()) return b;
   else if (b_sim.is_true()) return a;
   else if (a_sim.is_false() || b_sim.is_false()) 
     return _BoolVal(false);
+#endif
   return z3::operator&&(a, b);
 }
 
 z3_cstr operator||(const z3_cstr &a, const z3_cstr &b) {
+  if (a.is_false()) return b;
+  else if (b.is_false()) return a;
+#if SIMPLIFY_LEVEL >= 7
   const expr &a_sim = a.simplify();
   const expr &b_sim = b.simplify();
   if (a_sim.is_false()) return b;
   else if (b_sim.is_false()) return a;
   else if (a_sim.is_true() || b_sim.is_true())
     return _BoolVal(true);
+#endif
   return z3::operator||(a, b);
 }
 
@@ -129,35 +172,23 @@ z3_expr z3_expr::closed_interval(z3_expr start, z3_expr end) {
         (start.data <= data) && (data <= end.data)));
 }
 
-/*
- * func_decl _BitRange() {
- *   expr a = _Int("a"), b = _Int("b");
- *   sort I = _IntSort();
- *   z3::func_decl f = C.recfun("bit_range", I, I);
- *   expr_vector args(C);
- *   args.push_back(a);
- *   C.recdef(f, args,
- *       (z3::shl(1, a-1) - 1));
- *   return f;
- * }
- * static const func_decl _BIT_RANGE_FUNC = _BitRange();
- **/
 z3_expr z3_expr::bit_range() {
-  // return _BIT_RANGE_FUNC(val);
+#if SIMPLIFY_LEVEL <= 3
+  return one_shift(*this);
+#else
   return op_1_shift_left((*this - 1)) - 1;
+#endif
 }
 
-#define FVAL_1(__data) t1.__data
-#define FVAL_2(__data) FVAL_1(__data), t2.__data
+#define DATA(name) name.data
+#define CSTR(name) name.cstr
+#define CSTR_AND(name) c = c && name.cstr
 
-#define AND_1() c = c && t1.cstr;
-#define AND_2() AND_1(); c = c && t2.cstr;
-
-#define FMAP_OP(__f, __op, __args) \
-  FEXPR_MAP_DECL(__f, __args) { \
-    z3_data v = _ ## __op(CONCAT(FVAL_, __args)(data));     \
-    z3_cstr c = _ ## __op ## Cstr(CONCAT(FVAL_, __args)(data)); \
-    CONCAT(AND_, __args)(); \
+#define FMAP_OP(fname, op, args) \
+  F_Z3_EXPR_DECL(fname, args) { \
+    z3_data v = _ ## op(EXPAND_ARGS(args, DATA, S_COMMA)); \
+    z3_cstr c = _ ## op ## Cstr(EXPAND_ARGS(args, DATA, S_COMMA)); \
+    EXPAND_ARGS(args, CSTR_AND, S_SEMI); \
     return z3_expr(v, c); \
   }
 
@@ -167,25 +198,26 @@ FMAP_OP(operator-, Neg, 1);
 FMAP_OP(operator*, Mul, 2);
 FMAP_OP(operator/, Div, 2);
 FMAP_OP(op_1_shift_left, Shl, 1);
+FMAP_OP(one_shift, OneShift, 1);
 FMAP_OP(op_max, Max, 2);
 
-#define FMAP_CSTR(__f, __args, __from) \
-  FEXPR_MAP_DECL(__f, __args) { \
-    expr res = __f(CONCAT(FVAL_, __args)(__from)); \
+#define FMAP_CSTR(fname, args, from) \
+  F_Z3_EXPR_DECL(fname, args) { \
+    expr res = fname(EXPAND_ARGS(args, from, S_COMMA)); \
     return z3_expr(z3_cstr(res)); \
   }
 
-FMAP_CSTR(operator<, 2, data);
-FMAP_CSTR(operator<=, 2, data);
-FMAP_CSTR(operator==, 2, data);
-FMAP_CSTR(operator&&, 2, cstr);
-FMAP_CSTR(implies, 2, cstr);
+FMAP_CSTR(operator<, 2, DATA);
+FMAP_CSTR(operator<=, 2, DATA);
+FMAP_CSTR(operator==, 2, DATA);
+FMAP_CSTR(operator&&, 2, CSTR);
+FMAP_CSTR(implies, 2, CSTR);
 
 // ===== Shape   =====
 
 size_t Shape::Size() const {
   size_t _s = 1;
-  for (auto it = this->begin(); it != this->end(); ++it) {
+  for (auto it = begin(); it != end(); ++it) {
     _s *= *it;
   }
   return _s;
@@ -193,11 +225,12 @@ size_t Shape::Size() const {
 
 std::string Shape::to_string() const {
   std::ostringstream oss;
-  oss << "< ";
+  oss << "<";
   for (auto it = begin(); it != end(); ++it) {
     if (it != begin()) oss << ", ";
     oss << *it;
   }
+  oss << ">";
   return oss.str();
 }
 
@@ -207,6 +240,17 @@ TypePtr TypeRef::Make(
     const std::string &name, 
     const Shape &shape) {
   TypeRef tr(z3_expr(name + "_prec"), shape);
+  for (size_t i = 0; i < shape.Size(); ++i) {
+    tr.data.emplace_back(name + "_" + std::to_string(i));
+  }
+  return std::make_shared<TypeRef>(tr);
+}
+
+TypePtr TypeRef::Make(
+    const std::string &name, 
+    const Shape &shape,
+    const z3_expr &prec) {
+  TypeRef tr(prec, shape);
   for (size_t i = 0; i < shape.Size(); ++i) {
     tr.data.emplace_back(name + "_" + std::to_string(i));
   }

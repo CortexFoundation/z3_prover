@@ -3,7 +3,7 @@ project(z3_prover CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CXX_FLAGS "-g -std=c++11")
+set(CMAKE_CXX_FLAGS "-g -std=c++17")
 set(Z3_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/z3")
 
 include_directories("include")

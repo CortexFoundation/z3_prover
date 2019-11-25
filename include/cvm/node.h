@@ -38,9 +38,10 @@ class Node {
   z3_expr constraints() const;
   z3_expr assertions() const;
 
+  template<typename ValueType, typename ...Args>
   static NodeEntry CreateVariable(
-      const std::string &name,
-      const Shape &shape);
+      const std::string &node_name, 
+      Args&& ...args);
 
   static NodeEntry CreateOperator(
       const char *op_name,
@@ -111,6 +112,20 @@ inline uint32_t Node::num_inputs() const {
   }
 }
 
+template<typename ValueType, typename ...Args>
+NodeEntry Node::CreateVariable(
+    const std::string &node_name,
+    Args&& ...args) {
+  NodePtr n = Node::Create();
+  n->attrs.op = nullptr;
+  n->attrs.name = node_name;
+  n->data_.emplace_back(ValueType::Make(
+        node_name,
+        std::forward<Args>(args)...));
+  n->csrt_ = n->data_[0]->constraints();
+  n->asrt_ = n->data_[0]->assertions();
+  return NodeEntry{n, 0, 0};
+}
 
 }
 }

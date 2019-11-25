@@ -41,4 +41,17 @@ class RuntimeError {
 
 };
 
+/*
+ * Simplify Level indicates the z3 prover's condition simplicity.
+ *  Lower number is easy for debug with user-friendly constraints printer;
+ *  Higher number is efficiently speed up the prove time cost;
+ *
+ *  The range of SIMPLIFY_LEVEL is between [0, 10] and default
+ *    value is 5, [0, 4] is easy to read with frequently func-declare
+ *    of base operator such as safe_div (which is wrapper function for
+ *    processing zero-division), and [6, 10] is to do cond-reduction
+ *    as most as we can for less time provement.
+ **/
+#define SIMPLIFY_LEVEL 5
+
 #endif // Z3_CVM_BASE_H

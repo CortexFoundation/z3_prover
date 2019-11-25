@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <exception>
+#include <cmath>
 
 #include "z3++.h"
 #include "base.h"
@@ -17,15 +18,23 @@ using TypePtr = std::shared_ptr<TypeRef>;
 context& Z3Context();
 #define C Z3Context()
 
-
 #define CONCAT_(a, b) a ## b
 #define CONCAT(a, b) CONCAT_(a, b)
 
-#define FARG_1() const z3_expr &t1
-#define FARG_2() FARG_1(), const z3_expr &t2
+#define EXPAND_ARGS_1(f, s...) f(t1)
+#define EXPAND_ARGS_2(f, s...) EXPAND_ARGS_1(f, ##s)s f(t2)
+#define EXPAND_ARGS_3(f, s...) EXPAND_ARGS_2(f, ##s)s f(t3)
+#define EXPAND_ARGS(args, f, s...) CONCAT(EXPAND_ARGS_, args)(f, ##s)
 
-#define FEXPR_MAP_DECL(__f, __args) \
-  z3_expr __f(CONCAT(FARG_, __args)())
+#define S_COMMA ,
+#define S_SEMI ;
+
+#define Z3_EXPR_DECL(name) const z3_expr &name
+#define F_Z3_EXPR_DECL(fname, args) \
+  z3_expr fname(EXPAND_ARGS(args, Z3_EXPR_DECL, S_COMMA))
+
+#define DEBUG_STR_(macro) #macro
+#define DEBUG_STR(macro) DEBUG_STR_(macro)
 
 class z3_cstr;
 
@@ -85,26 +94,31 @@ class z3_expr {
 };
 
 // data operator, will collect constraints auto.
-FEXPR_MAP_DECL(operator+, 2);
-FEXPR_MAP_DECL(operator-, 2);
-FEXPR_MAP_DECL(operator-, 1);
-FEXPR_MAP_DECL(operator*, 2);
-FEXPR_MAP_DECL(operator/, 2);
-FEXPR_MAP_DECL(op_1_shift_left, 1);
-FEXPR_MAP_DECL(op_max, 2);
+// ARGS_EXPAND(operator+, 2);
+F_Z3_EXPR_DECL(operator+, 2);
+F_Z3_EXPR_DECL(operator-, 2);
+F_Z3_EXPR_DECL(operator-, 1);
+F_Z3_EXPR_DECL(operator*, 2);
+F_Z3_EXPR_DECL(operator/, 2);
+F_Z3_EXPR_DECL(op_1_shift_left, 1);
+F_Z3_EXPR_DECL(one_shift, 1);
+F_Z3_EXPR_DECL(op_max, 2);
 
 // generate constraints
-FEXPR_MAP_DECL(operator<, 2);
-FEXPR_MAP_DECL(operator<=, 2);
-FEXPR_MAP_DECL(operator==, 2);
-FEXPR_MAP_DECL(operator&&, 2);
-FEXPR_MAP_DECL(implies, 2);
+F_Z3_EXPR_DECL(operator<, 2);
+F_Z3_EXPR_DECL(operator<=, 2);
+F_Z3_EXPR_DECL(operator==, 2);
+F_Z3_EXPR_DECL(operator&&, 2);
+F_Z3_EXPR_DECL(implies, 2);
 
 // typedef std::vector<int32_t> Shape;
-class Shape : public std::vector<int32_t> {
+typedef std::vector<int32_t> _ShapeBase;
+class Shape : public _ShapeBase {
  public:
-  Shape(std::initializer_list<int32_t> init) 
-      : std::vector<int32_t>(init) { }
+  Shape(const std::initializer_list<int32_t> &init) 
+      : _ShapeBase(init) { }
+
+  Shape() : _ShapeBase() {}
 
   inline bool operator==(const Shape &shp) const {
     return std::equal(begin(), end(), shp.begin());
@@ -130,12 +144,18 @@ class TypeRef {
       << "TypeRef is not scalar";
     return data[0];
   }
-  inline z3_expr at(size_t index) const {
+  inline const z3_expr& at(size_t index) const {
     VERIFY((0 <= index) && (index < data.size()))
       << "Index " << index 
       << " out of TypeRef size " << data.size();
     return data[index];
   }
+  inline z3_expr& at(size_t index) {
+    return const_cast<z3_expr&>(
+        static_cast<const TypeRef&>(*this).at(index)
+    );
+  }
+  inline size_t Size() const { return shape.Size(); }
 
   /*
    * Basic operation constraints
@@ -151,6 +171,10 @@ class TypeRef {
 
   static TypePtr Make(const std::string &name, const Shape &shape);
   static TypePtr Make(
+      const std::string &name, 
+      const Shape &shape,
+      const z3_expr &prec);
+  static TypePtr Make(
       const std::vector<z3_expr> &data, 
       const z3_expr &prec,
       const Shape &shape);
@@ -159,7 +183,7 @@ class TypeRef {
   std::vector<z3_expr> data;
 
   TypeRef(const z3_expr &prec, const Shape &shp) : 
-    prec(prec), shape(shp) {}
+      prec(prec), shape(shp) {}
 };
 
 /*
@@ -171,8 +195,13 @@ class Scalar final : public TypeRef {
   static TypePtr Make(const std::string &name) {
     return TypeRef::Make(name, {});
   }
-  static TypePtr Make(
-      const z3_expr &v, const z3_expr &p) {
+  static TypePtr Make(const std::string &name, int data) {
+    int abs = data > 0 ? data : -data;
+    int bit = (abs > 0) ? log2(double(abs)) + 2 : 1;
+    return TypeRef::Make(
+        { z3_expr(data) }, z3_expr(bit), {});
+  }
+  static TypePtr Make(const z3_expr &v, const z3_expr &p) {
     return TypeRef::Make({v}, p, {});
   }
 };

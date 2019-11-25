@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unordered_map>
+#include <ctime>
 
 #include "cvm/z3_types.h"
 #include "cvm/op.h"
@@ -11,9 +12,14 @@ using namespace std;
 
 void z3_prover(z3_cstr cstr, ostream &os=cout) {
   z3::solver s(C);
+#if SIMPLIFY_LEVEL <= 5
   s.add(!cstr);
+#else
+  s.add((!cstr).simplify());
+#endif
 
   os << "===== z3_prover =====\n" << s << std::endl;
+  clock_t start = clock();
   switch (s.check()) {
     case z3::unsat: 
       os << "the model is deterministic." << std::endl;
@@ -38,8 +44,11 @@ void z3_prover(z3_cstr cstr, ostream &os=cout) {
       os << "The models is unknown" << std::endl;
       break;
     }
-
   }
+
+  clock_t interval = clock() - start;
+  os << "Time: " << double(interval) / CLOCKS_PER_SEC
+    << "s" << std::endl;
 }
 
 void z3_expr_deterministic() {
@@ -69,12 +78,16 @@ void z3_expr_deterministic() {
 int main() {
   // z3_expr_deterministic();
   // return 0;
+  //
+  // std::cout << DEBUG_STR(F_Z3_EXPR_DECL(operator+, 3)) << std::endl;
+  // return 0;
 
-  auto a = Node::CreateVariable("a", {});
-  auto b = Node::CreateVariable("b", {});
+  auto a = Node::CreateVariable<TypeRef>("a", Shape(), 24);
+  auto b = Node::CreateVariable<Scalar>("b", 4);
+  // auto b = Node::CreateVariable<TypeRef>("b", Shape());
 
   auto c = Node::CreateOperator(
-      "scalar_add", "add", {a, b},
+      "elemwise_add", "add", {a, b},
       unordered_map<string, string>{
           // {"data_assign", "false"}
       });

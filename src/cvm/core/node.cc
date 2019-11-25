@@ -31,21 +31,6 @@ Node::~Node() {
   }
 }
 
-NodeEntry Node::CreateVariable(
-    const std::string &name,
-    const Shape &shape) {
-  NodePtr n = Node::Create();
-  n->attrs.op = nullptr;
-  n->attrs.name = name;
-  n->data_.emplace_back(TypeRef::Make(name, shape));
-  // append TypeRef's constraints
-  n->csrt_ = n->data_[0]->constraints();
-  n->asrt_ = n->data_[0]->assertions();
-  // n->asrt_ = n->data_[0]->constraints() &&
-    // n->data_[0]->assertions();
-  return NodeEntry{n, 0, 0};
-}
-
 
 NodeEntry Node::CreateOperator(
     const char *op_name,
@@ -58,26 +43,31 @@ NodeEntry Node::CreateOperator(
   p->attrs.dict = attrs;
   p->inputs = std::move(inputs);
 
-  VERIFY(p->inputs.size() == p->num_inputs())
-    << "operator " << op_name << "(" << node_name << ")"
-    << " inputs' size "
-    << "not equals with " << p->num_inputs() << " vs. "
-    << p->inputs.size();
-
   std::vector<TypePtr> data;
   for (auto &ne : p->inputs) {
     data.emplace_back(ne.operator->());
   }
   std::vector<TypePtr> outs;
+
+  VERIFY_EQ(data.size(), p->num_inputs())
+    << "operator " << op_name << "(" << node_name << ") "
+    << "inputs' size "
+    << "not equals with " << p->num_inputs() << " vs. "
+    << p->inputs.size();
   p->csrt_ = p->op()->forward_func(p->attrs, data, outs);
+  VERIFY_EQ(outs.size(), p->num_outputs())
+    << "operator " << op_name << "(" << node_name << ") "
+    << "outputs' size "
+    << "not equal with " << p->num_outputs() << " vs. "
+    << outs.size();
   
   for (size_t i = 0; i < outs.size(); ++i) {
     TypePtr &&tmp = TypeRef::Make(
         node_name+"_out"+std::to_string(i), outs[i]->shape);
     p->data_.emplace_back(tmp);
-    p->csrt_ = p->csrt_ && tmp->assign(data[i]);
-    p->asrt_ = p->asrt_ && outs[i]->constraints() &&
-      outs[i]->assertions();
+    p->csrt_ = p->csrt_ && tmp->assign(outs[i]);
+    p->asrt_ = p->asrt_ && tmp->constraints() &&
+      tmp->assertions();
   }
   return NodeEntry(p, 0, 0);
 }
