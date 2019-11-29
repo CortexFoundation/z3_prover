@@ -9,6 +9,8 @@
 namespace z3 {
 namespace cvm {
 
+using namespace type;
+
 Node::~Node() {
   if (inputs.size() != 0) {
     // explicit deletion via DFS
@@ -66,8 +68,8 @@ NodeEntry Node::CreateOperator(
         node_name+"_out"+std::to_string(i), outs[i]->shape);
     p->data_.emplace_back(tmp);
     p->csrt_ = p->csrt_ && tmp->assign(outs[i]);
-    p->asrt_ = p->asrt_ && tmp->constraints() &&
-      tmp->assertions();
+    p->asrt_ = p->asrt_ && tmp->data_constraints() &&
+      tmp->op_constraints();
   }
   return NodeEntry(p, 0, 0);
 }

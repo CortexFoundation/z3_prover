@@ -13,8 +13,6 @@ namespace cvm {
 
 struct NodeAttrs;
 
-using namespace z3::type;
-
 class Op {
  public:
   std::string name;
@@ -45,35 +43,33 @@ class Op {
     return *this;
   }
 
-  std::function<z3_expr(
+  std::function<type::z3_expr(
       const NodeAttrs &attrs,
-      std::vector<TypePtr> &inputs,
-      std::vector<TypePtr> &outputs)> 
+      std::vector<type::TypePtr> &inputs,
+      std::vector<type::TypePtr> &outputs)> 
   forward_func = nullptr;
 
   inline Op& set_forward(
-      std::function<z3_expr(
+      std::function<type::z3_expr(
           const NodeAttrs&, 
-          std::vector<TypePtr>&,
-          std::vector<TypePtr>&)
+          std::vector<type::TypePtr>&,
+          std::vector<type::TypePtr>&)
       > forward_func) {
     this->forward_func = forward_func;
     return *this;
   }
 
-  std::function<z3_expr(const NodeAttrs&, std::vector<TypePtr>&)> 
-  constraints = 
-  [](const NodeAttrs& attrs, std::vector<TypePtr>& inputs){ 
-    return z3_expr(true);
-  };
+  std::function<std::vector<type::z3_expr>()> 
+  provements_generator = nullptr;
 
-  inline Op& set_constraints(
-      std::function<z3_expr(const NodeAttrs&, std::vector<TypePtr>&)> fn) {
-    this->constraints = fn;
+  inline Op& set_generator(
+      std::function<std::vector<type::z3_expr>()> func) {
+    this->provements_generator = func;
     return *this;
   }
 
   static const Op* Get(const std::string& op_name);
+  static std::vector<std::string> ListAllNames();
 
  private:
   friend class utils::Registry<Op>;

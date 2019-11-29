@@ -40,6 +40,10 @@ const Op* Op::Get(const std::string &name) {
   return op;
 }
 
+std::vector<std::string> Op::ListAllNames() {
+  return utils::Registry<Op>::ListAllNames();
+}
+
 // const Op* Op::Get(const std::string& name) {
 //   const Op* op = 
 // }

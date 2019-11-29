@@ -36,6 +36,9 @@ context& Z3Context();
 #define DEBUG_STR_(macro) #macro
 #define DEBUG_STR(macro) DEBUG_STR_(macro)
 
+static const int32_t 
+Z3_INT32_MAX = (int64_t{1} << 31) - 1;
+
 class z3_cstr;
 
 class z3_data : public expr {
@@ -86,11 +89,12 @@ class z3_expr {
   z3_expr(z3_data data, z3_cstr cstr);
 
   // get constraints in closed interval.
-  z3_expr closed_interval(z3_expr start, z3_expr end);
+  z3_expr closed_interval(z3_expr start, z3_expr end) const;
   z3_expr deterministic();
 
   // get the positive range of self representation.
   z3_expr bit_range();
+  z3_expr get_bit();
 };
 
 // data operator, will collect constraints auto.
@@ -103,6 +107,10 @@ F_Z3_EXPR_DECL(operator/, 2);
 F_Z3_EXPR_DECL(op_1_shift_left, 1);
 F_Z3_EXPR_DECL(one_shift, 1);
 F_Z3_EXPR_DECL(op_max, 2);
+F_Z3_EXPR_DECL(op_min, 2);
+F_Z3_EXPR_DECL(op_ite, 3);
+F_Z3_EXPR_DECL(op_abs, 1);
+F_Z3_EXPR_DECL(bit_prec, 1);
 
 // generate constraints
 F_Z3_EXPR_DECL(operator<, 2);
@@ -163,11 +171,20 @@ class TypeRef {
   z3_expr assign(const TypePtr &t);
 
   /*
-   * Collect current stored data's constriants.
+   * TypeRef constraints are that the data internal 
+   *  satisfied the precision range, which means
+   *  data between in range [-r, r] where r equals 
+   *  with (1 << (prec - 1) - 1.
    **/
-  z3_expr constraints();
-
-  z3_expr assertions();
+  z3_expr data_constraints();
+  /*
+   * TypeRef assertions are that the data internal
+   *  and precision variables constraints collection, 
+   *  which may be by-product that the operator 
+   *  processor generated.
+   **/
+  z3_expr op_constraints();
+  z3_expr deterministic();
 
   static TypePtr Make(const std::string &name, const Shape &shape);
   static TypePtr Make(

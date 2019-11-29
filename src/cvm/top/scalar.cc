@@ -4,6 +4,8 @@
 namespace z3 {
 namespace cvm {
 
+using namespace type;
+
 z3_expr _scalar_add(
     const NodeAttrs &attrs,
     std::vector<TypePtr> &inputs,
@@ -16,7 +18,6 @@ z3_expr _scalar_add(
   outputs.emplace_back(Scalar::Make(v, p));
   return (a->prec < 32) && (b->prec < 32);
 }
-      
 
 Z3_REGISTER_OP(scalar_add)
   .set_num_inputs(2)

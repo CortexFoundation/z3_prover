@@ -63,7 +63,22 @@ static expr _Div(const expr &a, const expr &b) {
 }
 static expr _Neg(const expr &a) { return -a; }
 static expr _Shl(const expr &a) { return z3::shl(1, a); }
-static expr _Max(const expr &a, const expr &b) { return z3::max(a, b); }
+/*
+ * Must use operator >, since z3::max use bitvector 
+ *  unsigned comparation instead of bvsge op.
+ **/
+static expr _Max(const expr &a, const expr &b) { 
+  return z3::ite(a > b, a, b);
+ }
+static expr _Min(const expr &a, const expr &b) { 
+  return z3::ite(a > b, b, a);
+}
+static expr _Abs(const expr &a) { 
+  return z3::ite(a >= 0, a, -a);
+}
+static expr _Ite(const expr &c, const expr &t, const expr &e) { 
+  return z3::ite(c, t, e);
+}
 
 static func_decl func_one_shift() {
   expr a = _Int("a"), b = _Int("b");
@@ -78,6 +93,21 @@ static func_decl func_one_shift() {
 static expr _OneShift(const expr &a) {
   static func_decl one_shift = func_one_shift();
   return one_shift(a);
+}
+
+static func_decl func_get_bit() {
+  expr a = _Int("a");
+  sort I = _IntSort();
+  z3::func_decl f = C.recfun("get_bit", I, I);
+  expr_vector args(C);
+  args.push_back(a);
+  C.recdef(f, args,
+      z3::ite(a == 0, _IntVal(0), f(z3::ashr(a, 1)) + 1));
+  return f;
+}
+static expr _GetBit(const expr &a) {
+  static func_decl get_bit = func_get_bit();
+  return get_bit(a);
 }
 
 static expr _AddCstr(const expr &a, const expr &b) {
@@ -98,7 +128,15 @@ static expr _DivCstr(const expr &a, const expr &b) {
 static expr _NegCstr(const expr &a) { return z3::bvneg_no_overflow(a); }
 static expr _ShlCstr(const expr &a) { return (0 <= a) && (a <= 31); }
 static expr _MaxCstr(const expr &a, const expr &b) { return _BoolVal(true); }
+static expr _MinCstr(const expr &a, const expr &b) { return _BoolVal(true); }
+
+// Do strong constraints, since positive number may not overflow.
+static expr _AbsCstr(const expr &a) { return z3::bvneg_no_overflow(a); }
 static expr _OneShiftCstr(const expr &a) { return (0 <= a) && (a <= 32); }
+static expr _IteCstr(const expr &c, const expr &t, const expr &e) {
+  return _BoolVal(true);
+}
+static expr _GetBitCstr(const expr &a) { return _BoolVal(true); }
 
 // ===== z3 data & cstr =====
 
@@ -124,7 +162,7 @@ z3_cstr::z3_cstr(expr val) : expr(val) {
 z3_cstr operator&&(const z3_cstr &a, const z3_cstr &b) {
   if (a.is_true()) return b;
   else if (b.is_true()) return a;
-#if SIMPLIFY_LEVEL >= 7
+#if SIMPLIFY_LEVEL >= 6
   const expr &a_sim = a.simplify();
   const expr &b_sim = b.simplify();
   if (a_sim.is_true()) return b;
@@ -138,7 +176,7 @@ z3_cstr operator&&(const z3_cstr &a, const z3_cstr &b) {
 z3_cstr operator||(const z3_cstr &a, const z3_cstr &b) {
   if (a.is_false()) return b;
   else if (b.is_false()) return a;
-#if SIMPLIFY_LEVEL >= 7
+#if SIMPLIFY_LEVEL >= 6
   const expr &a_sim = a.simplify();
   const expr &b_sim = b.simplify();
   if (a_sim.is_false()) return b;
@@ -162,12 +200,11 @@ z3_expr::z3_expr(z3_cstr cstr) : data(0), cstr(cstr) {}
 z3_expr::z3_expr(z3_data data, z3_cstr cstr) :
   data(data), cstr(cstr) {}
 
-static const int32_t _INT32_MAX = (int64_t{1} << 31) - 1;
 z3_expr z3_expr::deterministic() {
   return z3_expr(z3_cstr(
-        (-_INT32_MAX <= data) && (data <= _INT32_MAX)));
+        (-Z3_INT32_MAX <= data) && (data <= Z3_INT32_MAX)));
 }
-z3_expr z3_expr::closed_interval(z3_expr start, z3_expr end) {
+z3_expr z3_expr::closed_interval(z3_expr start, z3_expr end) const {
   return z3_expr(z3_cstr(
         (start.data <= data) && (data <= end.data)));
 }
@@ -178,6 +215,10 @@ z3_expr z3_expr::bit_range() {
 #else
   return op_1_shift_left((*this - 1)) - 1;
 #endif
+}
+
+z3_expr z3_expr::get_bit() {
+  return bit_prec(*this);
 }
 
 #define DATA(name) name.data
@@ -200,6 +241,10 @@ FMAP_OP(operator/, Div, 2);
 FMAP_OP(op_1_shift_left, Shl, 1);
 FMAP_OP(one_shift, OneShift, 1);
 FMAP_OP(op_max, Max, 2);
+FMAP_OP(op_min, Min, 2);
+FMAP_OP(op_abs, Abs, 1);
+FMAP_OP(op_ite, Ite, 3);
+FMAP_OP(bit_prec, GetBit, 1);
 
 #define FMAP_CSTR(fname, args, from) \
   F_Z3_EXPR_DECL(fname, args) { \
@@ -280,7 +325,7 @@ z3_expr TypeRef::assign(const TypePtr &t) {
   return cstr;
 }
 
-z3_expr TypeRef::constraints() {
+z3_expr TypeRef::data_constraints() {
   z3_expr cstr = prec.closed_interval(1, 32);
   z3_expr r = prec.bit_range();
   for (auto &d : data) {
@@ -289,12 +334,20 @@ z3_expr TypeRef::constraints() {
   return cstr;
 }
 
-z3_expr TypeRef::assertions() {
+z3_expr TypeRef::op_constraints() {
   z3_expr asrt = prec;
   for (z3_expr &d : data) {
     asrt = asrt && d;
   }
   return asrt;
+}
+
+z3_expr TypeRef::deterministic() {
+  z3_expr dtmt = prec.deterministic();
+  for (auto &d : data) {
+    dtmt = dtmt && d.deterministic();
+  }
+  return dtmt;
 }
 
 }

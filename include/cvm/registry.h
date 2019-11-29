@@ -14,10 +14,6 @@ namespace utils {
 template<typename EntryType>
 class Registry {
  public:
-  inline static const std::vector<const EntryType*>& List() {
-    return Get()->const_list_;
-  }
-
   inline static std::vector<std::string> ListAllNames() {
     const std::map<std::string, EntryType*> &fmap = Get()->fmap_;
     typename std::map<std::string, EntryType*>::const_iterator p;
@@ -58,7 +54,6 @@ class Registry {
     EntryType *e = new EntryType();
     e->name = name;
     fmap_[name] = e;
-    const_list_.push_back(e);
     entry_list_.push_back(e);
     return *e;
   }
@@ -75,7 +70,6 @@ class Registry {
 
  private:
   std::vector<EntryType*> entry_list_;
-  std::vector<const EntryType*> const_list_;
   std::map<std::string, EntryType*> fmap_;
   Registry() {}
   ~Registry() {

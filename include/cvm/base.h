@@ -52,6 +52,8 @@ class RuntimeError {
  *    processing zero-division), and [6, 10] is to do cond-reduction
  *    as most as we can for less time provement.
  **/
+#ifndef SIMPLIFY_LEVEL
 #define SIMPLIFY_LEVEL 5
+#endif
 
 #endif // Z3_CVM_BASE_H

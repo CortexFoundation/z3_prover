@@ -35,8 +35,8 @@ class Node {
   inline uint32_t num_inputs() const;
   inline uint32_t num_outputs() const;
 
-  z3_expr constraints() const;
-  z3_expr assertions() const;
+  type::z3_expr constraints() const;
+  type::z3_expr assertions() const;
 
   template<typename ValueType, typename ...Args>
   static NodeEntry CreateVariable(
@@ -53,8 +53,8 @@ class Node {
  private:
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
-  z3_expr asrt_{true};
-  z3_expr csrt_{true};
+  type::z3_expr asrt_{true};
+  type::z3_expr csrt_{true};
 
   Node() = default;
   static NodePtr Create() {
@@ -77,7 +77,7 @@ class NodeEntry {
     version()
   {}
 
-  inline const TypePtr operator->() {
+  inline const type::TypePtr operator->() {
     return this->node->data_[index];
   }
 
@@ -122,8 +122,8 @@ NodeEntry Node::CreateVariable(
   n->data_.emplace_back(ValueType::Make(
         node_name,
         std::forward<Args>(args)...));
-  n->csrt_ = n->data_[0]->constraints();
-  n->asrt_ = n->data_[0]->assertions();
+  n->csrt_ = n->data_[0]->data_constraints();
+  n->asrt_ = n->data_[0]->op_constraints();
   return NodeEntry{n, 0, 0};
 }
 

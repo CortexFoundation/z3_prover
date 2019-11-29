@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 #include <ctime>
 
@@ -12,17 +13,19 @@ using namespace std;
 
 void z3_prover(z3_cstr cstr, ostream &os=cout) {
   z3::solver s(C);
-#if SIMPLIFY_LEVEL <= 5
+#if SIMPLIFY_LEVEL <= 6
   s.add(!cstr);
 #else
   s.add((!cstr).simplify());
 #endif
 
-  os << "===== z3_prover =====\n" << s << std::endl;
+  os << "===== Z3_PROVER =====\n" 
+    << s
+    << "===== END =====\n" << std::endl;
   clock_t start = clock();
   switch (s.check()) {
     case z3::unsat: 
-      os << "the model is deterministic." << std::endl;
+      os << "The model is deterministic." << std::endl;
       break;
     case z3::sat: {
       os << "The model is undeterministic." << std::endl;
@@ -79,12 +82,26 @@ int main() {
   // z3_expr_deterministic();
   // return 0;
   //
-  // std::cout << DEBUG_STR(F_Z3_EXPR_DECL(operator+, 3)) << std::endl;
-  // return 0;
+  
+  // std::vector<std::string> op_names = { "clip" };
+  std::vector<std::string> op_names = Op::ListAllNames();
+  ofstream os("/tmp/verify.log");
+  // ostream &os = std::cout;
+  for (string name : op_names) {
+    auto oppg = Op::Get(name)->provements_generator;
+    if (oppg != nullptr) {
+      os << "\n\nVerification Operator: "
+        << name << "\n" << std::endl;
 
-  auto a = Node::CreateVariable<TypeRef>("a", Shape(), 24);
-  auto b = Node::CreateVariable<Scalar>("b", 4);
-  // auto b = Node::CreateVariable<TypeRef>("b", Shape());
+      for (auto &p : oppg()) z3_prover(p.cstr, os);
+    }
+    
+  }
+  return 0;
+
+  auto a = Node::CreateVariable<TypeRef>("a", Shape({2, 3}), 24);
+  // auto b = Node::CreateVariable<Scalar>("b", 4);
+  auto b = Node::CreateVariable<TypeRef>("b", Shape({2, 3}));
 
   auto c = Node::CreateOperator(
       "elemwise_add", "add", {a, b},
