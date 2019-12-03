@@ -75,26 +75,36 @@ class z3_expr {
   template<typename T>
   z3_expr(T t) = delete;
 
-  // initial data
+  // Initial data
   z3_expr(int num);
   z3_expr(const char *name);
-  z3_expr(const std::string &name);
+  explicit z3_expr(const std::string &name);
   z3_expr(z3_data data);
 
-  // initial constraints
+  // Initial constraints
   z3_expr(bool flag);
   z3_expr(z3_cstr cstr);
 
-  // initial both
+  // Initial both
   z3_expr(z3_data data, z3_cstr cstr);
 
-  // get constraints in closed interval.
-  z3_expr closed_interval(z3_expr start, z3_expr end) const;
-  z3_expr deterministic();
+  /* 
+   * All higher level function is wrapper of basic
+   *  operator declared in friend function as belows:
+   *  +, -, *, /, one_shift, ... etc.
+   *
+   * Micro `F_Z3_EXPR_DECL` is used for declaration of
+   *  basic operator function with z3_expr.
+   **/
+  // Get constraints in closed interval.
+  z3_expr closed_interval(
+      const z3_expr &start, 
+      const z3_expr &end) const;
+  z3_expr deterministic() const;
 
-  // get the positive range of self representation.
-  z3_expr bit_range();
-  z3_expr get_bit();
+  // Get the positive range of self representation.
+  z3_expr bit_range() const;
+  z3_expr get_bit() const;
 };
 
 // data operator, will collect constraints auto.
@@ -104,17 +114,22 @@ F_Z3_EXPR_DECL(operator-, 2);
 F_Z3_EXPR_DECL(operator-, 1);
 F_Z3_EXPR_DECL(operator*, 2);
 F_Z3_EXPR_DECL(operator/, 2);
-F_Z3_EXPR_DECL(op_1_shift_left, 1);
-F_Z3_EXPR_DECL(one_shift, 1);
+F_Z3_EXPR_DECL(operator<<, 2);
+F_Z3_EXPR_DECL(operator>>, 2);
+F_Z3_EXPR_DECL(op_one_shl, 1);
 F_Z3_EXPR_DECL(op_max, 2);
 F_Z3_EXPR_DECL(op_min, 2);
 F_Z3_EXPR_DECL(op_ite, 3);
 F_Z3_EXPR_DECL(op_abs, 1);
-F_Z3_EXPR_DECL(bit_prec, 1);
+
+F_Z3_EXPR_DECL(func_bit_range, 1);
+F_Z3_EXPR_DECL(func_get_bit, 1);
 
 // generate constraints
 F_Z3_EXPR_DECL(operator<, 2);
 F_Z3_EXPR_DECL(operator<=, 2);
+F_Z3_EXPR_DECL(operator>, 2);
+F_Z3_EXPR_DECL(operator>=, 2);
 F_Z3_EXPR_DECL(operator==, 2);
 F_Z3_EXPR_DECL(operator&&, 2);
 F_Z3_EXPR_DECL(implies, 2);
@@ -166,27 +181,44 @@ class TypeRef {
   inline size_t Size() const { return shape.Size(); }
 
   /*
-   * Basic operation constraints
+   * TypeRef copy operator inherits current data internal
+   *  and precision's constraints, but create new z3_data
+   *  symbol and set up assign constraints between old and 
+   *  new z3_data.
    **/
-  z3_expr assign(const TypePtr &t);
+  TypePtr copy(const std::string&) const;
 
   /*
-   * TypeRef constraints are that the data internal 
+   * TypeRef data constraints are that the data internal 
    *  satisfied the precision range, which means
    *  data between in range [-r, r] where r equals 
    *  with (1 << (prec - 1) - 1.
    **/
   z3_expr data_constraints();
   /*
-   * TypeRef assertions are that the data internal
+   * TypeRef op constraints are that the data internal
    *  and precision variables constraints collection, 
    *  which may be by-product that the operator 
    *  processor generated.
    **/
   z3_expr op_constraints();
+  /*
+   * TypeRef precision constraints are that
+   *  the precision is in range of [1, 32].
+   **/
+  z3_expr prec_constrains();
+  /*
+   * TypeRef assign constraints are introduced in 
+   *  copy function.
+   **/
+  z3_expr assign_constraints();
+  static z3_expr collect_constraints(std::vector<TypePtr> trs);
+
   z3_expr deterministic();
 
   static TypePtr Make(const std::string &name, const Shape &shape);
+  // TODO(wlt): using assign constraints by default
+  //            for parameters prec and data.
   static TypePtr Make(
       const std::string &name, 
       const Shape &shape,
@@ -196,11 +228,34 @@ class TypeRef {
       const z3_expr &prec,
       const Shape &shape);
 
+  // copy constructor use default.
+  TypeRef(const TypeRef &t) = default;
+  // assign constructor is deleted.
+  TypeRef& operator=(const TypePtr &t) = delete;
+
  protected:
   std::vector<z3_expr> data;
+  /*
+   * Assign constraints is special, it's different 
+   *  from another constraints such operator limit,
+   *  it's a easy-and-trick method for proving 
+   *  the deterministic of model directed acyclic graph.
+   *
+   * Assign constraints is recursive collected.
+   **/
+  z3_expr assign_constraints_{true};
 
-  TypeRef(const z3_expr &prec, const Shape &shp) : 
-      prec(prec), shape(shp) {}
+  inline TypeRef(
+      const std::vector<z3_expr> &data,
+      const z3_expr &prec, 
+      const Shape &shp) : 
+      data(data), prec(prec), shape(shp) {
+    VERIFY_EQ(shp.Size(), data.size())
+      << "TypeRef initializing with non consistent "
+      << "shape & data size "
+      << shp.to_string() << "==" << shp.Size()
+      << " vs. " << data.size();
+  }
 };
 
 /*

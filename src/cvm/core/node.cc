@@ -64,10 +64,12 @@ NodeEntry Node::CreateOperator(
     << outs.size();
   
   for (size_t i = 0; i < outs.size(); ++i) {
-    TypePtr &&tmp = TypeRef::Make(
-        node_name+"_out"+std::to_string(i), outs[i]->shape);
+    TypePtr &&tmp = outs[i]->copy(
+        node_name + "_out" + std::to_string(i));
+    // TypePtr &&tmp = TypeRef::Make(
+        // node_name+"_out"+std::to_string(i), outs[i]->shape);
     p->data_.emplace_back(tmp);
-    p->csrt_ = p->csrt_ && tmp->assign(outs[i]);
+    // p->csrt_ = p->csrt_ && tmp->assign(outs[i]);
     p->asrt_ = p->asrt_ && tmp->data_constraints() &&
       tmp->op_constraints();
   }

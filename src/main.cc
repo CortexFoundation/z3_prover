@@ -11,6 +11,11 @@ using namespace z3::cvm;
 using namespace z3::type;
 using namespace std;
 
+#define DOUBLE_LOG(msg) \
+  os << msg << std::endl; \
+  if (&os != &std::cout) \
+    std::cout << msg << std::endl;
+
 void z3_prover(z3_cstr cstr, ostream &os=cout) {
   z3::solver s(C);
 #if SIMPLIFY_LEVEL <= 6
@@ -25,26 +30,26 @@ void z3_prover(z3_cstr cstr, ostream &os=cout) {
   clock_t start = clock();
   switch (s.check()) {
     case z3::unsat: 
-      os << "The model is deterministic." << std::endl;
+      DOUBLE_LOG("The model is deterministic");
       break;
     case z3::sat: {
-      os << "The model is undeterministic." << std::endl;
+      DOUBLE_LOG("The model is undeterministic");
       z3::model m = s.get_model();
       for (unsigned i = 0; i < m.size(); i++) {
         z3::func_decl v = m[i];
         // this problem contains only constants
         // assert(v.arity() == 0);
-        std::cout << v.name() << " = ";
+        os << v.name() << " = ";
         if (v.arity() == 0)
-          std::cout << m.get_const_interp(v);
+          os << m.get_const_interp(v);
         else
-          std::cout << m.get_func_interp(v);
-        std::cout << "\n";
+          os << m.get_func_interp(v);
+        os << "\n";
       }
       break;
     }
     case z3::unknown: {
-      os << "The models is unknown" << std::endl;
+      DOUBLE_LOG("The model is unprovable");
       break;
     }
   }
@@ -83,10 +88,10 @@ int main() {
   // return 0;
   //
   
-  // std::vector<std::string> op_names = { "clip" };
-  std::vector<std::string> op_names = Op::ListAllNames();
-  ofstream os("/tmp/verify.log");
-  // ostream &os = std::cout;
+  // std::vector<std::string> op_names = Op::ListAllNames();
+  // ofstream os("/tmp/verify.log");
+  std::vector<std::string> op_names = { "elemwise_add" };
+  ostream &os = std::cout;
   for (string name : op_names) {
     auto oppg = Op::Get(name)->provements_generator;
     if (oppg != nullptr) {
