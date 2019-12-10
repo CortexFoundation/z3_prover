@@ -29,7 +29,7 @@ context& Z3Context();
 #define S_COMMA ,
 #define S_SEMI ;
 
-#define Z3_EXPR_DECL(name) const z3_expr &name
+#define Z3_EXPR_DECL(name) const type::z3_expr &name
 #define F_Z3_EXPR_DECL(fname, args) \
   z3_expr fname(EXPAND_ARGS(args, Z3_EXPR_DECL, S_COMMA))
 

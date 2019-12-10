@@ -90,7 +90,8 @@ int main() {
   
   // std::vector<std::string> op_names = Op::ListAllNames();
   // ofstream os("/tmp/verify.log");
-  std::vector<std::string> op_names = { "elemwise_add" };
+  z3::expr_vector a({ C.int_val(0) });
+  std::vector<std::string> op_names = { "broadcast_max" };
   ostream &os = std::cout;
   for (string name : op_names) {
     auto oppg = Op::Get(name)->provements_generator;

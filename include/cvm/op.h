@@ -2,6 +2,7 @@
 #define Z3_CVM_OP_H
 
 #include <memory>
+#include <limits>
 #include <z3++.h>
 
 #include "base.h"
@@ -11,7 +12,13 @@
 namespace z3 {
 namespace cvm {
 
+/*! \brief constant to indicate it take any length of positional inputs */
+static const uint32_t kVarg = std::numeric_limits<uint32_t>::max();
+
 struct NodeAttrs;
+
+using func_pg = std::function<
+  std::vector<type::z3_expr>()>;
 
 class Op {
  public:
@@ -59,8 +66,7 @@ class Op {
     return *this;
   }
 
-  std::function<std::vector<type::z3_expr>()> 
-  provements_generator = nullptr;
+  func_pg provements_generator = nullptr;
 
   inline Op& set_generator(
       std::function<std::vector<type::z3_expr>()> func) {

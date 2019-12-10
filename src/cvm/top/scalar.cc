@@ -1,6 +1,8 @@
 #include "cvm/op.h"
 #include "cvm/node.h"
 
+#include "common.h"
+
 namespace z3 {
 namespace cvm {
 
