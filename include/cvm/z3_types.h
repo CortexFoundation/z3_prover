@@ -66,6 +66,15 @@ class z3_cstr : public expr {
 z3_cstr operator&&(const z3_cstr&, const z3_cstr&);
 z3_cstr operator||(const z3_cstr&, const z3_cstr&);
 
+inline int GetBit(int64_t size) {
+  int prec = 0;
+  while (size) {
+    prec ++;
+    size >>= 1;
+  }
+  return prec;
+}
+
 class z3_expr {
  public:
   z3_data data;
@@ -138,15 +147,16 @@ F_Z3_EXPR_DECL(implies, 2);
 typedef std::vector<int32_t> _ShapeBase;
 class Shape : public _ShapeBase {
  public:
-  Shape(const std::initializer_list<int32_t> &init) 
+  template<typename DIM_T>
+  Shape(std::initializer_list<DIM_T> const& init) 
       : _ShapeBase(init) { }
 
   Shape() : _ShapeBase() {}
 
-  inline bool operator==(const Shape &shp) const {
+  inline bool operator==(Shape const& shp) const {
     return std::equal(begin(), end(), shp.begin());
   }
-  inline bool operator!=(const Shape &shp) const {
+  inline bool operator!=(Shape const& shp) const {
     return !(*this == shp);
   }
 
@@ -162,6 +172,9 @@ class TypeRef {
   //  which equals with data.size().
   const Shape shape; 
 
+  inline size_t ndim() const {
+    return shape.size();
+  }
   inline z3_expr asscalar() {
     VERIFY(shape.empty())
       << "TypeRef is not scalar";
