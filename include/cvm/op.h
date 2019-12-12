@@ -16,9 +16,15 @@ namespace cvm {
 static const uint32_t kVarg = std::numeric_limits<uint32_t>::max();
 
 struct NodeAttrs;
+class NodeAssertions;
 
 using func_pg = std::function<
   std::vector<type::z3_expr>()>;
+using func_forward = std::function<
+  void(NodeAttrs const& attrs,
+      std::vector<type::TypePtr>& inputs,
+      std::vector<type::TypePtr>& outputs,
+      std::vector<NodeAssertions> &nas)>;
 
 class Op {
  public:
@@ -50,26 +56,22 @@ class Op {
     return *this;
   }
 
-  std::function<type::z3_expr(
-      const NodeAttrs &attrs,
-      std::vector<type::TypePtr> &inputs,
-      std::vector<type::TypePtr> &outputs)> 
-  forward_func = nullptr;
+  std::function<void(NodeAttrs& attrs)> attr_def = nullptr;
+  inline Op& set_attr_default(
+      std::function<void(NodeAttrs& attrs)> p) {
+    this->attr_def = p;
+    return *this;
+  }
 
+  func_forward forward_func = nullptr;
   inline Op& set_forward(
-      std::function<type::z3_expr(
-          const NodeAttrs&, 
-          std::vector<type::TypePtr>&,
-          std::vector<type::TypePtr>&)
-      > forward_func) {
+      func_forward const& forward_func) {
     this->forward_func = forward_func;
     return *this;
   }
 
   func_pg provements_generator = nullptr;
-
-  inline Op& set_generator(
-      std::function<std::vector<type::z3_expr>()> func) {
+  inline Op& set_generator(func_pg const& func) {
     this->provements_generator = func;
     return *this;
   }
@@ -90,6 +92,14 @@ class Op {
 #define Z3_REGISTER_OP(OpName)                                     \
   Z3UTIL_STR_CONCAT(Z3_REGISTER_VAR_DEF(OpName), __COUNTER__) = \
       ::z3::utils::Registry<::z3::cvm::Op>::Get()->__REGISTER_OR_GET__(#OpName)
+
+#define ATTR_DEFAULT(attrs, key, value) \
+  if (attrs.dict.count(key) == 0) attrs.dict[key] = value;
+#define ATTR_DECL(attrs, key) \
+  VERIFY_NE(attrs.dict.count(key), 0) \
+    << "operator " << attrs.op->name \
+    << "(" << attrs.name << ")" \
+    << " forget to set attribute: " << key;
 
 }
 }

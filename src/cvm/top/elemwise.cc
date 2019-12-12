@@ -16,9 +16,32 @@ BIN_PREC_FUNC(prec_add, a, b) {
   return type::op_max(a, b) + 1;
 };
 
+static void forward_add(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<NodeAssertions>& nas) {
+  TypePtr const& a = inputs.at(0);
+  TypePtr const& b = inputs.at(1);
+  VERIFY_EQ(a->shape, b->shape);
+
+  outputs.push_back(TypeRef::Make(attrs.name, a->shape));
+  outputs[0]->set_prec(type::op_max(a->prec, b->prec) + 1);
+  for (size_t i = 0; i < a->Size(); ++i) {
+    z3_expr const& v = a->at(i) + b->at(i);
+    outputs[0]->set_data(i, v);
+    nas.push_back(
+        NodeAssertions()
+        .add_input(a, i)
+        .add_input(b, i)
+        .add_output(outputs[0], i));
+  }
+}
+
 Z3_REGISTER_OP(elemwise_add)
   .set_num_inputs(2)
   .set_num_outputs(1)
+  .set_forward(forward_add)
   .set_generator(prove_gen(op_add, prec_add));
 
 BIN_OP_FUNC(op_sub, a, b) {
@@ -27,6 +50,28 @@ BIN_OP_FUNC(op_sub, a, b) {
 BIN_PREC_FUNC(prec_sub, a, b) {
   return type::op_max(a, b) + 1;
 };
+
+static void forward_sub(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<NodeAssertions>& nas) {
+  TypePtr const& a = inputs.at(0);
+  TypePtr const& b = inputs.at(1);
+  VERIFY_EQ(a->shape, b->shape);
+
+  outputs.push_back(TypeRef::Make(attrs.name, a->shape));
+  outputs[0]->set_prec(type::op_max(a->prec, b->prec) + 1);
+  for (size_t i = 0; i < a->Size(); ++i) {
+    z3_expr const& v = a->at(i) - b->at(i);
+    outputs[0]->set_data(i, v);
+    nas.push_back(
+        NodeAssertions()
+        .add_input(a, i)
+        .add_input(b, i)
+        .add_output(outputs[0], i));
+  }
+}
 
 Z3_REGISTER_OP(elemwise_sub)
   .set_num_inputs(2)
@@ -48,7 +93,7 @@ std::vector<z3_expr> _clip_prove() {
     a_max.closed_interval(-Z3_INT32_MAX, Z3_INT32_MAX) &&
     (a_min < a_max) &&
     res->assign_constraints() &&
-    res->prec_constrains();
+    res->prec_constraints();
   z3_expr asrt = 
     res->data_constraints() && 
     res->op_constraints();
@@ -112,7 +157,7 @@ std::vector<z3_expr> _cvm_clip_prove() {
     //  Line:133 for more details.
     prec.closed_interval(1, 32) &&
     res->assign_constraints() &&
-    res->prec_constrains();
+    res->prec_constraints();
   z3_expr asrt = 
     res->data_constraints() && 
     res->op_constraints();
@@ -144,7 +189,7 @@ std::vector<z3_expr> _cvm_right_shift_prove() {
     prec.closed_interval(1, 32) &&
     shift_bit.closed_interval(1, 32) &&
     res->assign_constraints() &&
-    res->prec_constrains();
+    res->prec_constraints();
   z3_expr asrt =
     res->data_constraints() &&
     res->op_constraints();
@@ -175,7 +220,7 @@ std::vector<z3_expr> _cvm_left_shift_prove() {
     shift_bit.closed_interval(1, 32) &&
     (a->prec + shift_bit).closed_interval(1, 32) &&
     res->assign_constraints() &&
-    res->prec_constrains();
+    res->prec_constraints();
   z3_expr asrt =
     res->data_constraints() &&
     res->op_constraints();

@@ -173,20 +173,23 @@ class TypeRef {
       << " out of TypeRef size " << data.size();
     return data[index];
   }
-  inline z3_expr& at(size_t index) {
-    return const_cast<z3_expr&>(
-        static_cast<const TypeRef&>(*this).at(index)
-    );
-  }
+  // inline z3_expr& at(size_t index) {
+  //   return const_cast<z3_expr&>(
+  //       static_cast<const TypeRef&>(*this).at(index)
+  //   );
+  // }
   inline size_t Size() const { return shape.Size(); }
 
   /*
    * TypeRef copy operator inherits current data internal
-   *  and precision's constraints, but create new z3_data
-   *  symbol and set up assign constraints between old and 
-   *  new z3_data.
+   *  and precision's constraints and stores into 
+   *  operator_assertions_ preparing for further processing,
+   *  then create new z3_data symbol and set up assign 
+   *  constraints between old and new z3_data.
    **/
   TypePtr copy(const std::string&) const;
+  void set_data(size_t index, z3_expr const&);
+  void set_prec(z3_expr const&);
 
   /*
    * TypeRef data constraints are that the data internal 
@@ -195,6 +198,12 @@ class TypeRef {
    *  with (1 << (prec - 1) - 1.
    **/
   z3_expr data_constraints();
+  z3_expr data_constraints(size_t index);
+  /*
+   * TypeRef precision constraints are that
+   *  the precision is in range of [1, 32].
+   **/
+  z3_expr prec_constraints();
   /*
    * TypeRef op constraints are that the data internal
    *  and precision variables constraints collection, 
@@ -202,16 +211,13 @@ class TypeRef {
    *  processor generated.
    **/
   z3_expr op_constraints();
-  /*
-   * TypeRef precision constraints are that
-   *  the precision is in range of [1, 32].
-   **/
-  z3_expr prec_constrains();
+  z3_expr op_constraints(size_t index);
   /*
    * TypeRef assign constraints are introduced in 
    *  copy function.
    **/
   z3_expr assign_constraints();
+  z3_expr assign_constraints(size_t index);
   static z3_expr collect_constraints(std::vector<TypePtr> trs);
 
   z3_expr deterministic();
@@ -243,7 +249,8 @@ class TypeRef {
    *
    * Assign constraints is recursive collected.
    **/
-  z3_expr assign_constraints_{true};
+  std::vector<z3_expr> assign_constraints_;
+  std::vector<z3_expr> operator_assertions_;
 
   inline TypeRef(
       const std::vector<z3_expr> &data,
@@ -255,6 +262,8 @@ class TypeRef {
       << "shape & data size "
       << shp.to_string() << "==" << shp.Size()
       << " vs. " << data.size();
+    assign_constraints_.resize(shp.Size() + 1, z3_expr(true));
+    operator_assertions_.resize(shp.Size() + 1, z3_expr(true));
   }
 };
 

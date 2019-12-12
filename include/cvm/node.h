@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "z3++.h"
 #include "op.h"
@@ -21,12 +22,46 @@ struct NodeAttrs {
   std::unordered_map<std::string, std::string> dict;
 };
 
+class NodeAssertions {
+ public:
+  NodeAssertions() = default;
+  NodeAssertions(size_t uid)
+    : unique_id(uid) {}
+
+  NodeAssertions& set_unique_id(size_t uid) {
+    unique_id = uid;
+    return *this;
+  }
+
+  NodeAssertions& add_input(type::TypePtr const&);
+  NodeAssertions& add_input(type::TypePtr const&, size_t);
+  NodeAssertions& add_input( type::TypePtr const&, std::vector<size_t>);
+  NodeAssertions& add_extra_constraint(type::z3_expr const&);
+
+  NodeAssertions& add_output(type::TypePtr const&);
+  NodeAssertions& add_output(type::TypePtr const&, size_t);
+
+  type::z3_expr provement_generator() const;
+  inline bool operator==(NodeAssertions const& t) const {
+    return unique_id == t.unique_id;
+  }
+
+ private:
+  type::z3_expr in_cstr{true};
+  type::z3_expr out_cstr{true};
+  size_t unique_id{0};
+};
+
 class Node {
  public:
   NodeAttrs attrs;
   std::vector<NodeEntry> inputs;
 
+  Node() = default;
   ~Node();
+  static NodePtr Create() {
+    return std::make_shared<Node>(Node());
+  }
 
   inline const Op* op() const;
 
@@ -35,10 +70,11 @@ class Node {
   inline uint32_t num_inputs() const;
   inline uint32_t num_outputs() const;
 
-  type::z3_expr constraints() const;
-  type::z3_expr assertions() const;
+  void forward();
+  std::vector<type::z3_expr> provements_generator(
+      bool unique = true);
 
-  template<typename ValueType, typename ...Args>
+  template<typename ValueType = type::TypeRef, typename ...Args>
   static NodeEntry CreateVariable(
       const std::string &node_name, 
       Args&& ...args);
@@ -53,14 +89,7 @@ class Node {
  private:
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
-  type::z3_expr asrt_{true};
-  type::z3_expr csrt_{true};
-
-  Node() = default;
-  static NodePtr Create() {
-    return std::make_shared<Node>(Node());
-  }
-
+  std::vector<NodeAssertions> nas_;
 };
 
 class NodeEntry {
@@ -122,8 +151,12 @@ NodeEntry Node::CreateVariable(
   n->data_.emplace_back(ValueType::Make(
         node_name,
         std::forward<Args>(args)...));
-  n->csrt_ = n->data_[0]->data_constraints();
-  n->asrt_ = n->data_[0]->op_constraints();
+  for (size_t i = 0; i < n->data_[0]->Size(); ++i) {
+    n->nas_.emplace_back(
+        NodeAssertions()
+        .add_input(n->data_[0], i)
+        .add_output(n->data_[0], i));
+  }
   return NodeEntry{n, 0, 0};
 }
 

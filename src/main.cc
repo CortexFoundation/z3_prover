@@ -83,15 +83,10 @@ void z3_expr_deterministic() {
   // z3_prover(implies(a.deterministic(), res).cstr);
 }
 
-int main() {
-  // z3_expr_deterministic();
-  // return 0;
-  //
-  
+void generator_prove() {
   // std::vector<std::string> op_names = Op::ListAllNames();
   // ofstream os("/tmp/verify.log");
-  z3::expr_vector a({ C.int_val(0) });
-  std::vector<std::string> op_names = { "broadcast_max" };
+  std::vector<std::string> op_names = { "elemwise_add" };
   ostream &os = std::cout;
   for (string name : op_names) {
     auto oppg = Op::Get(name)->provements_generator;
@@ -103,6 +98,13 @@ int main() {
     }
     
   }
+}
+
+int main() {
+  // z3_expr_deterministic();
+  // return 0;
+  
+  generator_prove();
   return 0;
 
   auto a = Node::CreateVariable<TypeRef>("a", Shape({2, 3}), 24);
@@ -114,11 +116,9 @@ int main() {
       unordered_map<string, string>{
           // {"data_assign", "false"}
       });
+  for (auto &p : c.node->provements_generator(true))
+    z3_prover(p.cstr);
 
-  z3_expr cstr = c.node->constraints();
-  z3_expr asrt = c.node->assertions();
-
-  z3_prover(implies(cstr, asrt).cstr);
   return 0;
 
 

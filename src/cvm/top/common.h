@@ -7,78 +7,6 @@
 namespace z3{
 namespace cvm {
 
-using _BaseType = std::function<
-  std::vector<type::z3_expr>(
-      const std::vector<type::z3_expr> &ins,
-      const std::vector<type::z3_expr> &attrs)>;
-using op_forward = _BaseType;
-using prec_forward = _BaseType;
-using extra_constraints = std::function<
-  std::vector<type::z3_expr>(
-      const std::vector<type::z3_expr> &datas,
-      const std::vector<type::z3_expr> &precs,
-      const std::vector<type::z3_expr> &attrs)>;
-
-template<
-  op_forward &&op,
-  prec_forward &&ip,
-  extra_constraints && ec,
-  int in_num = 1, int out_num = 1>
-class OpProve {
-  std::vector<std::string> attr_names;
- public:
-  OpProve(const std::vector<std::string> &attrs)
-      : attr_names(attrs) {}
-
-  std::vector<type::z3_expr> operator() () {
-    std::vector<type::TypePtr> trs;
-    std::vector<type::z3_expr> datas;
-    std::vector<type::z3_expr> precs;
-    for (int i = 0; i < in_num; ++i) {
-      trs.emplace_back(
-          type::Scalar::Make("in_" + std::to_string(i)));
-      datas.emplace_back(trs[i]->at(0));
-      precs.emplace_back(trs[i]->prec);
-    }
-
-    std::vector<type::z3_expr> attrs;
-    for (const auto &name : attrs) {
-      attrs.emplace_back(name);
-    }
-
-    const auto &vs = op(datas, attrs);
-    const auto &ps = ip(precs, attrs);
-    const auto &cs = ec(datas, precs, attrs);
-    VERIFY_EQ(vs.size(), out_num)
-      << "Invalid op forward size, Expected "
-      << out_num << " vs. " << vs.size();
-    VERIFY_EQ(ps.size(), out_num)
-      << "Invalid prec forward size, Expected "
-      << out_num << " vs. " << ps.size();
-    VERIFY_EQ(cs.size(), out_num)
-      << "Invalid extra constraints size, Expected "
-      << out_num << " vs. " << cs.size();
-
-    std::vector<type::z3_expr> proves;
-    for (int i = 0; i < out_num; ++i) {
-      type::TypePtr res = 
-        type::Scalar::Make(vs[i], ps[i]) ->
-          copy("out_" + std::to_string(i));
-      type::z3_expr cstr =
-        type::TypeRef::collect_constraints(trs) &&
-        (cs.size() == 0 ? true : cs[i]) &&
-        res->assign_constraints() &&
-        res->prec_constrains();
-      type::z3_expr asrt =
-        res->data_constraints() &&
-        res->op_constraints();
-      proves.emplace_back(type::implies(cstr, asrt));
-    }
-
-    return proves;
-  }
-};
-
 using bin_op_forward = std::function<
   type::z3_expr(const type::z3_expr&, const type::z3_expr&)>;
 using bin_prec_forward = std::function<
@@ -99,7 +27,7 @@ inline func_pg prove_gen(
     type::z3_expr cstr = 
       type::TypeRef::collect_constraints({a, b}) &&
       res->assign_constraints() &&
-      res->prec_constrains();
+      res->prec_constraints();
     type::z3_expr asrt = 
       res->data_constraints() && 
       res->op_constraints();

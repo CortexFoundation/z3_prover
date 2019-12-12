@@ -1,6 +1,8 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
 
 #include <z3++.h>
 
@@ -10,6 +12,64 @@ namespace z3 {
 namespace cvm {
 
 using namespace type;
+
+NodeAssertions& NodeAssertions::add_input(
+    TypePtr const& tp) {
+  in_cstr = in_cstr && 
+    tp->data_constraints() &&
+    tp->prec_constraints();
+  return *this;
+}
+
+NodeAssertions& NodeAssertions::add_input(
+    TypePtr const& tp, size_t index) {
+  in_cstr = in_cstr && 
+    tp->data_constraints(index) &&
+    tp->prec_constraints();
+  return *this;
+}
+
+NodeAssertions& NodeAssertions::add_input(
+    TypePtr const& tp, 
+    std::vector<size_t> indexes) {
+  for (size_t index : indexes) {
+    in_cstr = in_cstr && tp->data_constraints(index);
+  }
+  in_cstr = in_cstr && tp->prec_constraints();
+  return *this;
+}
+
+NodeAssertions& NodeAssertions::add_extra_constraint(
+    z3_expr const& c) {
+  in_cstr = in_cstr && c;
+  return *this;
+}
+
+NodeAssertions& NodeAssertions::add_output(
+    type::TypePtr const& tp) {
+  in_cstr = in_cstr && 
+    tp->assign_constraints() &&
+    tp->prec_constraints();
+  out_cstr = out_cstr &&
+    tp->data_constraints() &&
+    tp->op_constraints();
+  return *this;
+}
+
+NodeAssertions& NodeAssertions::add_output(
+    type::TypePtr const& tp, size_t index) {
+  in_cstr = in_cstr &&
+    tp->assign_constraints(index) &&
+    tp->prec_constraints();
+  out_cstr = out_cstr &&
+    tp->data_constraints(index) &&
+    tp->op_constraints(index);
+  return *this;
+}
+
+z3_expr NodeAssertions::provement_generator() const {
+  return type::implies(in_cstr, out_cstr);
+}
 
 Node::~Node() {
   if (inputs.size() != 0) {
@@ -33,7 +93,6 @@ Node::~Node() {
   }
 }
 
-
 NodeEntry Node::CreateOperator(
     const char *op_name,
     const std::string &node_name,
@@ -42,55 +101,49 @@ NodeEntry Node::CreateOperator(
   NodePtr p = Node::Create();
   p->attrs.op = cvm::Op::Get(op_name);
   p->attrs.name = node_name;
-  p->attrs.dict = attrs;
+  p->attrs.dict = std::move(attrs);
   p->inputs = std::move(inputs);
 
-  std::vector<TypePtr> data;
-  for (auto &ne : p->inputs) {
-    data.emplace_back(ne.operator->());
-  }
-  std::vector<TypePtr> outs;
+  // Set operator attributes default value
+  if (p->op()->attr_def != nullptr)
+    p->op()->attr_def(p->attrs);
 
-  VERIFY_EQ(data.size(), p->num_inputs())
+  VERIFY_EQ(p->num_inputs(), p->inputs.size())
     << "operator " << op_name << "(" << node_name << ") "
-    << "inputs' size "
-    << "not equals with " << p->num_inputs() << " vs. "
-    << p->inputs.size();
-  p->csrt_ = p->op()->forward_func(p->attrs, data, outs);
-  VERIFY_EQ(outs.size(), p->num_outputs())
-    << "operator " << op_name << "(" << node_name << ") "
-    << "outputs' size "
-    << "not equal with " << p->num_outputs() << " vs. "
-    << outs.size();
-  
-  for (size_t i = 0; i < outs.size(); ++i) {
-    TypePtr &&tmp = outs[i]->copy(
-        node_name + "_out" + std::to_string(i));
-    // TypePtr &&tmp = TypeRef::Make(
-        // node_name+"_out"+std::to_string(i), outs[i]->shape);
-    p->data_.emplace_back(tmp);
-    // p->csrt_ = p->csrt_ && tmp->assign(outs[i]);
-    p->asrt_ = p->asrt_ && tmp->data_constraints() &&
-      tmp->op_constraints();
-  }
+    << "inputs' size invalid, Expected " << p->num_inputs()
+    << " vs. " << p->inputs.size();
+  p->forward();
   return NodeEntry(p, 0, 0);
 }
 
-z3_expr Node::constraints() const {
-  z3_expr cstr(true);
+void Node::forward() {
+  std::vector<TypePtr> in_data;
   for (auto &ne : inputs) {
-    cstr = cstr && ne.node->constraints();
+    in_data.emplace_back(ne.operator->());
   }
-  cstr = cstr && this->csrt_;
-  return cstr;
+  VERIFY_NE(op(), nullptr)
+    << "Node::forward() " << attrs.name
+    << " variable has no operator";
+  VERIFY_NE(op()->forward_func, nullptr)
+    << "Node::forward() " << attrs.name
+    << " variable has not registered foward_func";
+  op()->forward_func(attrs, in_data, data_, nas_);
+  VERIFY_EQ(data_.size(), num_outputs())
+    << "operator " << op()->name << "(" << attrs.name << ") "
+    << "outputs' size invalid, Expected " << num_outputs()
+    << " vs. " << data_.size();
 }
 
-z3_expr Node::assertions() const {
-  z3_expr asrt = this->asrt_;
-  for (auto &ne : inputs) {
-    asrt = asrt && ne.node->assertions();
+std::vector<z3_expr> 
+Node::provements_generator(bool unique) {
+  auto end = nas_.end();
+  if (unique) end = std::unique(nas_.begin(), end);
+
+  std::vector<z3_expr> proves;
+  for (auto it = nas_.begin();it != end; ++it) {
+    proves.push_back(it->provement_generator());
   }
-  return asrt;
+  return proves;
 }
 
 

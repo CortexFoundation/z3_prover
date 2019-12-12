@@ -200,17 +200,27 @@ TypePtr TypeRef::Make(
 }
 
 TypePtr TypeRef::copy(const std::string &name) const {
-  z3_expr p(name + "_prec", prec.cstr);
-  z3_expr assign_cstr = (p == prec);
-
-  std::vector<z3_expr> d;
+  // TODO(wlt): remove original constraints 
+  //  into operator_assertions_.
+  TypePtr tr = TypeRef::Make(name, this->shape);
+  tr->set_prec(this->prec);
   for (size_t i = 0; i < shape.Size(); ++i) {
-    d.emplace_back(name + "_" + std::to_string(i), data[i].cstr);
-    assign_cstr = assign_cstr && (d[i] == data[i]);
+    tr->set_data(i, data[i]);
   }
-  TypePtr tr = std::make_shared<TypeRef>(TypeRef(d, p, shape));
-  tr->assign_constraints_ = assign_constraints_ && assign_cstr;
   return tr;
+}
+
+void TypeRef::set_data(size_t index, z3_expr const& v) {
+  assign_constraints_[index] = (data[index] == v);
+  VERIFY(operator_assertions_[index].cstr.is_true())
+    << "TypeRef::set_data(): op constraints has been set";
+  operator_assertions_[index] = z3_expr(true) && v;
+}
+void TypeRef::set_prec(z3_expr const& v) {
+  assign_constraints_[data.size()] = (prec == v);
+  VERIFY(operator_assertions_[data.size()].cstr.is_true())
+    << "TypeRef::set_prec(): prec constraints has been set";
+  operator_assertions_[data.size()] = z3_expr(true) && v;
 }
 
 z3_expr TypeRef::data_constraints() {
@@ -222,16 +232,28 @@ z3_expr TypeRef::data_constraints() {
   }
   return cstr;
 }
+z3_expr TypeRef::data_constraints(size_t index) {
+  VERIFY((0 <= index) && (index < data.size()));
+  z3_expr const& r = prec.bit_range();
+  return data[index].closed_interval(-r, r);
+}
 
 z3_expr TypeRef::op_constraints() {
   z3_expr asrt = prec;
   for (const z3_expr &d : data) {
     asrt = asrt && d;
   }
+  for (z3_expr const& a : operator_assertions_) {
+    asrt = asrt && a;
+  }
   return asrt;
 }
+z3_expr TypeRef::op_constraints(size_t index) {
+  return prec && data[index] &&
+    operator_assertions_[index];
+}
 
-z3_expr TypeRef::prec_constrains() {
+z3_expr TypeRef::prec_constraints() {
   /*
    * Refer to cvm-runtime:src/cvm/infer_attr.cc Line:80
    *  for more details.
@@ -240,7 +262,16 @@ z3_expr TypeRef::prec_constrains() {
 }
 
 z3_expr TypeRef::assign_constraints() {
-  return assign_constraints_;
+  z3_expr cstr(true);
+  for (const auto& c : assign_constraints_) {
+    cstr = cstr && c;
+  }
+  return cstr;
+}
+z3_expr TypeRef::assign_constraints(size_t index) {
+  VERIFY((0 <= index) && (index < data.size()));
+  return assign_constraints_[index] &&
+    assign_constraints_[data.size()];
 }
 
 z3_expr TypeRef::collect_constraints(std::vector<TypePtr> trs) {
@@ -249,7 +280,7 @@ z3_expr TypeRef::collect_constraints(std::vector<TypePtr> trs) {
     cstr = cstr &&
       tr->data_constraints() &&
       tr->op_constraints() &&
-      tr->prec_constrains() &&
+      tr->prec_constraints() &&
       tr->assign_constraints();
   }
   return cstr;
