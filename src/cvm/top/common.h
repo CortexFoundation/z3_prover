@@ -3,6 +3,7 @@
 
 #include "cvm/z3_types.h"
 #include "cvm/op.h"
+#include "cvm/node.h"
 
 namespace z3{
 namespace cvm {
@@ -50,6 +51,31 @@ inline func_pg prove_gen(
 
 inline std::vector<type::z3_expr>
 null_generator() {
+  return {};
+}
+
+inline void SameShape(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U)
+    << "SameShape only supported single input";
+  for (size_t i = 0; i < oshpes.size(); ++i) {
+    oshpes[i] = ishpes[0];
+  }
+}
+
+inline std::vector<NodeAssertions>
+SamePrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs) {
+  VERIFY_EQ(iprecs.size(), 1U)
+    << "SameShape only supported single input";
+  for (size_t i = 0; i < oprecs.size(); ++i) {
+    oprecs[i] = iprecs[0];
+  }
   return {};
 }
 

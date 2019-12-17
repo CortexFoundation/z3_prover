@@ -86,12 +86,77 @@ void DenseForward(
   outputs.push_back(std::move(out));
 }
 
+std::vector<NodeAssertions> 
+DenseInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs) {
+  Shape xshp = ishpes[0];
+  int num_inputs = xshp[xshp.size() - 1];
+  z3_expr oprec = iprecs[0] + iprecs[1] + GetBit(num_inputs);
+  if (attrs.dict.at("use_bias") == "true") {
+    oprec = type::op_max(oprec, iprecs[2]) + 1;
+  }
+  oprecs[0] = oprec;
+  return {
+    NodeAssertions()
+      .add_extra_constraint(iprecs[0] <= 8)
+      .add_extra_constraint(iprecs[1] <= 8)
+  };
+}
+
+void DenseInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  if (attrs.dict.at("use_bias") == "true") {
+    VERIFY_EQ(ishpes.size(), 3U) << "Input:[data, weight, bias]";
+  } else {
+    VERIFY_EQ(ishpes.size(), 2U) << "Input:[data, weight]";
+  }
+  Shape xshp = ishpes[0], wshp = ishpes[1];
+  VERIFY_EQ(xshp.size(), 2U);
+  VERIFY_EQ(wshp.size(), 2U);
+  Shape oshape = xshp;
+  int num_inputs = oshape[oshape.size() - 1];
+  int units = std::atoi(attrs.dict.at("units").c_str());
+  oshape[oshape.size() - 1] = units;
+  VERIFY_EQ(wshp, Shape({units, num_inputs}));
+  if (attrs.dict.at("use_bias") == "true") {
+    VERIFY_EQ(ishpes[2], Shape({units}));
+  }
+}
 
 Z3_REGISTER_OP(dense)
   .set_num_inputs(UseBiasNumInputs)
   .set_attr_default(DenseParamDefault)
+  .set_infer_shape(DenseInferShape)
   .set_forward(DenseForward)
   .set_num_outputs(1);
+
+void ReluForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr> &inputs,
+    std::vector<TypePtr> &outputs,
+    std::vector<NodeAssertions> &nas) {
+  auto const& x = inputs.at(0);
+  auto const& out = outputs.at(0);
+  
+  for (size_t i = 0; i < out->Size(); ++i) {
+    auto const& d = x->at(i);
+    out->set_data(i, type::op_abs(d));
+    nas[i].add_input(x, i)
+        .add_output(out, i);
+  }
+}
+
+Z3_REGISTER_OP(relu)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_infer_shape(SameShape)
+  .set_infer_precision(SamePrecision)
+  .set_forward(ReluForward);
 
 }
 }
