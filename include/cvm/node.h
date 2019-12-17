@@ -35,11 +35,13 @@ class NodeAssertions {
 
   NodeAssertions& add_input(type::TypePtr const&);
   NodeAssertions& add_input(type::TypePtr const&, size_t);
-  NodeAssertions& add_input( type::TypePtr const&, std::vector<size_t>);
+  NodeAssertions& add_input(type::TypePtr const&, std::vector<size_t>);
   NodeAssertions& add_extra_constraint(type::z3_expr const&);
 
   NodeAssertions& add_output(type::TypePtr const&);
   NodeAssertions& add_output(type::TypePtr const&, size_t);
+
+  NodeAssertions& merge(NodeAssertions const&);
 
   type::z3_expr provement_generator() const;
   inline bool operator==(NodeAssertions const& t) const {
@@ -70,9 +72,16 @@ class Node {
   inline uint32_t num_inputs() const;
   inline uint32_t num_outputs() const;
 
-  void forward();
-  std::vector<type::z3_expr> provements_generator(
-      bool unique = true);
+  inline void setup() {
+    if (op() == nullptr) return ;
+
+    infer_shape();
+    infer_precision();
+    forward();
+  }
+
+  std::vector<type::z3_expr> 
+  provements_generator(bool unique = true);
 
   template<typename ValueType = type::TypeRef, typename ...Args>
   static NodeEntry CreateVariable(
@@ -90,6 +99,10 @@ class Node {
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
   std::vector<NodeAssertions> nas_;
+
+  void forward();
+  void infer_shape();
+  void infer_precision();
 };
 
 class NodeEntry {

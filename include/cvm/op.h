@@ -33,15 +33,18 @@ class Op {
   uint32_t num_inputs = 1;
   uint32_t num_outputs = 1;
 
-  std::function<uint32_t(const NodeAttrs& attrs)> get_num_outputs = nullptr;
-  std::function<uint32_t(const NodeAttrs& attrs)> get_num_inputs = nullptr;
+  using FNumOutputs = 
+  std::function<uint32_t(const NodeAttrs& attrs)>;
+  FNumOutputs get_num_outputs = nullptr;
+  using FNumInputs = 
+  std::function<uint32_t(const NodeAttrs& attrs)>;
+  FNumInputs get_num_inputs = nullptr;
 
   inline Op& set_num_inputs(uint32_t n) {
     this->num_inputs = n;
     return *this;
   }
-  inline Op& set_num_inputs(
-      std::function<uint32_t(const NodeAttrs& attr)> fn) {
+  inline Op& set_num_inputs(FNumInputs const& fn) {
     this->get_num_inputs = fn;
     return *this;
   }
@@ -50,16 +53,37 @@ class Op {
     this->num_outputs = n;
     return *this;
   }
-  inline Op& set_num_outputs(
-      std::function<uint32_t(const NodeAttrs& attr)> fn) {
+  inline Op& set_num_outputs(FNumOutputs const& fn) {
     this->get_num_outputs = fn;
     return *this;
   }
 
   std::function<void(NodeAttrs& attrs)> attr_def = nullptr;
   inline Op& set_attr_default(
-      std::function<void(NodeAttrs& attrs)> p) {
+      std::function<void(NodeAttrs& attrs)> const& p) {
     this->attr_def = p;
+    return *this;
+  }
+
+  using FInferShape = 
+    std::function<void(NodeAttrs const& attrs,
+      std::vector<type::Shape> &ishpes,
+      std::vector<type::Shape> &oshpes)>;
+  FInferShape infer_shape = nullptr;
+  inline Op& set_infer_shape(FInferShape const& p) {
+    this->infer_shape = p;
+    return *this;
+  }
+
+  using FInferPrecision =
+    std::function<std::vector<NodeAssertions>(
+        NodeAttrs const& attrs,
+        std::vector<type::Shape> &ishpes,
+        std::vector<type::z3_expr> &iprecs,
+        std::vector<type::z3_expr> &oprecs)>;
+  FInferPrecision infer_precision = nullptr;
+  inline Op& set_infer_precision(FInferPrecision const& fn) {
+    this->infer_precision = fn;
     return *this;
   }
 

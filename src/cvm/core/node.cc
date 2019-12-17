@@ -67,6 +67,13 @@ NodeAssertions& NodeAssertions::add_output(
   return *this;
 }
 
+NodeAssertions& NodeAssertions::merge(NodeAssertions const& t) {
+  in_cstr = in_cstr && t.in_cstr;
+  out_cstr = out_cstr && t.out_cstr;
+  unique_id = t.unique_id;
+  return *this;
+}
+
 z3_expr NodeAssertions::provement_generator() const {
   return type::implies(in_cstr, out_cstr);
 }
@@ -112,18 +119,66 @@ NodeEntry Node::CreateOperator(
     << "operator " << op_name << "(" << node_name << ") "
     << "inputs' size invalid, Expected " << p->num_inputs()
     << " vs. " << p->inputs.size();
-  p->forward();
+
+  p->setup();
   return NodeEntry(p, 0, 0);
 }
 
-void Node::forward() {
-  std::vector<TypePtr> in_data;
-  for (auto &ne : inputs) {
-    in_data.emplace_back(ne.operator->());
+void Node::infer_shape() {
+  VERIFY_NE(op()->infer_shape, nullptr)
+    << "Node::infer_shape() " << op()->name
+    << " operator has not registered FInferShape";
+
+  std::vector<Shape> ishpes(inputs.size());
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    ishpes[i] = inputs[i]->shape;
   }
-  VERIFY_NE(op(), nullptr)
-    << "Node::forward() " << attrs.name
-    << " variable has no operator";
+  std::vector<Shape> oshpes(num_outputs());
+  op()->infer_shape(attrs, ishpes, oshpes);
+  VERIFY_EQ(oshpes.size(), num_outputs());
+  for (size_t i = 0; i < oshpes.size(); ++i) {
+    data_.emplace_back(TypeRef::Make(attrs.name, oshpes[i]));
+    nas_.resize(nas_.size() + oshpes[i].Size());
+  }
+}
+
+void Node::infer_precision() {
+  VERIFY_NE(op()->infer_precision, nullptr)
+    << "Node::infer_precision() " << op()->name
+    << " operator has not registered FInferPrecision";
+  std::vector<z3_expr> iprecs(inputs.size(), z3_expr(0));
+  std::vector<Shape> ishpes(inputs.size());
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    iprecs[i] = inputs[i]->prec;
+    ishpes[i] = inputs[i]->shape;
+  }
+  std::vector<z3_expr> oprecs(num_outputs(), z3_expr(0));
+  auto const& extra_constraints = 
+    op()->infer_precision(attrs, ishpes, iprecs, oprecs);
+  VERIFY_EQ(oprecs.size(), num_outputs());
+  VERIFY(
+      (extra_constraints.size() == num_outputs()) ||
+      (extra_constraints.empty()));
+  VERIFY_EQ(data_.size(), num_outputs())
+    << "Node must execute infer shape before "
+    << "infer precision pass";
+  size_t current_index = 0;
+  for (size_t i = 0; i < oprecs.size(); ++i) {
+    data_[i]->set_prec(oprecs[i]);
+    if (! extra_constraints.empty()) {
+      for (size_t j = 0; j < data_[i]->Size(); ++j) {
+        nas_[current_index + j].merge(extra_constraints[i]);
+      }
+      current_index += data_[i]->Size();
+    }
+  }
+}
+
+void Node::forward() {
+  std::vector<TypePtr> in_data(inputs.size());
+  for (size_t i = 0; i < in_data.size(); ++i) {
+    in_data[i] = inputs[i].operator->();
+  }
   VERIFY_NE(op()->forward_func, nullptr)
     << "Node::forward() " << attrs.name
     << " variable has not registered foward_func";

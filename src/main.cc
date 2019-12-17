@@ -86,7 +86,7 @@ void z3_expr_deterministic() {
 void generator_prove() {
   // std::vector<std::string> op_names = Op::ListAllNames();
   // ofstream os("/tmp/verify.log");
-  std::vector<std::string> op_names = { "elemwise_mul" };
+  std::vector<std::string> op_names = { "elemwise_add" };
   ostream &os = std::cout;
   for (string name : op_names) {
     auto oppg = Op::Get(name)->provements_generator;
@@ -113,7 +113,8 @@ int main() {
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
 
   auto c = Node::CreateOperator(
-      "broadcast_mul", "add", {a, b},
+ //     "broadcast_mul", "add", {a, b},
+"relu", "add", {b},
       unordered_map<string, string>{
         {"units", "3"},
         {"use_bias", "false"},
