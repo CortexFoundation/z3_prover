@@ -107,15 +107,16 @@ int main() {
   // generator_prove();
   // return 0;
 
-  int num_inputs = 64;
-  auto a = Node::CreateVariable<TypeRef>("a", Shape({16, num_inputs}), 24);
+  int num_inputs = 2;
+  auto a = Node::CreateVariable<TypeRef>("a", Shape({2, num_inputs}), 24);
   // auto b = Node::CreateVariable<Scalar>("b", 4);
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
 
   auto c = Node::CreateOperator(
-      "relu", "add", {b},
+ //     "broadcast_mul", "add", {a, b},
+"relu", "add", {b},
       unordered_map<string, string>{
-        {"units", "2"},
+        {"units", "3"},
         {"use_bias", "false"},
       });
   for (auto &p : c.node->provements_generator(true))

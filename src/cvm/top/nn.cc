@@ -132,6 +132,7 @@ Z3_REGISTER_OP(dense)
   .set_num_inputs(UseBiasNumInputs)
   .set_attr_default(DenseParamDefault)
   .set_infer_shape(DenseInferShape)
+  .set_infer_precision(DenseInferPrecision)
   .set_forward(DenseForward)
   .set_num_outputs(1);
 
@@ -145,7 +146,8 @@ void ReluForward(
   
   for (size_t i = 0; i < out->Size(); ++i) {
     auto const& d = x->at(i);
-    out->set_data(i, type::op_abs(d));
+    auto new_val = type::op_ite(d<0, 0, d);
+    out->set_data(i, new_val);
     nas[i].add_input(x, i)
         .add_output(out, i);
   }
