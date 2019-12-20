@@ -113,13 +113,14 @@ int main() {
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
 
   auto c = Node::CreateOperator(
-      "elemwise_add", "add", {a, b},
+     // "elemwise_add", "add", {a, b},
 //"relu", "add", {b},
+    "elemwise_sub", "sub", {a, b},
       unordered_map<string, string>{
         {"units", "3"},
         {"use_bias", "false"},
       });
-  for (auto &p : c.node->provements_generator(false))
+  for (auto &p : c.node->provements_generator(true))
     z3_prover(p.cstr);
 
   return 0;
