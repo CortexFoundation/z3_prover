@@ -65,18 +65,17 @@ inline void SameShape(
   }
 }
 
-inline std::vector<NodeAssertions>
-SamePrecision(
+inline void SamePrecision(
     NodeAttrs const& attrs,
     std::vector<type::Shape> &ishpes,
     std::vector<type::z3_expr> &iprecs,
-    std::vector<type::z3_expr> &oprecs) {
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
   VERIFY_EQ(iprecs.size(), 1U)
     << "SameShape only supported single input";
   for (size_t i = 0; i < oprecs.size(); ++i) {
     oprecs[i] = iprecs[0];
   }
-  return {};
 }
 
 }

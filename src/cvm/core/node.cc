@@ -136,9 +136,10 @@ void Node::infer_shape() {
   std::vector<Shape> oshpes(num_outputs());
   op()->infer_shape(attrs, ishpes, oshpes);
   VERIFY_EQ(oshpes.size(), num_outputs());
+  nas_.resize(num_outputs(), {});
   for (size_t i = 0; i < oshpes.size(); ++i) {
     data_.emplace_back(TypeRef::Make(attrs.name, oshpes[i]));
-    nas_.resize(nas_.size() + oshpes[i].Size());
+    nas_[i].resize(oshpes[i].Size());
   }
 }
 
@@ -153,23 +154,16 @@ void Node::infer_precision() {
     ishpes[i] = inputs[i]->shape;
   }
   std::vector<z3_expr> oprecs(num_outputs(), z3_expr(0));
-  auto const& extra_constraints = 
-    op()->infer_precision(attrs, ishpes, iprecs, oprecs);
+  std::vector<NodeAssertions> nas(num_outputs());
+  op()->infer_precision(attrs, ishpes, iprecs, oprecs, nas);
   VERIFY_EQ(oprecs.size(), num_outputs());
-  VERIFY(
-      (extra_constraints.size() == num_outputs()) ||
-      (extra_constraints.empty()));
   VERIFY_EQ(data_.size(), num_outputs())
     << "Node must execute infer shape before "
     << "infer precision pass";
-  size_t current_index = 0;
   for (size_t i = 0; i < oprecs.size(); ++i) {
     data_[i]->set_prec(oprecs[i]);
-    if (! extra_constraints.empty()) {
-      for (size_t j = 0; j < data_[i]->Size(); ++j) {
-        nas_[current_index + j].merge(extra_constraints[i]);
-      }
-      current_index += data_[i]->Size();
+    for (size_t j = 0; j < data_[i]->Size(); ++j) {
+      nas_[i][j].merge(nas[i]);
     }
   }
 }
@@ -191,12 +185,17 @@ void Node::forward() {
 
 std::vector<z3_expr> 
 Node::provements_generator(bool unique) {
-  auto end = nas_.end();
-  if (unique) end = std::unique(nas_.begin(), end);
-
   std::vector<z3_expr> proves;
-  for (auto it = nas_.begin();it != end; ++it) {
-    proves.push_back(it->provement_generator());
+  std::unordered_set<size_t> uid_set;
+  // Iterator over number of outputs.
+  for (auto it = nas_.begin(); it != nas_.end(); ++it) {
+    std::vector<NodeAssertions> out = *it;
+    for (auto oit = out.begin();oit != out.end(); ++oit) {
+      if (unique && // And not inserted successfully via exists
+          !uid_set.insert(oit->get_uid()).second) 
+        continue;
+      proves.push_back(oit->provement_generator());
+    }
   }
   return proves;
 }

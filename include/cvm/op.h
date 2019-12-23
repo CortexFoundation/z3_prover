@@ -24,7 +24,7 @@ using func_forward = std::function<
   void(NodeAttrs const& attrs,
       std::vector<type::TypePtr>& inputs,
       std::vector<type::TypePtr>& outputs,
-      std::vector<NodeAssertions> &nas)>;
+      std::vector<std::vector<NodeAssertions> > &nas)>;
 
 class Op {
  public:
@@ -76,11 +76,12 @@ class Op {
   }
 
   using FInferPrecision =
-    std::function<std::vector<NodeAssertions>(
+    std::function<void(
         NodeAttrs const& attrs,
         std::vector<type::Shape> &ishpes,
         std::vector<type::z3_expr> &iprecs,
-        std::vector<type::z3_expr> &oprecs)>;
+        std::vector<type::z3_expr> &oprecs,
+        std::vector<NodeAssertions> &nas)>;
   FInferPrecision infer_precision = nullptr;
   inline Op& set_infer_precision(FInferPrecision const& fn) {
     this->infer_precision = fn;

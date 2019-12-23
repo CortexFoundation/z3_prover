@@ -113,10 +113,10 @@ int main() {
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
 
   auto c = Node::CreateOperator(
-    "dense", "fully-connected", {a, b},
+    // "dense", "fully-connected", {a, b},
     // "elemwise_add", "add", {a, b},
     // "relu", "add", {b},
-    // "clip", "clip", {a},
+    "clip", "clip", {a},
     unordered_map<string, string>{
       {"units", "2"},
       {"use_bias", "false"},
