@@ -116,13 +116,15 @@ int main() {
      // "elemwise_add", "add", {a, b},
 //"relu", "add", {b},
 //    "elemwise_sub", "sub", {a, b},
-    "clip", "clip", {a},
-      unordered_map<string, string>{
+    //"clip", "clip", {a},
+      "flatten", "flt", {a}
+      /*unordered_map<string, string>{
       //  {"units", "3"},
       //  {"use_bias", "false"},
       {"a_max", "10"},
       {"a_min", "-19"},
-      });
+      }*/
+      );
   for (auto &p : c.node->provements_generator(true))
     z3_prover(p.cstr);
 

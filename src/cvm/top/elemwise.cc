@@ -37,8 +37,6 @@ static void ElemwiseAddInferShape(
     NodeAttrs const& attrs,
     std::vector<Shape> &ishpes,
     std::vector<Shape> &oshpes) {
-  VERIFY_EQ(ishpes.size(), static_cast<size_t>(2));
-  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
   VERIFY_EQ(ishpes.at(0), ishpes.at(1));
   oshpes.at(0) = ishpes.at(0);
 }
@@ -212,9 +210,55 @@ std::vector<z3_expr> _flatten_prove() {
   return {};
 }
 
+static void forward_flatten(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<NodeAssertions>& nas) {
+  
+  TypePtr& x = inputs.at(0);
+  TypePtr& y = outputs.at(0);
+
+  for (size_t i = 0; i < x->Size(); ++i) {
+    y->set_data(i, x->at(i));
+    nas[i].add_input(x, i)
+        .add_output(y, i);
+  }
+}
+
+static void FlattenInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), static_cast<size_t>(1));
+  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
+  const auto& dshape = ishpes[0]; 
+  uint32_t target_dim = 1;
+  for (int i = 1; i < ishpes.size(); i++){
+    target_dim *= dshape[i];
+  }
+  oshpes[0] = Shape();
+  oshpes[0].push_back(dshape[0]);
+  oshpes[0].push_back(target_dim);
+}
+
+std::vector<NodeAssertions> 
+FlattenInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs) {
+  
+  oprecs[0] = iprecs.at(0);
+  return {};
+}
+
 Z3_REGISTER_OP(flatten)
   .set_num_inputs(1)
   .set_num_outputs(1)
+  .set_forward(forward_flatten)
+  .set_infer_shape(FlattenInferShape)
+  .set_infer_precision(FlattenInferPrecision)
   .set_generator(_flatten_prove);
 
 std::vector<z3_expr> _reshape_prove() {
