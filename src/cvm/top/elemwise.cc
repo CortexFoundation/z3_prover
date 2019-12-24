@@ -38,8 +38,6 @@ static void ElemwiseAddInferShape(
     NodeAttrs const& attrs,
     std::vector<Shape> &ishpes,
     std::vector<Shape> &oshpes) {
-  VERIFY_EQ(ishpes.size(), static_cast<size_t>(2));
-  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
   VERIFY_EQ(ishpes.at(0), ishpes.at(1));
   oshpes.at(0) = ishpes.at(0);
 }
@@ -91,8 +89,6 @@ static void ElemwiseSubInferShape(
     NodeAttrs const& attrs,
     std::vector<Shape> &ishpes,
     std::vector<Shape> &oshpes) {
-  VERIFY_EQ(ishpes.size(), static_cast<size_t>(2));
-  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
   VERIFY_EQ(ishpes.at(0), ishpes.at(1));
   oshpes[0] = ishpes.at(0);
 }
@@ -115,6 +111,11 @@ Z3_REGISTER_OP(elemwise_sub)
   .set_forward(ElemwiseSubForward)
   .set_generator(prove_gen(op_sub, prec_sub));
 
+static void ClipAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "a_min");
+  ATTR_DECL(attrs, "a_max");
+}
+
 static void ClipForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
@@ -126,7 +127,6 @@ static void ClipForward(
   std::string const s_max = attrs.dict.at("a_max");
   int a_min = std::atoi(s_min.c_str());
   int a_max = std::atoi(s_max.c_str());
-
 
   for (size_t i = 0; i < x->Size(); ++i) {
     z3_expr const& v = type::op_max(a_min, type::op_min(x->at(i), a_max));
@@ -141,9 +141,7 @@ static void ClipInferShape(
     NodeAttrs const& attrs,
     std::vector<Shape> &ishpes,
     std::vector<Shape> &oshpes) {
-  VERIFY_EQ(ishpes.size(), static_cast<size_t>(1));
-  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
-  oshpes.at(0) = ishpes.at(0);
+  oshpes[0] = ishpes[0];
 }
 
 static void ClipInferPrecision(
@@ -195,6 +193,7 @@ std::vector<z3_expr> _clip_prove() {
 Z3_REGISTER_OP(clip)
   .set_num_inputs(1)
   .set_num_outputs(1)
+  .set_attr_default(ClipAttrDefault)
   .set_infer_shape(ClipInferShape)
   .set_infer_precision(ClipInferPrecision)
   .set_forward(ClipForward)

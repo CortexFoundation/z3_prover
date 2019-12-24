@@ -149,7 +149,9 @@ inline uint32_t Node::num_outputs() const {
 inline uint32_t Node::num_inputs() const {
   if (is_variable()) return 1;
   if (this->op()->get_num_inputs == nullptr) {
-    return this->op()->num_inputs;
+    uint32_t num = this->op()->num_inputs;
+    if (num == kVarg) num = this->inputs.size();
+    return num;
   } else {
     return this->op()->get_num_inputs(this->attrs);
   }
