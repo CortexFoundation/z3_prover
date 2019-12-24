@@ -28,10 +28,11 @@ class NodeAssertions {
   NodeAssertions(size_t uid)
     : unique_id(uid) {}
 
-  NodeAssertions& set_unique_id(size_t uid) {
+  NodeAssertions& set_uid(size_t uid) {
     unique_id = uid;
     return *this;
   }
+  size_t get_uid() { return unique_id; }
 
   NodeAssertions& add_input(type::TypePtr const&);
   NodeAssertions& add_input(type::TypePtr const&, size_t);
@@ -98,7 +99,7 @@ class Node {
  private:
   friend class NodeEntry;
   std::vector<type::TypePtr> data_;
-  std::vector<NodeAssertions> nas_;
+  std::vector<std::vector<NodeAssertions> > nas_;
 
   void forward();
   void infer_shape();
@@ -148,7 +149,9 @@ inline uint32_t Node::num_outputs() const {
 inline uint32_t Node::num_inputs() const {
   if (is_variable()) return 1;
   if (this->op()->get_num_inputs == nullptr) {
-    return this->op()->num_inputs;
+    uint32_t num = this->op()->num_inputs;
+    if (num == kVarg) num = this->inputs.size();
+    return num;
   } else {
     return this->op()->get_num_inputs(this->attrs);
   }
@@ -166,9 +169,11 @@ NodeEntry Node::CreateVariable(
         std::forward<Args>(args)...));
   for (size_t i = 0; i < n->data_[0]->Size(); ++i) {
     n->nas_.emplace_back(
+      std::vector<NodeAssertions>{
         NodeAssertions()
-        .add_input(n->data_[0], i)
-        .add_output(n->data_[0], i));
+          .add_input(n->data_[0], i)
+          .add_output(n->data_[0], i)
+    });
   }
   return NodeEntry{n, 0, 0};
 }

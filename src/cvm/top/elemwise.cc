@@ -16,20 +16,21 @@ BIN_PREC_FUNC(prec_add, a, b) {
   return type::op_max(a, b) + 1;
 };
 
-static void forward_add(
+static void ElemwiseAddForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
-    std::vector<NodeAssertions>& nas) {
+    std::vector<std::vector<NodeAssertions> >& nas) {
   TypePtr const& a = inputs.at(0);
   TypePtr const& b = inputs.at(1);
 
   for (size_t i = 0; i < a->Size(); ++i) {
     z3_expr const& v = a->at(i) + b->at(i);
     outputs[0]->set_data(i, v);
-    nas[i].add_input(a, i)
-    .add_input(b, i)
-    .add_output(outputs[0], i);
+    nas[0].at(i)
+      .add_input(a, i)
+      .add_input(b, i)
+      .add_output(outputs[0], i);
   }
 }
 
@@ -41,23 +42,22 @@ static void ElemwiseAddInferShape(
   oshpes.at(0) = ishpes.at(0);
 }
 
-std::vector<NodeAssertions> 
-ElemwiseAddInferPrecision(
+static void ElemwiseAddInferPrecision(
     NodeAttrs const& attrs,
     std::vector<type::Shape> &ishpes,
     std::vector<type::z3_expr> &iprecs,
-    std::vector<type::z3_expr> &oprecs) {
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
   z3_expr max_prec = type::op_max(iprecs.at(0), iprecs.at(1));
   oprecs.at(0) = max_prec + 1;
-  return {};
 }
   
 Z3_REGISTER_OP(elemwise_add)
   .set_num_inputs(2)
   .set_num_outputs(1)
-  .set_forward(forward_add)
   .set_infer_shape(ElemwiseAddInferShape)
   .set_infer_precision(ElemwiseAddInferPrecision)
+  .set_forward(ElemwiseAddForward)
   .set_generator(prove_gen(op_add, prec_add));
 
 BIN_OP_FUNC(op_sub, a, b) {
@@ -67,20 +67,21 @@ BIN_PREC_FUNC(prec_sub, a, b) {
   return type::op_max(a, b) + 1;
 };
 
-static void forward_sub(
+static void ElemwiseSubForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
-    std::vector<NodeAssertions>& nas) {
+    std::vector<std::vector<NodeAssertions> >& nas) {
   TypePtr const& a = inputs.at(0);
   TypePtr const& b = inputs.at(1);
 
   for (size_t i = 0; i < a->Size(); ++i) {
     z3_expr const& v = a->at(i) - b->at(i);
     outputs[0]->set_data(i, v);
-    nas[i].add_input(a, i)
-        .add_input(b, i)
-        .add_output(outputs[0], i);
+    nas[0].at(i)
+      .add_input(a, i)
+      .add_input(b, i)
+      .add_output(outputs[0], i);
   }
 }
 
@@ -88,36 +89,38 @@ static void ElemwiseSubInferShape(
     NodeAttrs const& attrs,
     std::vector<Shape> &ishpes,
     std::vector<Shape> &oshpes) {
-  VERIFY_EQ(ishpes.size(), static_cast<size_t>(2));
-  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
   VERIFY_EQ(ishpes.at(0), ishpes.at(1));
-  oshpes.at(0) = ishpes.at(0);
+  oshpes[0] = ishpes.at(0);
 }
 
-std::vector<NodeAssertions> 
-ElemwiseSubInferPrecision(
+static void ElemwiseSubInferPrecision(
     NodeAttrs const& attrs,
     std::vector<type::Shape> &ishpes,
     std::vector<type::z3_expr> &iprecs,
-    std::vector<type::z3_expr> &oprecs) {
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
   z3_expr max_prec = type::op_max(iprecs.at(0), iprecs.at(1));
-  oprecs.at(0) = max_prec + 1;
-  return {};
+  oprecs[0] = max_prec + 1;
 }
   
 Z3_REGISTER_OP(elemwise_sub)
   .set_num_inputs(2)
   .set_num_outputs(1)
-  .set_forward(forward_sub)
   .set_infer_shape(ElemwiseSubInferShape)
   .set_infer_precision(ElemwiseSubInferPrecision)
+  .set_forward(ElemwiseSubForward)
   .set_generator(prove_gen(op_sub, prec_sub));
 
-static void forward_clip(
+static void ClipAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "a_min");
+  ATTR_DECL(attrs, "a_max");
+}
+
+static void ClipForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
-    std::vector<NodeAssertions>& nas) {
+    std::vector<std::vector<NodeAssertions> >& nas) {
   
   TypePtr const& x = inputs.at(0);
   std::string const s_min = attrs.dict.at("a_min");
@@ -125,12 +128,12 @@ static void forward_clip(
   int a_min = std::atoi(s_min.c_str());
   int a_max = std::atoi(s_max.c_str());
 
-
   for (size_t i = 0; i < x->Size(); ++i) {
     z3_expr const& v = type::op_max(a_min, type::op_min(x->at(i), a_max));
     outputs[0]->set_data(i, v);
-    nas[i].add_input(x, i)
-        .add_output(outputs[0], i);
+    nas[0].at(i)
+      .add_input(x, i)
+      .add_output(outputs[0], i);
   }
 }
 
@@ -138,17 +141,15 @@ static void ClipInferShape(
     NodeAttrs const& attrs,
     std::vector<Shape> &ishpes,
     std::vector<Shape> &oshpes) {
-  VERIFY_EQ(ishpes.size(), static_cast<size_t>(1));
-  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
-  oshpes.at(0) = ishpes.at(0);
+  oshpes[0] = ishpes[0];
 }
 
-std::vector<NodeAssertions> 
-ClipInferPrecision(
+static void ClipInferPrecision(
     NodeAttrs const& attrs,
     std::vector<type::Shape> &ishpes,
     std::vector<type::z3_expr> &iprecs,
-    std::vector<type::z3_expr> &oprecs) {
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
   int64_t r = 1;
   r = (r << 31) - r;
   
@@ -162,8 +163,7 @@ ClipInferPrecision(
   VERIFY(a_min < a_max);
 
   int64_t range = std::max(std::abs(a_min), std::abs(a_max));
-  oprecs.at(0) = GetBit(range) + 1; 
-  return {};
+  oprecs[0] = GetBit(range) + 1; 
 }
 
 std::vector<z3_expr> _clip_prove() {
@@ -193,9 +193,10 @@ std::vector<z3_expr> _clip_prove() {
 Z3_REGISTER_OP(clip)
   .set_num_inputs(1)
   .set_num_outputs(1)
-  .set_forward(forward_clip)
+  .set_attr_default(ClipAttrDefault)
   .set_infer_shape(ClipInferShape)
   .set_infer_precision(ClipInferPrecision)
+  .set_forward(ClipForward)
   .set_generator(_clip_prove);
 
 std::vector<z3_expr> _flatten_prove() {
@@ -214,14 +215,13 @@ static void forward_flatten(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
-    std::vector<NodeAssertions>& nas) {
-  
+    std::vector<std::vector<NodeAssertions> >& nas){
   TypePtr& x = inputs.at(0);
   TypePtr& y = outputs.at(0);
 
   for (size_t i = 0; i < x->Size(); ++i) {
     y->set_data(i, x->at(i));
-    nas[i].add_input(x, i)
+    nas[0][i].add_input(x, i)
         .add_output(y, i);
   }
 }
@@ -234,7 +234,7 @@ static void FlattenInferShape(
   VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
   const auto& dshape = ishpes[0]; 
   uint32_t target_dim = 1;
-  for (int i = 1; i < ishpes.size(); i++){
+  for (int i = 1; i < dshape.size(); i++){
     target_dim *= dshape[i];
   }
   oshpes[0] = Shape();
@@ -242,15 +242,15 @@ static void FlattenInferShape(
   oshpes[0].push_back(target_dim);
 }
 
-std::vector<NodeAssertions> 
-FlattenInferPrecision(
+
+static void FlattenInferPrecision(
     NodeAttrs const& attrs,
     std::vector<type::Shape> &ishpes,
     std::vector<type::z3_expr> &iprecs,
-    std::vector<type::z3_expr> &oprecs) {
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
   
-  oprecs[0] = iprecs.at(0);
-  return {};
+    oprecs[0] = iprecs.at(0);
 }
 
 Z3_REGISTER_OP(flatten)
