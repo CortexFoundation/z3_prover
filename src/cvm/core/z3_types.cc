@@ -156,13 +156,35 @@ size_t Shape::Size() const {
 
 std::string Shape::to_string() const {
   std::ostringstream oss;
-  oss << "<";
+  oss << "(";
   for (auto it = begin(); it != end(); ++it) {
     if (it != begin()) oss << ", ";
     oss << *it;
   }
-  oss << ">";
+  oss << ")";
   return oss.str();
+}
+
+Shape Shape::from_string(const std::string& st) {
+  Shape re;
+  int stlen = st.length();
+  if (st.length() == 0){
+    return re;
+  } else {
+    VERIFY(stlen > 1);
+  }
+  VERIFY_EQ(st[0], '(');
+  VERIFY_EQ(st[stlen-1], ')');
+  for (int i = 1; i < stlen-1; ){
+    std::string num;
+    int cnt = 0;
+    while ((i+cnt < stlen-1) && (st[i+cnt] != ',')){
+      cnt++;
+    }
+    re.emplace_back(std::stoi(st.substr(i, cnt)));
+    i = i + (cnt + 2);
+  }
+  return re;
 }
 
 // ===== TypeRef =====

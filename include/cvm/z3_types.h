@@ -162,6 +162,7 @@ class Shape : public _ShapeBase {
 
   size_t Size() const;
   std::string to_string() const;
+  static Shape from_string(const std::string& st);
 };
 
 class TypeRef {

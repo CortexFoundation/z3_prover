@@ -118,11 +118,13 @@ int main() {
     // "relu", "add", {b},
     //"clip", "clip", {a},
      //"flatten", "flt", {a},
-    "repeat", "rpt", {a},
+    //"repeat", "rpt", {a},
+      "tile", "tl", {a},
       unordered_map<string, string>{
       // {"units", "2"},
       // {"use_bias", "false"},
       {"repeats", "2"},
+      {"reps", "(2, 2, 3)"},
       {"a_max", "10"},
       {"a_min", "-19"},
   });

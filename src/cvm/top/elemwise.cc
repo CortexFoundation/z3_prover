@@ -344,6 +344,106 @@ Z3_REGISTER_OP(flatten)
   .set_infer_precision(FlattenInferPrecision)
   .set_generator(_flatten_prove);
 
+static void forward_tile(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas){
+  TypePtr& x = inputs.at(0);
+  TypePtr& y = outputs.at(0);
+
+  int32_t yndim = y->ndim();
+  int32_t xndim = x->ndim();
+  
+  uint64_t tmp_y_size = 1;
+
+  for (int i = 0; i < xndim; i++){
+    tmp_y_size *= y->shape[i+yndim-xndim];
+  }
+
+  for (uint64_t i = 0; i < tmp_y_size; i++){
+    uint64_t o_i = i, in_i = 0, shapeSize = 1;
+    for (int j = xndim-1; j >= 0; j--){
+      int yj = j + yndim - xndim;
+      int col = o_i % y->shape[yj];
+      o_i /= y->shape[yj];
+      col = col %  x->shape[j];
+      in_i += col * shapeSize;
+      shapeSize *= x->shape[j];
+    }
+    y->set_data(i, x->at(in_i));
+    nas[0][i].add_input(x, in_i)
+      .add_output(y, i);
+  }
+
+  uint64_t othery = 1;
+  for (size_t i = 0; i < yndim-xndim; ++i) {
+    othery *= y->shape[i];
+  }
+  for (size_t i = 1; i < othery; i++){
+    for (size_t j = 0; j < tmp_y_size; j++){
+      y->set_data(i*tmp_y_size + j, y->at(j));
+      nas[0].at(i*tmp_y_size+j)
+        .add_input(y, j)
+        .add_output(y, i*tmp_y_size + j)
+        .set_uid(1);
+    }
+  }
+}
+
+static void TileInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), static_cast<size_t>(1));
+  VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
+  const Shape& shp = ishpes[0]; 
+  uint32_t sdim = shp.size();
+ 
+  Shape reps = Shape::from_string(attrs.dict.at("reps"));
+  uint32_t rdim = reps.size();
+  VERIFY(rdim > 0);
+  uint32_t odim = std::max(sdim, rdim);
+
+  for (size_t i = 0; i < rdim; i++){
+    VERIFY((reps[i] >= 1) && (reps[i] < 4096));
+  }
+
+  oshpes[0] = Shape();
+  for (size_t i = 0; i < odim; i++){
+    oshpes[0].emplace_back(0);
+  }
+  for (size_t i = 0; i < odim; i++){
+    const auto s = i < sdim ? shp[sdim-1-i] : 1;
+    const auto r = i < rdim ? reps[rdim-1-i] : 1;
+    oshpes[0][odim-1-i] = s * r;
+  }
+}
+
+
+static void TileInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  
+    oprecs[0] = iprecs.at(0);
+}
+
+static void TileAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "reps", "(0)");
+}
+
+Z3_REGISTER_OP(tile)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_attr_default(TileAttrDefault)
+  .set_forward(forward_tile)
+  .set_infer_shape(TileInferShape)
+  .set_infer_precision(TileInferPrecision)
+  ;
+
 std::vector<z3_expr> _reshape_prove() {
   /**
    * Reshape operator does nothing except memory copy,
