@@ -217,15 +217,15 @@ static void RepeatForward(
   std::string s_axis = attrs.dict.at("axis");
   int axis = std::atoi(s_axis.c_str());
   int ndims = inputs[0]->ndim();
-  if (axis < 0){
+  if (axis < 0) {
     axis += ndims;
   }
   for (size_t i = 0; i < y->Size(); ++i) {
     size_t o_i = i, in_i = 0, shapeSize = 1;
-    for (int j = ndims-1; j >= 0; j--){
+    for (int j = ndims-1; j >= 0; j--) {
       size_t col = o_i % y->shape[j];
       o_i /= y->shape[j];
-      if (j == axis){
+      if (j == axis) {
         col = col / repeats;
       }
       in_i += col *shapeSize;
@@ -298,7 +298,7 @@ static void FlattenForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
-    std::vector<std::vector<NodeAssertions> >& nas){
+    std::vector<std::vector<NodeAssertions> >& nas) {
   TypePtr& x = inputs.at(0);
   TypePtr& y = outputs.at(0);
 
@@ -317,7 +317,7 @@ static void FlattenInferShape(
   VERIFY_EQ(oshpes.size(), static_cast<size_t>(1));
   const auto& dshape = ishpes[0]; 
   uint32_t target_dim = 1;
-  for (int i = 1; i < dshape.size(); i++){
+  for (int i = 1; i < dshape.size(); i++) {
     target_dim *= dshape[i];
   }
   oshpes[0] = Shape();
@@ -348,7 +348,7 @@ static void TileForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
-    std::vector<std::vector<NodeAssertions> >& nas){
+    std::vector<std::vector<NodeAssertions> >& nas) {
   TypePtr& x = inputs.at(0);
   TypePtr& y = outputs.at(0);
 
@@ -357,13 +357,13 @@ static void TileForward(
   
   uint64_t tmp_y_size = 1;
 
-  for (int i = 0; i < xndim; i++){
+  for (int i = 0; i < xndim; i++) {
     tmp_y_size *= y->shape[i+yndim-xndim];
   }
 
-  for (uint64_t i = 0; i < tmp_y_size; i++){
+  for (uint64_t i = 0; i < tmp_y_size; i++) {
     uint64_t o_i = i, in_i = 0, shapeSize = 1;
-    for (int j = xndim-1; j >= 0; j--){
+    for (int j = xndim-1; j >= 0; j--) {
       int yj = j + yndim - xndim;
       int col = o_i % y->shape[yj];
       o_i /= y->shape[yj];
@@ -380,8 +380,8 @@ static void TileForward(
   for (size_t i = 0; i < yndim-xndim; ++i) {
     othery *= y->shape[i];
   }
-  for (size_t i = 1; i < othery; i++){
-    for (size_t j = 0; j < tmp_y_size; j++){
+  for (size_t i = 1; i < othery; i++) {
+    for (size_t j = 0; j < tmp_y_size; j++) {
       y->set_data(i*tmp_y_size + j, y->at(j));
       nas[0].at(i*tmp_y_size+j)
         .add_input(y, j)
@@ -405,15 +405,15 @@ static void TileInferShape(
   VERIFY(rdim > 0);
   uint32_t odim = std::max(sdim, rdim);
 
-  for (size_t i = 0; i < rdim; i++){
+  for (size_t i = 0; i < rdim; i++) {
     VERIFY((reps[i] >= 1) && (reps[i] < 4096));
   }
 
   oshpes[0] = Shape();
-  for (size_t i = 0; i < odim; i++){
+  for (size_t i = 0; i < odim; i++) {
     oshpes[0].emplace_back(0);
   }
-  for (size_t i = 0; i < odim; i++){
+  for (size_t i = 0; i < odim; i++) {
     const auto s = i < sdim ? shp[sdim-1-i] : 1;
     const auto r = i < rdim ? reps[rdim-1-i] : 1;
     oshpes[0][odim-1-i] = s * r;

@@ -168,21 +168,21 @@ std::string Shape::to_string() const {
 Shape Shape::from_string(const std::string& st) {
   Shape re;
   int stlen = st.length();
-  if (st.length() == 0){
+  if (st.length() == 0) {
     return re;
   } else {
     VERIFY(stlen > 1);
   }
   VERIFY((st[0] == '(' && st[stlen-1] == ')') 
       || (st[0] == '[' && st[stlen-1] == ']'));
-  for (int i = 1; i < stlen-1; ){
+  for (int i = 1; i < stlen-1; ) {
     std::string num;
     int cnt = 0;
-    while ((st[i+cnt] >= '0') && (st[i+cnt] <= '9')){
+    while ((st[i+cnt] >= '0') && (st[i+cnt] <= '9')) {
       cnt++;
     }
     VERIFY(st[i+cnt] == ',' || st[i+cnt] == ' ');
-    if (cnt > 0){
+    if (cnt > 0) {
       re.emplace_back(std::stoi(st.substr(i, cnt)));
     }
     i = i + (cnt + 1);
