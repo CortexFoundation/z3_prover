@@ -432,7 +432,7 @@ static void TileInferPrecision(
 }
 
 static void TileAttrDefault(NodeAttrs& attrs) {
-  ATTR_DEFAULT(attrs, "reps", "(0)");
+  ATTR_DEFAULT(attrs, "reps", "()");
 }
 
 Z3_REGISTER_OP(tile)
