@@ -173,20 +173,20 @@ Shape Shape::from_string(const std::string& st) {
   } else {
     VERIFY(stlen > 1);
   }
-  VERIFY_EQ(st[0], '(');
-  VERIFY_EQ(st[stlen-1], ')');
-  for (int i = 1; i < stlen; ){
+  VERIFY((st[0] == '(' && st[stlen-1] == ')') 
+      || (st[0] == '[' && st[stlen-1] == ']'));
+  for (int i = 1; i < stlen-1; ){
     std::string num;
     int cnt = 0;
     while ((st[i+cnt] >= '0') && (st[i+cnt] <= '9')){
       cnt++;
     }
+    VERIFY(st[i+cnt] == ',' || st[i+cnt] == ' ');
     if (cnt > 0){
       re.emplace_back(std::stoi(st.substr(i, cnt)));
     }
     i = i + (cnt + 1);
   }
-    std::cout << re.to_string() << std::endl;
   return re;
 }
 
