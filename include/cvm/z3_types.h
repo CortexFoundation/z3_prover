@@ -160,33 +160,28 @@ class Shape : public _ShapeBase {
   inline bool operator!=(Shape const& shp) const {
     return !(*this == shp);
   }
+
   std::string to_string() const;
+  static Shape from_string(const std::string& st);
 
   template<typename DIM_T>
-  size_t FromIndex(
-      std::initializer_list<DIM_T> const& index) const {
-    VERIFY_EQ(size(), index.size());
-    std::vector<DIM_T> vindex(index);
-    size_t ret = 0, acc = 1;
-    for (size_t i = 0; i < size(); ++i) {
-      ret += acc * vindex[size()-1-i];
-      acc *= at(size()-1-i);
-    }
-    return ret;
-  }
-  std::vector<int32_t> ToIndex(size_t index) const {
-    VERIFY(0 <= index && index < Size());
-    std::vector<int32_t> ret(size());
-    for (size_t i = 0; i < size(); ++i) {
-      size_t j = size() - 1 - j;
-      ret[j] = index % at(j);
-      index = index / at(size()-1-i);
-    }
-    return ret;
-  }
-
+  size_t FromIndex(std::initializer_list<DIM_T> const& index) const;
+  std::vector<int32_t> ToIndex(size_t index) const;
   size_t Size() const;
 };
+
+template<typename DIM_T>
+size_t Shape::FromIndex(
+    std::initializer_list<DIM_T> const& index) const {
+  VERIFY_EQ(size(), index.size());
+  std::vector<DIM_T> vindex(index);
+  size_t ret = 0, acc = 1;
+  for (size_t i = 0; i < size(); ++i) {
+    ret += acc * vindex[size()-1-i];
+    acc *= at(size()-1-i);
+  }
+  return ret;
+}
 
 class TypeRef {
  public:
