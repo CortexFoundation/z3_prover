@@ -107,7 +107,7 @@ int main() {
   // generator_prove();
   // return 0;
 
-  int num_inputs = 2;
+  int num_inputs = 3;
   auto a = Node::CreateVariable<TypeRef>("a", Shape({2, num_inputs}), 24);
   // auto b = Node::CreateVariable<Scalar>("b", 4);
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
@@ -116,10 +116,15 @@ int main() {
     // "dense", "fully-connected", {a, b},
     // "elemwise_add", "add", {a, b},
     // "relu", "add", {b},
-    "clip", "clip", {a},
-    unordered_map<string, string>{
-      {"units", "2"},
-      {"use_bias", "false"},
+    //"clip", "clip", {a},
+     //"flatten", "flt", {a},
+    //"repeat", "rpt", {a},
+      "tile", "tl", {a},
+      unordered_map<string, string>{
+      // {"units", "2"},
+      // {"use_bias", "false"},
+      {"repeats", "2"},
+      {"reps", "(2,    2,   3,     )"},
       {"a_max", "10"},
       {"a_min", "-19"},
   });
