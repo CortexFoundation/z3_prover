@@ -147,21 +147,45 @@ F_Z3_EXPR_DECL(implies, 2);
 typedef std::vector<int32_t> _ShapeBase;
 class Shape : public _ShapeBase {
  public:
-  template<typename DIM_T>
-  Shape(std::initializer_list<DIM_T> const& init) 
+  Shape(std::initializer_list<int32_t> const& init) 
       : _ShapeBase(init) { }
 
   Shape() : _ShapeBase() {}
+  Shape(size_t n) : _ShapeBase(n) {}
 
   inline bool operator==(Shape const& shp) const {
-    return std::equal(begin(), end(), shp.begin());
+    return size() == shp.size() &&
+      std::equal(begin(), end(), shp.begin());
   }
   inline bool operator!=(Shape const& shp) const {
     return !(*this == shp);
   }
+  std::string to_string() const;
+
+  template<typename DIM_T>
+  size_t FromIndex(
+      std::initializer_list<DIM_T> const& index) const {
+    VERIFY_EQ(size(), index.size());
+    std::vector<DIM_T> vindex(index);
+    size_t ret = 0, acc = 1;
+    for (size_t i = 0; i < size(); ++i) {
+      ret += acc * vindex[size()-1-i];
+      acc *= at(size()-1-i);
+    }
+    return ret;
+  }
+  std::vector<int32_t> ToIndex(size_t index) const {
+    VERIFY(0 <= index && index < Size());
+    std::vector<int32_t> ret(size());
+    for (size_t i = 0; i < size(); ++i) {
+      size_t j = size() - 1 - j;
+      ret[j] = index % at(j);
+      index = index / at(size()-1-i);
+    }
+    return ret;
+  }
 
   size_t Size() const;
-  std::string to_string() const;
 };
 
 class TypeRef {
@@ -180,17 +204,18 @@ class TypeRef {
       << "TypeRef is not scalar";
     return data[0];
   }
-  inline const z3_expr& at(size_t index) const {
+  inline z3_expr const& at(size_t index) const {
     VERIFY((0 <= index) && (index < data.size()))
       << "Index " << index 
       << " out of TypeRef size " << data.size();
     return data[index];
   }
-  // inline z3_expr& at(size_t index) {
-  //   return const_cast<z3_expr&>(
-  //       static_cast<const TypeRef&>(*this).at(index)
-  //   );
-  // }
+  template<typename DIM_T>
+  inline const z3_expr& at(
+      std::initializer_list<DIM_T> const& index
+      ) const {
+    return this->at(shape.FromIndex(index));
+  }
   inline size_t Size() const { return shape.Size(); }
 
   /*

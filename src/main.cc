@@ -111,19 +111,22 @@ int main() {
   auto a = Node::CreateVariable<TypeRef>("a", Shape({2, num_inputs}), 24);
   // auto b = Node::CreateVariable<Scalar>("b", 4);
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
+  auto c = Node::CreateVariable<TypeRef>("c", Shape({2, 2, 2, 2}));
 
-  auto c = Node::CreateOperator(
+  auto ret = Node::CreateOperator(
     // "dense", "fully-connected", {a, b},
     // "elemwise_add", "add", {a, b},
     // "relu", "add", {b},
-    "clip", "clip", {a},
+    // "clip", "clip", {a},
+    "upsampling", "upsampling", {c},
     unordered_map<string, string>{
       {"units", "2"},
       {"use_bias", "false"},
       {"a_max", "10"},
       {"a_min", "-19"},
+      {"scale", "2"},
   });
-  for (auto &p : c.node->provements_generator(true))
+  for (auto &p : ret.node->provements_generator(true))
     z3_prover(p.cstr);
 
   return 0;
