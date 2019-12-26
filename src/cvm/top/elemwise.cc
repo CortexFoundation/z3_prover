@@ -294,7 +294,7 @@ std::vector<z3_expr> _flatten_prove() {
   return {};
 }
 
-static void forward_flatten(
+static void FlattenForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
@@ -339,12 +339,12 @@ static void FlattenInferPrecision(
 Z3_REGISTER_OP(flatten)
   .set_num_inputs(1)
   .set_num_outputs(1)
-  .set_forward(forward_flatten)
+  .set_forward(FlattenForward)
   .set_infer_shape(FlattenInferShape)
   .set_infer_precision(FlattenInferPrecision)
   .set_generator(_flatten_prove);
 
-static void forward_tile(
+static void TileForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,
     std::vector<TypePtr>& outputs,
@@ -439,7 +439,7 @@ Z3_REGISTER_OP(tile)
   .set_num_inputs(1)
   .set_num_outputs(1)
   .set_attr_default(TileAttrDefault)
-  .set_forward(forward_tile)
+  .set_forward(TileForward)
   .set_infer_shape(TileInferShape)
   .set_infer_precision(TileInferPrecision)
   ;
