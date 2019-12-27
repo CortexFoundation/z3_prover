@@ -47,13 +47,19 @@ void UpsamplingForward(
     std::vector<std::vector<NodeAssertions> >& nas) {
   int scale = std::stoi(attrs.dict.at("scale"));
   auto x = inputs[0], y = outputs[0];
+
+  size_t n_batch = x->shape[0], n_channels = x->shape[1];
+  size_t h = x->shape[2], w = x->shape[3];
+  size_t oh = y->shape[2], ow = y->shape[3];
+
   for (size_t batch = 0; batch < y->shape[0]; ++batch) {
     for (size_t c = 0; c < y->shape[1]; ++c) {
+      size_t y_start = batch * n_channels * oh * ow + c * oh * ow;
+      size_t x_start = batch * n_channels * h * w + c * h * w;
       for (size_t yi = 0; yi < y->shape[2]; ++yi) {
         for (size_t xi = 0; xi < y->shape[3]; ++xi) {
-          size_t y_index = y->shape.FromIndex({batch, c, yi, xi});
-          size_t x_index = x->shape.FromIndex(
-              {batch, c, yi/scale, xi/scale});
+          size_t y_index = y_start + yi * ow + xi;
+          size_t x_index = x_start + yi / scale * w + xi / scale;
           y->set_data(y_index, x->at(x_index));
           nas[0].at(y_index)
             .add_input(x, x_index)
