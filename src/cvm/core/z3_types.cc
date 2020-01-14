@@ -192,7 +192,7 @@ Shape Shape::from_string(const std::string& st) {
     while ((st[i+cnt] >= '0') && (st[i+cnt] <= '9')) {
       cnt++;
     }
-    VERIFY(st[i+cnt] == ',' || st[i+cnt] == ' ');
+    VERIFY(st[i+cnt] == ',' || st[i+cnt] == ' ' || st[i+cnt] == ')');
     if (cnt > 0) {
       re.emplace_back(std::stoi(st.substr(i, cnt)));
     }

@@ -435,6 +435,7 @@ static void TileAttrDefault(NodeAttrs& attrs) {
   ATTR_DEFAULT(attrs, "reps", "()");
 }
 
+
 Z3_REGISTER_OP(tile)
   .set_num_inputs(1)
   .set_num_outputs(1)
@@ -442,6 +443,629 @@ Z3_REGISTER_OP(tile)
   .set_forward(TileForward)
   .set_infer_shape(TileInferShape)
   .set_infer_precision(TileInferPrecision)
+  ;
+
+static void ConcatenateAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "axis", "1");
+}
+
+inline bool shape_assign(Shape *y, const Shape& x) {
+  if (y->size() == 0) {
+    *y = x;
+    return true;
+  } else if (y->size() != x.size()) {
+    return x.size() == 0;
+  } else {
+    for (size_t i = 0; i < y->size(); ++i) {
+      if ((*y)[i] == 0) {
+        (*y)[i] = x[i];
+      } else if ((*y)[i] != x[i] && x[i] != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+static void ConcatenateForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  std::string st_axis = attrs.dict.at("axis");
+  int axis = std::stoi(st_axis);
+  int ndim = inputs.at(0)->ndim();
+  if (axis < 0){
+    axis += ndim;
+  }
+
+  auto& out_data = outputs.at(0);
+  for (uint64_t i = 0; i < out_data->Size(); i++){
+    uint64_t o_i = i, in_i = 0, in_i2 = 0, shapeSize = 1;
+    for (int j = out_data->ndim()-1; j >= 0; j--){
+      uint64_t col = o_i % out_data->shape[j];
+      o_i /= out_data->shape[j];
+      uint64_t tmpcol = col;
+      if (j == axis){
+        uint64_t allShapeSize = 0;
+        for (int k = 0; k < inputs.size(); k++){
+          tmpcol = col - allShapeSize;
+          allShapeSize = inputs.at(k)->shape[axis];
+          if (col < allShapeSize){
+            in_i = k;
+            break;
+          }
+        }
+      }
+      in_i2 += tmpcol * shapeSize;
+      shapeSize *= inputs.at(in_i)->shape[j];
+    }
+    out_data->set_data(i, inputs.at(in_i)->at(in_i2));
+    nas[0][i].add_input(inputs.at(in_i), in_i2)
+      .add_output(out_data, i);
+  }
+
+}
+
+static void ConcatenateInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY(ishpes.size());
+  int ndim = ishpes.at(0).size();
+  for (const auto& it : ishpes){
+    VERIFY_EQ(it.size(), ndim);
+  }
+
+  std::string st_attrs_axis = attrs.dict.at("axis");
+  int attrs_axis = std::stoi(st_attrs_axis);
+  VERIFY(attrs_axis >= -ndim && attrs_axis < ndim);
+  int axis = attrs_axis >= 0 ? attrs_axis : ndim + attrs_axis;
+
+  bool has_zero = false;
+  int size = 0;
+  Shape dshape;
+  for (auto& tmp : ishpes){
+    VERIFY(axis < ndim);
+    has_zero = tmp[axis] == 0 || has_zero;
+    size += tmp[axis];
+    tmp[axis] = 0;
+    VERIFY_EQ(shape_assign(&dshape, tmp), true);
+  }
+
+  Shape tmp = oshpes.at(0);
+  if (tmp.size()){
+    VERIFY(axis < tmp.size());
+    tmp[axis] = 0;
+    VERIFY_EQ(shape_assign(&dshape, tmp), true);
+  }
+  if (!has_zero){
+    dshape[axis] = size;
+  }
+  VERIFY(dshape.Size());
+  oshpes.at(0) = dshape;
+}
+
+static void ConcatenateInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+    VERIFY(iprecs.size() > 0);
+    type::z3_expr max_prec = iprecs.at(0);
+    for (auto prec : iprecs) {
+      max_prec = type::op_max(prec, max_prec);
+    }
+    for (auto& v : oprecs){
+      v = max_prec;
+    }
+}
+
+Z3_REGISTER_OP(concatenate)
+  .set_num_inputs(kVarg)
+  .set_num_outputs(1)
+  .set_attr_default(ConcatenateAttrDefault)
+  .set_forward(ConcatenateForward)
+  .set_infer_shape(ConcatenateInferShape)
+  .set_infer_precision(ConcatenateInferPrecision)
+  ;
+
+static void ExpandDimsAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "axis");
+  ATTR_DEFAULT(attrs, "num_newaxis", "1");
+}
+
+static void ExpandDimsForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  auto& out_data = outputs.at(0);
+  for (uint64_t i = 0; i < out_data->Size(); i++){
+    out_data->set_data(i, inputs.at(0)->at(i));
+    nas[0][i].add_input(inputs.at(0), i)
+      .add_output(out_data, i);
+  }
+
+}
+
+static void ExpandDimsInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  const auto& dshape = ishpes.at(0);
+  int ndim = dshape.size();
+  std::string st_attrs_axis = attrs.dict.at("axis");
+  std::string st_attrs_num_axis = attrs.dict.at("num_newaxis");
+  int attrs_axis = std::stoi(st_attrs_axis);
+  int attrs_num_axis = std::stoi(st_attrs_num_axis);
+  VERIFY(attrs_axis >= -ndim-1 && attrs_axis <= ndim);
+  const int32_t ATTR_MIN_VALUE = 0; 
+  const int32_t ATTR_MAX_VALUE = 4096;
+  VERIFY(attrs_axis >= ATTR_MIN_VALUE && attrs_axis < ATTR_MAX_VALUE);
+  int axis = attrs_axis < 0 ? ndim + attrs_axis + 1: attrs_axis;
+
+  for (int i = 0; i < axis; i++){
+    oshpes.at(0).push_back(dshape.at(i));
+  }
+  for (int i = 0; i < attrs_num_axis; i++){
+    oshpes.at(0).push_back(1);
+  }
+  for (int i = axis; i < ndim; i++){
+    oshpes.at(0).push_back(dshape.at(i));
+  }
+}
+
+static void ExpandDimsInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
+Z3_REGISTER_OP(expand_dims)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_attr_default(ExpandDimsAttrDefault)
+  .set_forward(ExpandDimsForward)
+  .set_infer_shape(ExpandDimsInferShape)
+  .set_infer_precision(ExpandDimsInferPrecision)
+  ;
+
+static void SqueezeAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "axis", "()");
+}
+
+static void SqueezeForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  auto& out_data = outputs.at(0);
+  for (uint64_t i = 0; i < out_data->Size(); i++){
+    out_data->set_data(i, inputs.at(0)->at(i));
+    nas[0][i].add_input(inputs.at(0), i)
+      .add_output(out_data, i);
+  }
+
+}
+
+static void SqueezeInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
+static void SqueezeInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  const auto& shp = ishpes.at(0);
+  int ndim = shp.size();
+  std::string st_attrs_axis = attrs.dict.at("axis");
+  Shape attrs_axis = Shape::from_string(st_attrs_axis);
+  if (attrs_axis.size() == 0){
+    for (int i = 0; i < ndim; i++){
+      if (shp.at(i) != 1){
+        oshpes.at(0).emplace_back(shp.at(i));
+      }
+    }
+  } else {
+    
+    std::unordered_set<int> axis_checker;
+    for (size_t i = 0; i < attrs_axis.size(); ++i) {
+      VERIFY((attrs_axis.at(i) >= -ndim) && (attrs_axis.at(i) < ndim));
+      int real_axis;
+      if (attrs_axis.at(i) < 0) {
+        real_axis = attrs_axis.at(i)+ ndim;
+      } else {
+        real_axis = attrs_axis.at(i);
+      }
+      axis_checker.insert(real_axis);
+    }
+
+
+    for (int i = 0; i < ndim; ++i) {
+      if (axis_checker.find(i) == axis_checker.end()) {
+        oshpes.at(0).emplace_back(shp[i]);
+      } else {
+        VERIFY_EQ(shp[i], 1) << "The squeezed axis must have shape 1!"
+                            << "Want to squeeze " << i
+                            << ", which has shape" << shp[i];
+      }
+    }
+  }
+
+  if (oshpes.at(0).size() == 0) {
+    // Handles the case where all axes are squeezed.
+    oshpes.at(0).push_back(1);
+  }
+}
+
+Z3_REGISTER_OP(squeeze)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_attr_default(SqueezeAttrDefault)
+  .set_forward(SqueezeForward)
+  .set_infer_shape(SqueezeInferShape)
+  .set_infer_precision(SqueezeInferPrecision)
+  ;
+
+static void TransposeAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "axes", "()");
+}
+
+static void TransposeInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  const auto& shp = ishpes.at(0);
+  int ndim = shp.size();
+  Shape ret(shp);
+  
+  std::string st_attrs_axis = attrs.dict.at("axes");
+  Shape attrs_axis = Shape::from_string(st_attrs_axis);
+  std::cout << attrs_axis.size() << " byr " << shp.size() << std:: endl;
+  if (attrs_axis.size() == 0){
+    for (int i = 0; i < ndim; i++){
+      if (shp.at(i) != 1){
+        ret[i] = shp[ndim - 1 - i];
+      }
+    }
+  } else {
+    VERIFY_EQ(shp.size(), attrs_axis.size());
+    Shape axes(attrs_axis);
+    for (size_t i = 0; i < ndim; ++i) {
+      int64_t new_axis = axes[i];
+      VERIFY((new_axis >= -ndim) && (new_axis < ndim));
+      int real_axis;
+      if (new_axis < 0) {
+        new_axis += ndim;
+        axes[i] = new_axis;
+      }
+      for (int j = 0; j < ndim; j++){
+        if (i != j){
+          VERIFY(new_axis != axes[j]);
+        }
+      }
+      ret[i] = shp[new_axis];
+    }
+  }
+  oshpes.at(0) = ret;
+}
+
+static void TransposeForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  std::string st_attrs_axis = attrs.dict.at("axes");
+  Shape axes = Shape::from_string(st_attrs_axis);
+  for (uint32_t i = 0; i < axes.size(); i++){
+    if (axes[i] < 0){
+      axes[i] += inputs.at(0)->ndim();
+    }
+  } 
+
+  int ndim = outputs.at(0)->ndim();
+
+  auto& out_data = outputs.at(0);
+  for (uint64_t i = 0; i < out_data->Size(); i++){
+    uint64_t o_i = i, in_i = 0;
+    for (int j = ndim - 1; j >= 0; j--){
+      uint64_t col = o_i % out_data->shape[j];
+      o_i /= out_data->shape[j];
+      int xj = j;
+      if (axes.size() > 0){
+        xj = axes[j];
+      } else {
+        xj = ndim - 1 - j;
+      }
+      int xi = 1;
+      for (int tx = ndim-1; tx > xj; tx--){
+        xi *= inputs.at(0)->shape[tx];
+      }
+      in_i += col * xi;
+    }
+
+    out_data->set_data(i, inputs.at(0)->at(in_i));
+    nas[0][i].add_input(inputs.at(0), in_i)
+      .add_output(out_data, i);
+  }
+}
+
+static void TransposeInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
+Z3_REGISTER_OP(transpose)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_attr_default(TransposeAttrDefault)
+  .set_forward(TransposeForward)
+  .set_infer_shape(TransposeInferShape)
+  .set_infer_precision(TransposeInferPrecision)
+  ;
+
+static void StridedSliceAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "begin", "(0)");
+  ATTR_DEFAULT(attrs, "end", "(1)");
+  ATTR_DEFAULT(attrs, "stride", "()");
+}
+
+static void StridedSliceInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  const auto& dshape = ishpes.at(0);
+  auto oshape = dshape;
+  int num_axis = dshape.size();
+ 
+  std::string st_attrs_begin = attrs.dict.at("begin");
+  Shape attrs_begin = Shape::from_string(st_attrs_begin);
+  std:: vector<int64_t> begin_vec;
+  std::copy(attrs_begin.begin(), attrs_begin.end(), std::back_inserter(begin_vec));
+  for (int i = begin_vec.size(); i < num_axis; i++){
+    begin_vec.push_back(0);
+  }
+
+  std::string st_attrs_end = attrs.dict.at("end");
+  Shape attrs_end = Shape::from_string(st_attrs_end);
+  std:: vector<int64_t> end_vec;
+  std::copy(attrs_end.begin(), attrs_end.end(), std::back_inserter(end_vec));
+  for (int i = end_vec.size(); i < num_axis; i++){
+    end_vec.push_back(dshape[i]);
+  }
+
+  std::string st_attrs_stride = attrs.dict.at("stride");
+  Shape attrs_stride = Shape::from_string(st_attrs_stride);
+  std:: vector<int64_t> stride_vec;
+  std::copy(attrs_stride.begin(), attrs_stride.end(), std::back_inserter(stride_vec));
+  for (int i = stride_vec.size(); i < num_axis; i++){
+    stride_vec.push_back(1);
+  }
+
+  for (int i = 0; i < num_axis; i++) {
+    VERIFY(stride_vec.at(i) != 0);
+    int64_t begin_range = stride_vec.at(i) < 0 ? -1 : 0;
+    int64_t end_range = stride_vec.at(i) < 0 ? dshape[i] - 1 : dshape[i];
+    int64_t begin = begin_vec.at(i) < 0 ? dshape[i] + begin_vec.at(i) : begin_vec.at(i);
+    int64_t end = end_vec.at(i) < 0 ? dshape[i] + end_vec[i] : end_vec[i];
+    begin = std::min(std::max(begin, begin_range), end_range);
+    end = std::min(std::max(end, begin_range), end_range);
+    int interval = std::abs(end - begin);
+    int slice_size = static_cast<int>((interval
+          + std::abs(stride_vec[i]) - 1) / std::abs(stride_vec[i]));
+    VERIFY(stride_vec[i] < 0 ? (end < begin) : (begin < end))
+      << ": Input [Begin=" << begin_vec[i] << ", End=" << end_vec[i]
+      << "] is invalid for axis=" << i;
+    oshape[i] = slice_size;
+  }
+  oshpes.at(0) = oshape;
+}
+
+static void StridedSliceInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
+static void StridedSliceForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  std::string st_begin = attrs.dict.at("begin");
+  std::string st_end = attrs.dict.at("end");
+  std::string st_stride = attrs.dict.at("stride");
+  Shape begin = Shape::from_string(st_begin);
+  Shape end = Shape::from_string(st_end);
+  Shape stride = Shape::from_string(st_stride);
+  auto& x = inputs.at(0);
+  auto& y = outputs.at(0);
+  int ndim = y->ndim();
+  int32_t num_axis = x->ndim();
+  Shape dshp = x->shape;
+  std::vector<int64_t> begin_vec;
+  std::copy(begin.begin(), begin.end(), std::back_inserter(begin_vec));
+  for (int i = begin_vec.size(); i < num_axis; ++i) {
+    begin_vec.push_back(0);
+  }
+
+  std::vector<int64_t> stride_vec;
+  std::copy(stride.begin(), stride.end(), 
+      std::back_inserter(stride_vec));
+  for (int i = stride_vec.size(); i < num_axis; ++i) {
+    stride_vec.push_back(1);
+  }
+
+  for (size_t i = 0; i < begin_vec.size(); ++i) {
+    int64_t begin_range = stride_vec[i] < 0 ? -1 : 0;
+    int64_t end_range = stride_vec[i] < 0 ? dshp[i] -1 : dshp[i];
+    int64_t begin = begin_vec[i];
+    if (begin < 0) begin += dshp[i];
+    begin_vec[i]= std::min(std::max(begin, begin_range), end_range);
+  }
+
+  
+  for(uint64_t i = 0; i < y->Size(); i++){
+      uint64_t o_i = i, in_i = 0, shapeSize = 1;
+      for(int j = ndim-1; j >= 0; j--){
+          uint64_t col = o_i % y->shape[j];
+          o_i /= y->shape[j];
+          int64_t tbegin = begin_vec[j];
+          int64_t tstep = stride_vec[j];
+          col = tbegin + col * tstep;
+          in_i += col * shapeSize;
+          shapeSize *= x->shape[j];
+      }
+    y->set_data(i, inputs.at(0)->at(in_i));
+    nas[0][i].add_input(inputs.at(0), in_i)
+      .add_output(y, i);
+  }
+}
+
+Z3_REGISTER_OP(slice)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_attr_default(StridedSliceAttrDefault)
+  .set_forward(StridedSliceForward)
+  .set_infer_shape(StridedSliceInferShape)
+  .set_infer_precision(StridedSliceInferPrecision)
+  ;
+
+static void TakeAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "axis", "0");
+  ATTR_DEFAULT(attrs, "axis_none", "1");
+}
+
+static void TakeInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 2U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  const auto& dshape = ishpes.at(0);
+  const auto& indicesshape = ishpes.at(1);
+  int ndim = dshape.size();
+  std::string st_axis= attrs.dict.at("axis");
+  int in_axis = std::stoi(st_axis);
+  std::string st_axis_none = attrs.dict.at("axis_none");
+  int in_axis_none = std::stoi(st_axis_none);
+  Shape oshape((in_axis_none ? 0 : ndim - 1) + indicesshape.size());
+
+
+  if (in_axis_none) {
+    for (size_t j = 0; j < indicesshape.size(); ++j) {
+      oshape[j] = indicesshape[j];
+    }
+  } else {
+    int axis = in_axis;
+    VERIFY((axis >= -ndim) && (axis < ndim));
+    if (axis < 0) {
+      axis += ndim;
+    }
+    
+    size_t posi = 0;
+    for (int i = 0; i < ndim; ++i) {
+      if (i == axis) {
+        for (size_t j = 0; j < indicesshape.size(); ++j) {
+          oshape[posi++] = indicesshape[j];
+        }
+      } else {
+        oshape[posi++] = dshape[i];
+      }
+    }
+  }
+
+  ishpes.at(0) = dshape;
+  ishpes.at(1) = indicesshape;
+  oshpes.at(0) = oshape;
+}
+
+static void TakeInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
+static void TakeForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  std::string st_axis= attrs.dict.at("axis");
+  int in_axis = std::stoi(st_axis);
+  std::string st_axis_none = attrs.dict.at("axis_none");
+  int in_axis_none = std::stoi(st_axis_none);
+  
+  auto& x = inputs.at(0);
+  auto& indices = inputs.at(1);
+  auto& y = outputs.at(0);
+  if (in_axis_none){
+    uint64_t xs = x->Size();
+    uint64_t ys = y->Size();
+    for (uint64_t i = 0; i < ys; i++) {
+//      auto in_i = type::op_min(type::op_max(indices->at(i), 0), xs-1);
+    }
+  } else {
+  }
+
+}
+
+Z3_REGISTER_OP(take)
+  .set_num_inputs(2)
+  .set_num_outputs(1)
+  .set_attr_default(TakeAttrDefault)
+  .set_forward(TakeForward)
+  .set_infer_shape(TakeInferShape)
+  .set_infer_precision(TakeInferPrecision)
+  ;
+
+Z3_REGISTER_OP(cvm_lut)
+  .set_num_inputs(2)
+  .set_num_outputs(1)
+  .set_attr_default(TakeAttrDefault)
+  .set_forward(TakeForward)
+  .set_infer_shape(TakeInferShape)
+  .set_infer_precision(TakeInferPrecision)
   ;
 
 std::vector<z3_expr> _reshape_prove() {
