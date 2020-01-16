@@ -199,7 +199,7 @@ Z3_REGISTER_OP(clip)
   .set_forward(ClipForward)
   .set_generator(_clip_prove);
 
-static void RepeatAttrDefault(NodeAttrs& attrs) {
+/*static void RepeatAttrDefault(NodeAttrs& attrs) {
   ATTR_DECL(attrs, "repeats");
   ATTR_DEFAULT(attrs, "axis", "0");
 }
@@ -283,14 +283,6 @@ Z3_REGISTER_OP(repeat)
   ;
 
 std::vector<z3_expr> _flatten_prove() {
-  /**
-   * Flatten operator does nothing except memory copy,
-   *  which is equals with assign process defined in
-   *  `z3_types.cc` that is deterministic.
-   *
-   * Refers to cvm-runtime:src/cvm/ops/cpu/elemwise.cc
-   *  Line:83 for more details.
-   **/
   return {};
 }
 
@@ -1162,14 +1154,6 @@ Z3_REGISTER_OP(where)
   ;
 
 std::vector<z3_expr> _reshape_prove() {
-  /**
-   * Reshape operator does nothing except memory copy,
-   *  which is equals with assign process defined in
-   *  `z3_types.cc` that is deterministic.
-   *
-   * Refers to cvm-runtime:src/cvm/ops/cpu/elemwise.cc
-   *  Line:104 for more details.
-   **/
   return {};
 }
 
@@ -1289,7 +1273,7 @@ Z3_REGISTER_OP(reshape)
   .set_infer_shape(ReshapeInferShape)
   .set_infer_precision(ReshapeInferPrecision)
   .set_generator(_reshape_prove);
-
+*/
 std::vector<z3_expr> _cvm_clip_prove() {
   TypePtr a = Scalar::Make("a");
   z3_expr prec("precision");
