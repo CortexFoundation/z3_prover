@@ -966,6 +966,90 @@ Z3_REGISTER_OP(slice)
   .set_infer_precision(StridedSliceInferPrecision)
   ;
 
+static void SliceLikeAttrDefault(NodeAttrs& attrs) {
+  ATTR_DEFAULT(attrs, "axis", "()");
+}
+
+static void SliceLikeForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  auto& x = inputs.at(0);
+  auto& y = outputs.at(0);
+  int ndim = y->ndim();
+  
+  for(uint64_t i = 0; i < y->Size(); i++){
+      uint64_t o_i = i, in_i = 0, shapeSize = 1;
+      for(int j = ndim-1; j >= 0; j--){
+          int col = o_i % y->shape[j];
+          o_i /= y->shape[j];
+          in_i += col * shapeSize;
+          shapeSize *= x->shape[j];
+      }
+    y->set_data(i, inputs.at(0)->at(in_i));
+    nas[0][i].add_input(inputs.at(0), in_i)
+      .add_output(y, i);
+  }
+}
+
+static void SliceLikeInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 2U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  const auto& src_shape = ishpes.at(0);
+  const Shape& target_shape = ishpes.at(1);
+  Shape end_idx = src_shape;
+
+  std::string st_axis = attrs.dict.at("axis");
+  Shape axis = Shape::from_string(st_axis);
+  if (axis.size() == 0) {
+    for (size_t i = 0; i < src_shape.size(); ++i) {
+      if (i < target_shape.size()) {
+        end_idx[i] = target_shape[i];
+        VERIFY(end_idx[i] < src_shape[i])
+          << "End index of axis " << i << " exceeds input shape: "
+          << end_idx[i] << " vs " << src_shape[i];
+      }
+    }
+  } else {
+    for (auto i : axis) {
+      VERIFY(((int)-src_shape.size() <= i) && (i < target_shape.size()));
+      if (i < 0) {
+        i = src_shape.size() + i;
+      }
+      end_idx[i] = target_shape[i];
+      VERIFY(end_idx[i] < src_shape[i])
+        << "End index of axis " << i << " exceeds input shape: "
+        << end_idx[i] << " vs " << src_shape[i];
+    }
+  }
+  oshpes.at(0) = end_idx;
+}
+
+static void SliceLikeInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
+Z3_REGISTER_OP(slice_like)
+  .set_num_inputs(2)
+  .set_num_outputs(1)
+  .set_attr_default(SliceLikeAttrDefault)
+  .set_forward(SliceLikeForward)
+  .set_infer_shape(SliceLikeInferShape)
+  .set_infer_precision(SliceLikeInferPrecision)
+  ;
+
 static void TakeAttrDefault(NodeAttrs& attrs) {
   ATTR_DEFAULT(attrs, "axis", "0");
   ATTR_DEFAULT(attrs, "axis_none", "1");
@@ -1068,6 +1152,15 @@ Z3_REGISTER_OP(cvm_lut)
   .set_infer_precision(TakeInferPrecision)
   ;
 
+Z3_REGISTER_OP(where)
+  .set_num_inputs(2)
+  .set_num_outputs(1)
+  .set_attr_default(TakeAttrDefault)
+  .set_forward(TakeForward)
+  .set_infer_shape(TakeInferShape)
+  .set_infer_precision(TakeInferPrecision)
+  ;
+
 std::vector<z3_expr> _reshape_prove() {
   /**
    * Reshape operator does nothing except memory copy,
@@ -1080,9 +1173,121 @@ std::vector<z3_expr> _reshape_prove() {
   return {};
 }
 
+static void ReshapeAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "shape");
+}
+
+static void ReshapeForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+ 
+  auto& x = inputs.at(0);
+  auto& y = outputs.at(0);
+  for(uint64_t i = 0; i < y->Size(); i++){
+    y->set_data(i, inputs.at(0)->at(i));
+    nas[0][i].add_input(inputs.at(0), i)
+      .add_output(y, i);
+  }
+}
+
+static void ReshapeInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  std::string st_shape = attrs.dict.at("shape");
+  Shape shape = Shape::from_string(st_shape);
+  VERIFY(shape.size() >  0);
+
+  const auto& dshape = ishpes.at(0);
+  const Shape& target_shape = shape;
+  Shape oshape;
+  int src_idx = 0;
+  int infer_idx = -1;
+
+  for (int i = 0; i < target_shape.size(); ++i) {
+    int64_t svalue = target_shape[i];
+    // special flag handling for shape inference.
+    if (svalue > 0) {
+      oshape.push_back(svalue);
+      ++src_idx;
+    } else if (svalue == 0) {
+      // keep same
+      VERIFY(src_idx < dshape.size());
+      oshape.push_back(dshape[src_idx++]);
+    } else if (svalue == -1) {
+      // inference based on rest
+      VERIFY(infer_idx < 0)
+          << "One and only one dim can be inferred";
+      infer_idx = i;
+      oshape.push_back(1);
+      ++src_idx;
+    } else if (svalue == -2) {
+      // copy all remaining dims from source
+      while (src_idx < dshape.size()) {
+        oshape.push_back(dshape[src_idx++]);
+      }
+    } else if (svalue == -3) {
+      // merge two dims from source
+      VERIFY(src_idx + 1 < dshape.size());
+      int d1 = dshape[src_idx++];
+      int d2 = dshape[src_idx++];
+      oshape.push_back(d1 * d2);
+    } else if (svalue == -4) {
+      // split the source dim s into two dims
+      // read the left dim and then the right dim (either can be -1)
+      VERIFY(i + 2 < target_shape.size());
+      VERIFY(src_idx < dshape.size());
+      int d0 = dshape[src_idx++];
+      int d1 = target_shape[++i];
+      int d2 = target_shape[++i];
+      VERIFY(d1 != -1 || d2 != -1) << "Split dims cannot both be -1.";
+      if (d1 == -1) d1 = d0 / d2;
+      if (d2 == -1) d2 = d0 / d1;
+      VERIFY_EQ(d1 * d2, static_cast<int>(d0)) <<
+          "Split dims " << d1 << ", " << d2 << " do not divide original dim " << d0;
+      oshape.push_back(d1);
+      oshape.push_back(d2);
+    }
+  }
+
+
+  if (infer_idx >= 0) {
+    if (dshape.Size() > 0) {
+      int new_size = 1;
+      for (int x : oshape) {
+        new_size *= x;
+      }
+      oshape[infer_idx] = dshape.Size() / new_size;
+    } else {
+      oshape[infer_idx] = 0;
+    }
+  }
+  VERIFY_EQ(dshape.Size(), oshape.Size());
+  oshpes.at(0) = oshape;
+}
+
+static void ReshapeInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+
+  oprecs[0] = iprecs.at(0);
+
+}
+
 Z3_REGISTER_OP(reshape)
   .set_num_inputs(1)
   .set_num_outputs(1)
+  .set_attr_default(ReshapeAttrDefault)
+  .set_forward(ReshapeForward)
+  .set_infer_shape(ReshapeInferShape)
+  .set_infer_precision(ReshapeInferPrecision)
   .set_generator(_reshape_prove);
 
 std::vector<z3_expr> _cvm_clip_prove() {
@@ -1110,9 +1315,65 @@ std::vector<z3_expr> _cvm_clip_prove() {
   };
 }
 
+static void CVMClipAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "precision");
+  ATTR_DEFAULT(attrs, "is_sign", "true");
+}
+
+static void CVMClipInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  oshpes.at(0) = ishpes.at(0);
+}
+
+static void CVMClipInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  
+  std::string const s_min = attrs.dict.at("precision");
+  int a_min = std::atoi(s_min.c_str());
+  
+  VERIFY((a_min >= 1) && (a_min < 33));
+  oprecs[0] = a_min;
+}
+
+static void CVMClipForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& x = inputs.at(0);
+  std::string const str_precision= attrs.dict.at("precision");
+  int precision = std::stoi(str_precision);
+  int32_t a_min = -(((int64_t)1 << (precision-1))-1);
+  int32_t a_max = -a_min;
+  
+  for (size_t i = 0; i < x->Size(); ++i) {
+    z3_expr tmp = x->at(i);
+    tmp = op_ite(tmp > a_max,
+      a_max, op_ite(tmp < a_min, a_min, tmp));
+      
+    outputs[0]->set_data(i, tmp);
+    nas[0].at(i)
+      .add_input(x, i)
+      .add_output(outputs[0], i);
+  }
+}
+
 Z3_REGISTER_OP(cvm_clip)
   .set_num_inputs(1)
   .set_num_outputs(1)
+  .set_attr_default(CVMClipAttrDefault)
+  .set_forward(CVMClipForward)
+  .set_infer_shape(CVMClipInferShape)
+  .set_infer_precision(CVMClipInferPrecision)
   .set_generator(_cvm_clip_prove);
 
 std::vector<z3_expr> _cvm_right_shift_prove() {
@@ -1142,9 +1403,87 @@ std::vector<z3_expr> _cvm_right_shift_prove() {
   };
 }
 
+static void CVMRightShiftAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "precision");
+  ATTR_DECL(attrs, "shift_bit");
+  ATTR_DEFAULT(attrs, "is_sign", "true");
+}
+
+static void CVMRightShiftInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  oshpes.at(0) = ishpes.at(0);
+}
+
+static void CVMRightShiftInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  
+  std::string const s_min = attrs.dict.at("precision");
+  int a_min = std::atoi(s_min.c_str());
+  std::string const s_max = attrs.dict.at("shift_bit");
+  int a_max = std::atoi(s_min.c_str());
+  
+  VERIFY((a_min >= 1) && (a_min < 33));
+  VERIFY((a_max >= 1) && (a_max < 33));
+  oprecs[0] = a_min; 
+}
+
+static void CVMRightShiftForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& a = inputs.at(0);
+  std::string const str_precision = attrs.dict.at("precision");
+  int precision = std::stoi(str_precision);
+  std::string const str_shift_bit = attrs.dict.at("shift_bit");
+  int b = std::stoi(str_shift_bit);
+ 
+  int32_t a_min = -(((int64_t)1 << (precision-1)) - 1);
+  int32_t a_max = -a_min;
+  auto size = a->Size();
+
+  if (b == 1) {
+    for(uint64_t i = 0; i < size; i++){
+      z3_expr shift_a = (a->at(i) + 1) >> 1;
+      shift_a = op_ite(shift_a > a_max,
+      a_max, op_ite(shift_a < a_min, a_min, shift_a));
+      outputs[0]->set_data(i, shift_a);
+      nas[0].at(i)
+        .add_input(a, i)
+        .add_output(outputs[0], i);
+    }
+  } else {
+    b -= 1;
+    {
+      for(uint64_t i = 0; i < size; i++){
+        z3_expr shift_a = ((a->at(i) >> b) + 1) >> 1;
+        shift_a = op_ite(shift_a > a_max,
+        a_max, op_ite(shift_a < a_min, a_min, shift_a));
+        outputs[0]->set_data(i, shift_a);
+        nas[0].at(i)
+          .add_input(a, i)
+          .add_output(outputs[0], i);
+      }
+    }
+  }
+}
+
 Z3_REGISTER_OP(cvm_right_shift)
   .set_num_inputs(1)
   .set_num_outputs(1)
+  .set_attr_default(CVMRightShiftAttrDefault)
+  .set_forward(CVMRightShiftForward)
+  .set_infer_shape(CVMRightShiftInferShape)
+  .set_infer_precision(CVMRightShiftInferPrecision)
   .set_generator(_cvm_right_shift_prove);
 
 std::vector<z3_expr> _cvm_left_shift_prove() {
@@ -1173,10 +1512,160 @@ std::vector<z3_expr> _cvm_left_shift_prove() {
   };
 }
 
+static void CVMLeftShiftAttrDefault(NodeAttrs& attrs) {
+  ATTR_DECL(attrs, "precision");
+  ATTR_DECL(attrs, "shift_bit");
+  ATTR_DEFAULT(attrs, "is_sign", "true");
+}
+
+static void CVMLeftShiftInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  oshpes.at(0) = ishpes.at(0);
+}
+
+static void CVMLeftShiftInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  
+  std::string const s_min = attrs.dict.at("precision");
+  int a_min = std::atoi(s_min.c_str());
+  std::string const s_max = attrs.dict.at("shift_bit");
+  int a_max = std::atoi(s_min.c_str());
+  
+  VERIFY((a_min >= 1) && (a_min < 33));
+  VERIFY((a_max >= 1) && (a_max < 33));
+  oprecs[0] = a_min; 
+}
+
+static void CVMLeftShiftForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& a = inputs.at(0);
+  std::string const str_precision = attrs.dict.at("precision");
+  int precision = std::stoi(str_precision);
+  std::string const str_shift_bit = attrs.dict.at("shift_bit");
+  int b = std::stoi(str_shift_bit);
+ 
+  int32_t a_min = -(((int64_t)1 << (precision-1)) - 1);
+  int32_t a_max = -a_min;
+  auto size = a->Size();
+
+  for(uint64_t i = 0; i < size; i++){
+    z3_expr shift_a = a->at(i) << b;
+    outputs[0]->set_data(i, type::op_max(type::op_min(shift_a, a_max), a_min));
+    nas[0].at(i)
+      .add_input(a, i)
+      .add_output(outputs[0], i);
+  }
+}
+
 Z3_REGISTER_OP(cvm_left_shift)
   .set_num_inputs(1)
   .set_num_outputs(1)
+  .set_attr_default(CVMLeftShiftAttrDefault)
+  .set_forward(CVMLeftShiftForward)
+  .set_infer_shape(CVMLeftShiftInferShape)
+  .set_infer_precision(CVMLeftShiftInferPrecision)
   .set_generator(_cvm_left_shift_prove);
 
+
+static void AbsForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& x = inputs.at(0);
+
+  for (size_t i = 0; i < x->Size(); ++i) {
+    z3_expr const& v = type::op_abs(x->at(i));
+    outputs[0]->set_data(i, v);
+    nas[0].at(i)
+      .add_input(x, i)
+      .add_output(outputs[0], i);
+  }
+}
+
+static void AbsInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  oshpes[0] = ishpes[0];
+}
+
+static void AbsInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  oprecs.at(0)  = iprecs.at(0); 
+}
+
+Z3_REGISTER_OP(abs)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_forward(AbsForward)
+  .set_infer_shape(AbsInferShape)
+  .set_infer_precision(AbsInferPrecision);
+
+static void CVMPrecisionForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& x = inputs.at(0);
+  TypePtr& y = outputs.at(0);
+
+    for(size_t j = 0; j < x->Size(); j++){
+      z3_expr x_val = x->at(j);
+      z3_expr v = 32;
+      for(int i = 1; i < 32; i++){
+        z3_expr tmp = 1 << i;
+        z3_expr tmpv = int32_t(1) << v;
+        v = op_ite(type::op_abs(x_val) < tmp, op_ite(tmp < tmpv, i, v), v);
+      }
+       outputs[0]->set_data(j, v);
+       nas[0].at(j)
+         .add_input(x, j)
+         .add_output(outputs[0], j);
+    }
+}
+
+static void CVMPrecisionInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  oshpes[0] = ishpes[0];
+}
+
+static void CVMPrecisionInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  for (auto& v : oprecs){
+    v = 6;
+  }
+}
+
+Z3_REGISTER_OP(cvm_precision)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  //.set_forward(CVMPrecisionForward)
+  .set_infer_shape(CVMPrecisionInferShape)
+  .set_infer_precision(CVMPrecisionInferPrecision);
 }
 }
