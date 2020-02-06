@@ -112,6 +112,9 @@ int main() {
   // auto b = Node::CreateVariable<Scalar>("b", 4);
   auto b = Node::CreateVariable<TypeRef>("b", Shape({2, num_inputs}));
   auto c = Node::CreateVariable<TypeRef>("c", Shape({2, 2, 2, 2}));
+  auto d = Node::CreateVariable<TypeRef>("d", Shape({1, 3, 1}));
+  auto e = Node::CreateVariable<TypeRef>("e", Shape({2, 2, 2}));
+  auto f = Node::CreateVariable<TypeRef>("f", Shape({3, 4}));
 
   auto ret = Node::CreateOperator(
     // "dense", "fully-connected", {a, b},
@@ -120,11 +123,32 @@ int main() {
     // "clip", "clip", {a},
     // "flatten", "flt", {a},
     // "repeat", "rpt", {a},
-    "upsampling", "upsampling", {c},
+    //"upsampling", "upsampling", {c},
+    //"concatenate", "concat", {a, b},
+    //"expand_dims", "expdim", {c},
+    //"squeeze", "squeeze", {d},
+    //"transpose", "trp", {e},
     // "tile", "tl", {a},
+    //"slice", "slice", {f},
+    //"reshape", "rsp", {f},
+    "slice_like", "sli", {f, b},
+    //"cvm_clip", "cvmclie", {a},
+    //"abs", "abs", {a},
+    //"cvm_precision", "cvmpre", {a},
+    //"cvm_right_shift", "crs", {a},
+    //"cvm_left_shift", "cls", {a},
+
     unordered_map<string, string>{
     // {"units", "2"},
     // {"use_bias", "false"},
+    //{"axis", "1"},
+    {"precision", "2"},
+    {"shift_bit", "2"},
+    {"begin", "(0, 1)"},
+    {"shape", "(2, 2, 3)"},
+    {"end", "(2,4)"},
+    //{"axis", "(0, 2)"},
+    //{"axes", "(1, 0, 2)"},
     {"repeats", "2"},
     {"reps", "(2,    2,   3,     )"},
     {"a_max", "10"},
