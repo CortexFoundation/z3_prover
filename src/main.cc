@@ -115,6 +115,7 @@ int main() {
   auto d = Node::CreateVariable<TypeRef>("d", Shape({1, 3, 1}));
   auto e = Node::CreateVariable<TypeRef>("e", Shape({2, 2, 2}));
   auto f = Node::CreateVariable<TypeRef>("f", Shape({3, 4}));
+  auto g = Node::CreateVariable<TypeRef>("g", Shape({2, 1}));
 
   auto ret = Node::CreateOperator(
     // "dense", "fully-connected", {a, b},
@@ -131,12 +132,17 @@ int main() {
     // "tile", "tl", {a},
     //"slice", "slice", {f},
     //"reshape", "rsp", {f},
-    "slice_like", "sli", {f, b},
+    //"slice_like", "sli", {f, b},
     //"cvm_clip", "cvmclie", {a},
     //"abs", "abs", {a},
     //"cvm_precision", "cvmpre", {a},
     //"cvm_right_shift", "crs", {a},
     //"cvm_left_shift", "cls", {a},
+    "broadcast_add", "badd", {b, g},
+
+
+
+
 
     unordered_map<string, string>{
     // {"units", "2"},
