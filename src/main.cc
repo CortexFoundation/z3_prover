@@ -138,7 +138,8 @@ int main() {
     //"cvm_precision", "cvmpre", {a},
     //"cvm_right_shift", "crs", {a},
     //"cvm_left_shift", "cls", {a},
-    "broadcast_add", "badd", {b, g},
+    //"broadcast_add", "badd", {b, g},
+    "broadcast_sub", "bsub", {b, g},
 
 
 

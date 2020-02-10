@@ -138,9 +138,85 @@ BIN_PREC_FUNC(prec_sub, a, b) {
   return type::op_max(a, b) + 1;
 };
 
+static void BroadcastSubForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& x = inputs.at(0);
+  TypePtr const& y = inputs.at(1);
+  TypePtr const& z = outputs.at(0);
+  for(uint64_t i = 0; i < z->Size(); ++i){
+    uint64_t o_index = i;
+    int64_t a_index = broadcast_i_index(z->shape, o_index, x->shape, x->ndim(), z->ndim());
+    int64_t b_index = broadcast_i_index(z->shape, o_index, y->shape, y->ndim(), z->ndim());
+    z3_expr const& v = x->at(a_index) - y->at(b_index);
+    outputs[0]->set_data(i, v);
+    nas[0].at(i)
+      .add_input(x, a_index)
+      .add_input(y, b_index)
+      .add_output(outputs[0], i);
+  }
+}
+
+static void BroadcastSubInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 2U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  const auto& lhs = ishpes.at(0);
+  const auto& rhs = ishpes.at(1);
+
+  // avoid pre-mature shape inference.
+  VERIFY (lhs.size() != 0 && rhs.size() != 0);
+
+  if (lhs == rhs) {
+    oshpes[0] = ishpes[0];
+  }
+  
+  
+  Shape out(std::max(lhs.size(), rhs.size()));
+  auto bl = out.size() - lhs.size();
+  auto br = out.size() - rhs.size();
+  for (auto i = 0; i < out.size(); ++i) {
+    auto l = 1, r = 1;
+    if (i >= bl) l = lhs[i - bl];
+    if (i >= br) r = rhs[i - br];
+    if (l != r) {
+      if (l == 0 || r == 0) {
+        out[i] = 0;
+      } else {
+        VERIFY(l == 1 || r == 1)
+          << "operands could not be broadcast together with shapes "
+          << ", l=" << l << ", r=" << r;
+        out[i] = std::max(l, r);
+      }
+    } else {
+      out[i] = l;
+    }
+  }
+  oshpes[0] = out;
+}
+
+static void BroadcastSubInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  VERIFY_EQ(ishpes.size(), 2U);
+  auto max_prec = type::op_max(iprecs.at(0), iprecs.at(1));
+  oprecs.at(0) = max_prec + 1;
+}
+
 Z3_REGISTER_OP(broadcast_sub)
   .set_num_inputs(2)
   .set_num_outputs(1)
+  .set_forward(BroadcastSubForward)
+  .set_infer_shape(BroadcastSubInferShape)
+  .set_infer_precision(BroadcastSubInferPrecision)
   .set_generator(prove_gen(op_sub, prec_sub));
 
 BIN_OP_FUNC(op_mul, a, b) {
