@@ -140,7 +140,8 @@ int main() {
     //"cvm_left_shift", "cls", {a},
     //"broadcast_add", "badd", {b, g},
     // "broadcast_sub", "bsub", {b, g},
-    "broadcast_mul", "bmul", {b, g},
+    //"broadcast_mul", "bmul", {b, g},
+    "broadcast_div", "bdiv", {b, g},
 
 
 
