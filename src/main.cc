@@ -141,7 +141,8 @@ int main() {
     //"broadcast_add", "badd", {b, g},
     // "broadcast_sub", "bsub", {b, g},
     //"broadcast_mul", "bmul", {b, g},
-    "broadcast_div", "bdiv", {b, g},
+    //"broadcast_div", "bdiv", {b, g},
+    "broadcast_max", "bmax", {b, g},
 
 
 
