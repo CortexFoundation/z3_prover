@@ -153,6 +153,9 @@ void Node::infer_precision() {
     iprecs[i] = inputs[i]->prec;
     ishpes[i] = inputs[i]->shape;
   }
+  for (const auto& it : data_) {
+    ishpes.push_back(it->shape);
+  }
   std::vector<z3_expr> oprecs(num_outputs(), z3_expr(0));
   std::vector<NodeAssertions> nas(num_outputs());
   op()->infer_precision(attrs, ishpes, iprecs, oprecs, nas);
