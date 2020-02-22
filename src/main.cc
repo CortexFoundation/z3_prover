@@ -150,8 +150,8 @@ int main() {
     //"max_pool2d", "maxpool", {h},
     //"sum", "sum", {g},
     //"max", "max", {h},
-    "conv2d", "c2d", {i, ii, },
-
+    //"conv2d", "c2d", {i, ii, },
+    "negative", "ngt", {a},
 
 
 
