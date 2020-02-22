@@ -114,7 +114,7 @@ NodeEntry Node::CreateOperator(
   // Set operator attributes default value
   if (p->op()->attr_def != nullptr)
     p->op()->attr_def(p->attrs);
-
+  std::cout << "shenqi " << p->num_inputs() << " " << p->inputs.size() << std::endl;
   VERIFY_EQ(p->num_inputs(), p->inputs.size())
     << "operator " << op_name << "(" << node_name << ") "
     << "inputs' size invalid, Expected " << p->num_inputs()

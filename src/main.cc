@@ -117,6 +117,9 @@ int main() {
   auto f = Node::CreateVariable<TypeRef>("f", Shape({3, 4}));
   auto g = Node::CreateVariable<TypeRef>("g", Shape({2, 1}));
   auto h = Node::CreateVariable<TypeRef>("h", Shape({4, 2, 3, 4}));
+  auto i = Node::CreateVariable<TypeRef>("i", Shape({2, 1, 1, 1}));
+  auto ii = Node::CreateVariable<TypeRef>("ii", Shape({2, 1, 1, 1}));
+  auto iii = Node::CreateVariable<TypeRef>("iii", Shape({2, }));
 
   auto ret = Node::CreateOperator(
     // "dense", "fully-connected", {a, b},
@@ -145,7 +148,9 @@ int main() {
     //"broadcast_div", "bdiv", {b, g},
     //"broadcast_max", "bmax", {b, g},
     //"max_pool2d", "maxpool", {h},
-    "sum", "sum", {h},
+    //"sum", "sum", {g},
+    //"max", "max", {h},
+    "conv2d", "c2d", {i, ii, },
 
 
 
@@ -153,8 +158,10 @@ int main() {
 
     unordered_map<string, string>{
     // {"units", "2"},
-    // {"use_bias", "false"},
-    {"axis", "(1, 2)"},
+    {"use_bias", "false"},
+    {"axis", "(1, )"},
+    {"kernel_size", "(1, 1)"},
+    {"channels", "2"},
     {"pool_size", "(1, 2)"},
     {"precision", "2"},
     {"shift_bit", "2"},
