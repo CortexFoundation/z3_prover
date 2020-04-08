@@ -2,6 +2,8 @@
 #include <fstream>
 #include <unordered_map>
 #include <ctime>
+#include <cstdio>
+#include <cstdlib>
 
 #include "cvm/z3_types.h"
 #include "cvm/op.h"
@@ -100,6 +102,595 @@ void generator_prove() {
   }
 }
 
+void test_dense(){
+  char st[15];
+  for (int i = 1; i < 10; i++){
+    for (int j = 1; j < 10; j++){
+      for (int l = 1; l <= i; l++) {
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({l, j}));
+           sprintf(st, "%d", l);
+           printf("%d %s ??\n",l, st);
+           auto ret = Node::CreateOperator(
+             "dense", "fully-connected", {a, b},
+             unordered_map<string, string>{
+             {"units", st},
+             {"use_bias", "false"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+      }
+    }
+  }
+}
+
+void test_elemwise_add(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+           std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+             "elemwise_add", "eadd", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_relu(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+             "relu", "relu", {a},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_clip(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+             "clip", "clip", {a},
+             unordered_map<string, string>{
+                {"a_max", "10"},
+                {"a_min", "-19"}
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_flatten(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+             "flatten", "flt", {a},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_repeat(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+             "repeat", "rpt", {a},
+             unordered_map<string, string>{
+                {"repeats", "2"}
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_upsampling(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+             "upsampling", "upsampling", {a},
+             unordered_map<string, string>{
+                {"scale", "2"}
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_concatenate(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b  = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+            "concatenate", "concat", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_expand_dims(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+            "expand_dims", "expdim", {a},
+             unordered_map<string, string>{
+                {"axis", "2"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_squeeze(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+            "squeeze", "squeeze", {a},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_transpose(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+            "transpose", "trp", {a},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_tile(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+            "tile", "tl", {a},
+             unordered_map<string, string>{
+              {"reps", "(2,    2,   3,     )"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_slice(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto ret = Node::CreateOperator(
+            "slice", "slice", {a},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_reshape(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "reshape", "rsp", {a},
+             unordered_map<string, string>{
+              {"shape", st},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_cvm_clip(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "cvm_clip", "cvmclip", {a},
+             unordered_map<string, string>{
+                {"a_max", "10"},
+                {"a_min", "-19"},
+                {"precision", "2"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_slice_like(){
+  char st[15];
+  for (int i = 2; i < 3; i++){
+    for (int j = 2; j < 100; j+=13){
+      for (int l = 2; l <= 100; l+=17) {
+        for (int r = 2; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i-1, j-1}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "slice_like", "sli", {a, b},
+             unordered_map<string, string>{
+              {"axis", "(0, 1)"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_abs(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "abs", "abs", {a},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_cvm_right_shift(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "cvm_right_shift", "crs", {a},
+             unordered_map<string, string>{
+              {"precision", "2"},
+              {"shift_bit", "2"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_cvm_left_shift(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "cvm_left_shift", "cls", {a},
+             unordered_map<string, string>{
+              {"precision", "2"},
+              {"shift_bit", "2"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_broadcast_add(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "broadcast_add", "badd", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_broadcast_sub(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "broadcast_sub", "bsub", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_broadcast_mul(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, l, r}));
+           sprintf(st, "(%d, %d, %d)", r, l, i);
+           auto ret = Node::CreateOperator(
+            "broadcast_mul", "bmul", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+  }
+}
+
+void test_broadcast_div(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "broadcast_div", "bdiv", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_broadcast_max(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=13){
+      for (int l = 1; l <= 100; l+=17) {
+        for (int r = 1; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "broadcast_max", "bmax", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void big_test(std::string op_name){
+  if (op_name == "dense"){
+    test_dense(); 
+  }
+  if (op_name == "elemwise_add"){
+    test_elemwise_add();
+  }
+  if (op_name == "relu"){
+    test_relu();
+  }
+  if (op_name == "clip"){
+    test_clip();
+  }
+  if (op_name == "flatten"){
+    test_flatten();
+  }
+  if (op_name == "repeat"){
+    test_repeat();
+  }
+  if (op_name == "upsampling"){
+    test_upsampling();
+  }
+  if (op_name == "concatenate"){
+    test_concatenate();
+  }
+  if (op_name == "expand_dims"){
+    test_expand_dims();
+  }
+  if (op_name == "squeeze"){
+    test_squeeze();
+  }
+  if (op_name == "transpose"){
+    test_transpose();
+  }
+  if (op_name == "tile"){
+    test_tile();
+  }
+  if (op_name == "slice"){
+    test_slice();
+  }
+  if (op_name == "reshape"){
+    test_reshape();
+  }
+  if (op_name == "slice_like"){
+    test_slice_like();
+  }
+  if (op_name == "cvm_clip"){
+    test_cvm_clip();
+  }
+  if (op_name == "abs"){
+    test_abs();
+  }
+  if (op_name == "cvm_right_shift"){
+    test_cvm_right_shift();
+  }
+  if (op_name == "cvm_left_shift"){
+    test_cvm_left_shift();
+  }
+  if (op_name == "broadcast_add"){
+    test_broadcast_add();
+  }
+  if (op_name == "broadcast_sub"){
+    test_broadcast_sub();
+  }
+  if (op_name == "broadcast_mul"){
+    test_broadcast_mul();
+  }
+  if (op_name == "broadcast_div"){
+    test_broadcast_div();
+  }
+  if (op_name == "broadcast_max"){
+    test_broadcast_max();
+  }
+}
+
 int main() {
   // z3_expr_deterministic();
   // return 0;
@@ -107,6 +698,8 @@ int main() {
   // generator_prove();
   // return 0;
 
+  big_test("broadcast_max");
+  return 0;
   int num_inputs = 3;
   auto a = Node::CreateVariable<TypeRef>("a", Shape({2, num_inputs}), 24);
   // auto b = Node::CreateVariable<Scalar>("b", 4);

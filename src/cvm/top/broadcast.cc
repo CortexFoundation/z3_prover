@@ -117,7 +117,7 @@ static void BroadcastAddInferPrecision(
     std::vector<type::z3_expr> &iprecs,
     std::vector<type::z3_expr> &oprecs,
     std::vector<NodeAssertions> &nas) {
-  VERIFY_EQ(ishpes.size(), 2U);
+  VERIFY_EQ(ishpes.size(), 3U);
   auto max_prec = type::op_max(iprecs.at(0), iprecs.at(1));
   oprecs.at(0) = max_prec + 1;
 }
@@ -206,7 +206,7 @@ static void BroadcastSubInferPrecision(
     std::vector<type::z3_expr> &iprecs,
     std::vector<type::z3_expr> &oprecs,
     std::vector<NodeAssertions> &nas) {
-  VERIFY_EQ(ishpes.size(), 2U);
+  VERIFY_EQ(ishpes.size(), 3U);
   auto max_prec = type::op_max(iprecs.at(0), iprecs.at(1));
   oprecs.at(0) = max_prec + 1;
 }
@@ -294,7 +294,7 @@ static void BroadcastMulInferPrecision(
     std::vector<type::z3_expr> &iprecs,
     std::vector<type::z3_expr> &oprecs,
     std::vector<NodeAssertions> &nas) {
-  VERIFY_EQ(ishpes.size(), 2U);
+  VERIFY_EQ(ishpes.size(), 3U);
   auto max_prec = iprecs.at(0) + iprecs.at(1);
   oprecs.at(0) = max_prec + 1;
 }
