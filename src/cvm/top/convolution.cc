@@ -154,9 +154,6 @@ void matrix_mul(std::vector<z3_expr>& a, const std::vector<int>& a_index, TypePt
           for(int k = 0; k < K; k++){
              auto aV = a.at(i * K + k);
                y_sum = y_sum + aV * b.at(k * N + j); 
-               std::cout << yid << " m " << base_index << " o " << y->Size() << std::endl;
-               std::cout << a.size() << " ab " << b.size() << std::endl;
-               std::cout << i * K + k << " kk " << k * N + j << std::endl;
                 if (a_index.at(i * K + k) != -1){
                   nas[0].at(yid)
                     .add_input(w, a_index.at(i * K + k));
@@ -168,7 +165,6 @@ void matrix_mul(std::vector<z3_expr>& a, const std::vector<int>& a_index, TypePt
                 }
              }
          if(use_bias){
-           std::cout << "???" << std::endl;
             y_sum = y_sum + bias->at(i);
             nas[0].at(yid)
             .add_input(bias, i);
@@ -252,7 +248,6 @@ static void Conv2dForward(
     for (auto& it : data_col_index){
       it = -1;
     }
-    std::cout << "initsz " << in_channels * filter_h * filter_w * o_h * o_w << " " << data_col.size() << std::endl; 
     int32_t fn = out_channels * in_channels * filter_h * filter_w;
     std::vector<z3_expr> int8_filter;
     for (int i = 0; i < fn; i++){
@@ -262,7 +257,6 @@ static void Conv2dForward(
     for (auto& it : int8_filter_index){
       it = -1;
     }
-    std::cout << "initsz " << fn << " " << int8_filter.size() << std::endl; 
     for(int32_t i = 0; i < fn; i++){
       int8_filter.at(i) = w->at(i);
       int8_filter_index.at(i) = i;

@@ -102,15 +102,16 @@ void generator_prove() {
   }
 }
 
+
 void test_dense(){
   char st[15];
-  for (int i = 1; i < 10; i++){
-    for (int j = 1; j < 10; j++){
-      for (int l = 1; l <= i; l++) {
+  for (int i = 1; i < 33; i+=13){
+    for (int j = 1; j < 33; j+=11){
+      for (int l = 1; l < 33; l+=17) {
            auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j}));
            auto b = Node::CreateVariable<TypeRef>("b", Shape({l, j}));
            sprintf(st, "%d", l);
-           printf("%d %s ??\n",l, st);
+           printf("%d %d %d\n", i, j, l);
            auto ret = Node::CreateOperator(
              "dense", "fully-connected", {a, b},
              unordered_map<string, string>{
@@ -594,6 +595,33 @@ void test_broadcast_div(){
   }
 }
 
+
+void test_conv2d(){
+  char st[15], st1[15], st2[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 10; j+=3){
+      for (int l = 1; l <= 10; l+=4) {
+        for (int r = 1; r <= 10; r+=2){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           auto b = Node::CreateVariable<TypeRef>("b", Shape({i, j, l, r}));
+           auto c = Node::CreateVariable<TypeRef>("c", Shape({i,}));
+           sprintf(st, "%d", j);
+           sprintf(st1, "(%d, %d)", l, r);
+           auto ret = Node::CreateOperator(
+            "conv2d", "c2d", {a, b, c, },
+             unordered_map<string, string>{
+              {"channels", st},
+              {"kernel_size", st1},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
 void test_broadcast_max(){
   char st[15];
   for (int i = 1; i < 2; i++){
@@ -606,6 +634,71 @@ void test_broadcast_max(){
            sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
            auto ret = Node::CreateOperator(
             "broadcast_max", "bmax", {a, b},
+             unordered_map<string, string>{
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_maxpool2d(){
+  char st[15];
+  for (int i = 4; i < 5; i++){
+    for (int j = 2; j < 100; j+=13){
+      for (int l = 3; l <= 100; l+=17) {
+        for (int r = 4; r <= 100; r+=23){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "max_pool2d", "maxpool", {a},
+             unordered_map<string, string>{
+            {"pool_size", "(1, 2)"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_sum(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=33){
+      for (int l = 1; l <= 100; l+=57) {
+        for (int r = 1; r <= 100; r+=63){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "sum", "sum", {a},
+             unordered_map<string, string>{
+              {"axis", "(1, )"},
+           });
+           for (auto &p : ret.node->provements_generator(true))
+             z3_prover(p.cstr);
+        }
+      }
+    }
+  }
+}
+
+void test_max(){
+  char st[15];
+  for (int i = 1; i < 2; i++){
+    for (int j = 1; j < 100; j+=33){
+      for (int l = 1; l <= 100; l+=57) {
+        for (int r = 1; r <= 100; r+=63){
+          std::cout << i << " " << j << " " << l << " " << r << std::endl;
+           auto a = Node::CreateVariable<TypeRef>("a", Shape({i, j, l, r}));
+           sprintf(st, "(%d, %d, %d, %d)", r, l, j, i);
+           auto ret = Node::CreateOperator(
+            "max", "max", {a},
              unordered_map<string, string>{
            });
            for (auto &p : ret.node->provements_generator(true))
@@ -689,6 +782,18 @@ void big_test(std::string op_name){
   if (op_name == "broadcast_max"){
     test_broadcast_max();
   }
+  if (op_name == "maxpool2d"){
+    test_maxpool2d();
+  }
+  if (op_name == "sum"){
+    test_sum();
+  }
+  if (op_name == "max"){
+    test_max();
+  }
+  if (op_name == "conv2d"){
+    test_conv2d();
+  }
 }
 
 int main() {
@@ -698,7 +803,7 @@ int main() {
   // generator_prove();
   // return 0;
 
-  big_test("broadcast_max");
+  big_test("conv2d");
   return 0;
   int num_inputs = 3;
   auto a = Node::CreateVariable<TypeRef>("a", Shape({2, num_inputs}), 24);

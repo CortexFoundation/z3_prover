@@ -69,7 +69,6 @@ static void SumForward(
   std::vector<int64_t> realAxis = GetRealAxis(axis, exclude, x->ndim());
 
   if(exclude && realAxis.size() == 0){
-    std::cout << "test1" << std::endl; 
     for (size_t i = 0; i < y->Size(); ++i) {
        y->set_data(i, x->at(i));
        nas[0].at(i)
@@ -77,7 +76,6 @@ static void SumForward(
          .add_output(y, i);
      }
   } else if (realAxis.size() == 0) {
-    std::cout << "test2" << std::endl;
     z3_expr tmp = 0;
     for(uint64_t i = 0; i < x->Size(); i++){
       f(tmp, x->at(i));
@@ -86,7 +84,6 @@ static void SumForward(
     nas[0].at(0).add_output(y, 0);
     y->set_data(0, tmp);
   } else {
-    std::cout << "test3" << std::endl;
     std::vector<bool> flag(x->ndim(), false);
     for(uint32_t i = 0; i < realAxis.size(); i++){
       int32_t val = realAxis[i];
@@ -280,9 +277,7 @@ static void MaxForward(
 
 
   std::vector<int64_t> realAxis = GetRealAxis(axis, exclude, x->ndim());
-
   if(exclude && realAxis.size() == 0){
-    std::cout << "test1" << std::endl; 
     for (size_t i = 0; i < y->Size(); ++i) {
        y->set_data(i, x->at(i));
        nas[0].at(i)
@@ -290,16 +285,14 @@ static void MaxForward(
          .add_output(y, i);
      }
   } else if (realAxis.size() == 0) {
-    std::cout << "test2" << std::endl;
     z3_expr tmp = 0;
     for(uint64_t i = 0; i < x->Size(); i++){
       f(tmp, x->at(i));
       nas[0].at(0).add_input(x, i);
     }
-    nas[0].at(0).add_output(y, 0);
     y->set_data(0, tmp);
+    nas[0].at(0).add_output(y, 0);
   } else {
-    std::cout << "test3" << std::endl;
     std::vector<bool> flag(x->ndim(), false);
     for(uint32_t i = 0; i < realAxis.size(); i++){
       int32_t val = realAxis[i];
@@ -385,7 +378,7 @@ static void MaxInferShape(
     return;
   }
   if (r_axes.size() == indim){
-    oshpes.at(0) = Shape(keepdims ? indim : 1);
+    oshpes.at(0) = Shape(keepdims ? indim : 1, 1);
     return; 
   }
   VERIFY(r_axes.size() < indim);
@@ -401,6 +394,7 @@ static void MaxInferShape(
   }
   
   Shape oshape(indim - r_axes.size());
+  std::cout << indim << " " << r_axes.size() << std::endl;
   for (unsigned i = 0, j = 0, k = 0; i < indim; ++i) {
     if (j < r_axes.size() && i == r_axes[j]) {
       ++j;
