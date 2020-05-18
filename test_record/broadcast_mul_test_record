@@ -1,0 +1,1590 @@
+1  1 1
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 811.1s
+1  1 24
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1559.6s
+1  1 47
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 863.247s
+1  1 70
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1016.56s
+1  1 93
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 965.548s
+1  18 1
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 743.809s
+1  18 24
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 656.156s
+1  18 47
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1080.75s
+1  18 70
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1377.8s
+1  18 93
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1153.07s
+1  35 1
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1033.22s
+1  35 24
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1008.48s
+1  35 47
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1250.43s
+1  35 70
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1402.11s
+1  35 93
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 958.876s
+1  52 1
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1061.32s
+1  52 24
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 878.701s
+1  52 47
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1346.92s
+1  52 70
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1363.07s
+1  52 93
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1412.94s
+1  69 1
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1708.63s
+1  69 24
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1071.4s
+1  69 47
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 908.705s
+1  69 70
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 703.994s
+1  69 93
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1199s
+1  86 1
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1057.57s
+1  86 24
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1053.89s
+1  86 47
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1595.36s
+1  86 70
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 957.762s
+1  86 93
+===== Z3_PROVER =====
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun bmul_prec () (_ BitVec 64))
+(declare-fun bmul_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!2 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!4 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec)))))
+      (a!7 (bvsle bmul_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff bmul_prec))))))
+(let ((a!5 (not (and (bvsle a!1 a_0)
+                     a!2
+                     (bvsle #x0000000000000001 a_prec)
+                     (bvsle a_prec #x0000000000000020)
+                     (bvsle a!3 b_0)
+                     a!4
+                     (bvsle #x0000000000000001 b_prec)
+                     (bvsle b_prec #x0000000000000020)
+                     (= bmul_0 (bvmul a_0 b_0))
+                     (= bmul_prec (bvadd #x0000000000000001 a_prec b_prec))
+                     (bvsle #x0000000000000001 bmul_prec)
+                     (bvsle bmul_prec #x0000000000000020)))))
+  (not (or a!5
+           (and (bvsle a!6 bmul_0)
+                a!7
+                (bvsmul_noovfl a_0 b_0)
+                (bvsmul_noudfl a_0 b_0)))))))
+===== END =====
+
+The model is deterministic
+Time: 1330.69s
