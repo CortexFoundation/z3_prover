@@ -1,0 +1,2597 @@
+1 1 1 1
+===== Z3_PROVER =====
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff c_prec)))))
+      (a!6 (bvsle c_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff c_prec)))))
+      (a!7 (bvadd #x0000000000000001
+                  (ite (bvsle (bvadd #x0000000000000001 a_prec b_prec) c_prec)
+                       c_prec
+                       (bvadd #x0000000000000001 a_prec b_prec))))
+      (a!9 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!10 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!11 (not (bvsle (bvadd (bvmul a_0 b_0) c_0) #x0000000000000000)))
+      (a!12 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle c_0 #x0000000000000000))))
+      (a!13 (not (bvsle #x0000000000000000 (bvadd (bvmul a_0 b_0) c_0))))
+      (a!14 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 c_0)))))
+(let ((a!8 (and (bvsle a!1 b_0)
+                a!2
+                (bvsle #x0000000000000001 b_prec)
+                (bvsle b_prec #x0000000000000020)
+                (bvsle a!3 a_0)
+                a!4
+                (bvsle #x0000000000000001 a_prec)
+                (bvsle a_prec #x0000000000000020)
+                (bvsle a!5 c_0)
+                a!6
+                (bvsle #x0000000000000001 c_prec)
+                (bvsle c_prec #x0000000000000020)
+                (= c2d_0 (bvadd (bvmul a_0 b_0) c_0))
+                (= c2d_prec a!7)
+                (bvsle #x0000000000000001 c2d_prec)
+                (bvsle c2d_prec #x0000000000000020))))
+(let ((a!15 (or (not a!8)
+                (and (bvsle a!9 c2d_0)
+                     a!10
+                     (or a!11 (not a!12))
+                     (or a!13 (not a!14))
+                     (bvsmul_noovfl b_0 a_0)
+                     (bvsmul_noudfl b_0 a_0)))))
+  (not a!15)))))
+===== END =====
+
+The model is deterministic
+Time: 950.295s
+1 1 1 3
+===== Z3_PROVER =====
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff c_prec)))))
+      (a!10 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!11 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2) c_0))
+      (a!12 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000002 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000002 a_prec b_prec))))
+      (a!13 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!14 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!15 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!18 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                        #x0000000000000000)))
+      (a!20 (not (bvsle #x0000000000000000
+                        (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!22 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!23 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!16 (not (and (not (bvsle a!15 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!17 (not (and (not (bvsle #x0000000000000000 a!15))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!19 (and a!18 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!21 (and a!20 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!24 (and (bvsle a!13 c2d_0)
+                 a!14
+                 (or a!16 (not (bvsle a!11 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!11)) a!17)
+                 (or (not (bvsle a!15 #x0000000000000000)) (not a!19))
+                 (or (not a!21) (not (bvsle #x0000000000000000 a!15)))
+                 (or a!18 (not a!22))
+                 (or a!20 (not a!23))
+                 (bvsmul_noovfl b_0 a_0)
+                 (bvsmul_noudfl b_0 a_0)
+                 (bvsmul_noovfl b_1 a_1)
+                 (bvsmul_noudfl b_1 a_1)
+                 (bvsmul_noovfl b_2 a_2)
+                 (bvsmul_noudfl b_2 a_2))))
+(let ((a!25 (or (not (and (bvsle a!1 b_0)
+                          a!2
+                          (bvsle #x0000000000000001 b_prec)
+                          (bvsle b_prec #x0000000000000020)
+                          (bvsle a!3 a_0)
+                          a!4
+                          (bvsle #x0000000000000001 a_prec)
+                          (bvsle a_prec #x0000000000000020)
+                          (bvsle a!1 b_1)
+                          a!5
+                          (bvsle a!3 a_1)
+                          a!6
+                          (bvsle a!1 b_2)
+                          a!7
+                          (bvsle a!3 a_2)
+                          a!8
+                          (bvsle a!9 c_0)
+                          a!10
+                          (bvsle #x0000000000000001 c_prec)
+                          (bvsle c_prec #x0000000000000020)
+                          (= c2d_0 a!11)
+                          (= c2d_prec a!12)
+                          (bvsle #x0000000000000001 c2d_prec)
+                          (bvsle c2d_prec #x0000000000000020)))
+                a!24)))
+  (not a!25))))))
+===== END =====
+
+The model is deterministic
+Time: 94521.8s
+1 1 1 5
+===== Z3_PROVER =====
+(declare-fun a_4 () (_ BitVec 64))
+(declare-fun b_4 () (_ BitVec 64))
+(declare-fun a_3 () (_ BitVec 64))
+(declare-fun b_3 () (_ BitVec 64))
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvsle b_3
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!10 (bvsle a_3
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!11 (bvsle b_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!12 (bvsle a_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!13 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!14 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!15 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   c_0))
+      (a!16 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000003 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000003 a_prec b_prec))))
+      (a!17 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!18 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!19 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)))
+      (a!22 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)))
+      (a!25 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!28 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                        #x0000000000000000)))
+      (a!30 (not (bvsle #x0000000000000000
+                        (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!32 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!33 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!20 (not (and (not (bvsle a!19 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!21 (not (and (not (bvsle #x0000000000000000 a!19))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!23 (and (not (bvsle a!22 #x0000000000000000))
+                 (not (bvsle (bvmul a_4 b_4) #x0000000000000000))))
+      (a!24 (and (not (bvsle #x0000000000000000 a!22))
+                 (not (bvsle #x0000000000000000 (bvmul a_4 b_4)))))
+      (a!26 (and (not (bvsle a!25 #x0000000000000000))
+                 (not (bvsle (bvmul a_3 b_3) #x0000000000000000))))
+      (a!27 (and (not (bvsle #x0000000000000000 a!25))
+                 (not (bvsle #x0000000000000000 (bvmul a_3 b_3)))))
+      (a!29 (and a!28 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!31 (and a!30 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!34 (and (bvsle a!17 c2d_0)
+                 a!18
+                 (or a!20 (not (bvsle a!15 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!15)) a!21)
+                 (or (not a!23) (not (bvsle a!19 #x0000000000000000)))
+                 (or (not a!24) (not (bvsle #x0000000000000000 a!19)))
+                 (or (not (bvsle a!22 #x0000000000000000)) (not a!26))
+                 (or (not (bvsle #x0000000000000000 a!22)) (not a!27))
+                 (or (not (bvsle a!25 #x0000000000000000)) (not a!29))
+                 (or (not (bvsle #x0000000000000000 a!25)) (not a!31))
+                 (or (not a!32) a!28)
+                 (or (not a!33) a!30)
+                 (bvsmul_noovfl b_0 a_0)
+                 (bvsmul_noudfl b_0 a_0)
+                 (bvsmul_noovfl b_1 a_1)
+                 (bvsmul_noudfl b_1 a_1)
+                 (bvsmul_noovfl b_2 a_2)
+                 (bvsmul_noudfl b_2 a_2)
+                 (bvsmul_noovfl b_3 a_3)
+                 (bvsmul_noudfl b_3 a_3)
+                 (bvsmul_noovfl b_4 a_4)
+                 (bvsmul_noudfl b_4 a_4))))
+(let ((a!35 (or (not (and (bvsle a!1 b_0)
+                          a!2
+                          (bvsle #x0000000000000001 b_prec)
+                          (bvsle b_prec #x0000000000000020)
+                          (bvsle a!3 a_0)
+                          a!4
+                          (bvsle #x0000000000000001 a_prec)
+                          (bvsle a_prec #x0000000000000020)
+                          (bvsle a!1 b_1)
+                          a!5
+                          (bvsle a!3 a_1)
+                          a!6
+                          (bvsle a!1 b_2)
+                          a!7
+                          (bvsle a!3 a_2)
+                          a!8
+                          (bvsle a!1 b_3)
+                          a!9
+                          (bvsle a!3 a_3)
+                          a!10
+                          (bvsle a!1 b_4)
+                          a!11
+                          (bvsle a!3 a_4)
+                          a!12
+                          (bvsle a!13 c_0)
+                          a!14
+                          (bvsle #x0000000000000001 c_prec)
+                          (bvsle c_prec #x0000000000000020)
+                          (= c2d_0 a!15)
+                          (= c2d_prec a!16)
+                          (bvsle #x0000000000000001 c2d_prec)
+                          (bvsle c2d_prec #x0000000000000020)))
+                a!34)))
+  (not a!35))))))
+===== END =====
+
+The model is unprovable
+Time: 339172s
+1 1 1 7
+===== Z3_PROVER =====
+(declare-fun a_6 () (_ BitVec 64))
+(declare-fun b_6 () (_ BitVec 64))
+(declare-fun a_5 () (_ BitVec 64))
+(declare-fun b_5 () (_ BitVec 64))
+(declare-fun a_4 () (_ BitVec 64))
+(declare-fun b_4 () (_ BitVec 64))
+(declare-fun a_3 () (_ BitVec 64))
+(declare-fun b_3 () (_ BitVec 64))
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvsle b_3
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!10 (bvsle a_3
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!11 (bvsle b_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!12 (bvsle a_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!13 (bvsle b_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!14 (bvsle a_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!15 (bvsle b_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!16 (bvsle a_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!17 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!18 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!19 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   c_0))
+      (a!20 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000003 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000003 a_prec b_prec))))
+      (a!21 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!22 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!23 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)))
+      (a!26 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)))
+      (a!29 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)))
+      (a!32 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)))
+      (a!35 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!38 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                        #x0000000000000000)))
+      (a!40 (not (bvsle #x0000000000000000
+                        (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!42 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!43 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!24 (not (and (not (bvsle a!23 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!25 (not (and (not (bvsle #x0000000000000000 a!23))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!27 (and (not (bvsle a!26 #x0000000000000000))
+                 (not (bvsle (bvmul a_6 b_6) #x0000000000000000))))
+      (a!28 (and (not (bvsle #x0000000000000000 a!26))
+                 (not (bvsle #x0000000000000000 (bvmul a_6 b_6)))))
+      (a!30 (and (not (bvsle a!29 #x0000000000000000))
+                 (not (bvsle (bvmul a_5 b_5) #x0000000000000000))))
+      (a!31 (and (not (bvsle #x0000000000000000 a!29))
+                 (not (bvsle #x0000000000000000 (bvmul a_5 b_5)))))
+      (a!33 (and (not (bvsle a!32 #x0000000000000000))
+                 (not (bvsle (bvmul a_4 b_4) #x0000000000000000))))
+      (a!34 (and (not (bvsle #x0000000000000000 a!32))
+                 (not (bvsle #x0000000000000000 (bvmul a_4 b_4)))))
+      (a!36 (and (not (bvsle a!35 #x0000000000000000))
+                 (not (bvsle (bvmul a_3 b_3) #x0000000000000000))))
+      (a!37 (and (not (bvsle #x0000000000000000 a!35))
+                 (not (bvsle #x0000000000000000 (bvmul a_3 b_3)))))
+      (a!39 (and a!38 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!41 (and a!40 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!44 (and (bvsle a!21 c2d_0)
+                 a!22
+                 (or a!24 (not (bvsle a!19 #x0000000000000000)))
+                 (or a!25 (not (bvsle #x0000000000000000 a!19)))
+                 (or (not a!27) (not (bvsle a!23 #x0000000000000000)))
+                 (or (not a!28) (not (bvsle #x0000000000000000 a!23)))
+                 (or (not a!30) (not (bvsle a!26 #x0000000000000000)))
+                 (or (not a!31) (not (bvsle #x0000000000000000 a!26)))
+                 (or (not a!33) (not (bvsle a!29 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!29)) (not a!34))
+                 (or (not (bvsle a!32 #x0000000000000000)) (not a!36))
+                 (or (not a!37) (not (bvsle #x0000000000000000 a!32)))
+                 (or (not a!39) (not (bvsle a!35 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!35)) (not a!41))
+                 (or (not a!42) a!38)
+                 (or a!40 (not a!43))
+                 (bvsmul_noovfl b_0 a_0)
+                 (bvsmul_noudfl b_0 a_0)
+                 (bvsmul_noovfl b_1 a_1)
+                 (bvsmul_noudfl b_1 a_1)
+                 (bvsmul_noovfl b_2 a_2)
+                 (bvsmul_noudfl b_2 a_2)
+                 (bvsmul_noovfl b_3 a_3)
+                 (bvsmul_noudfl b_3 a_3)
+                 (bvsmul_noovfl b_4 a_4)
+                 (bvsmul_noudfl b_4 a_4)
+                 (bvsmul_noovfl b_5 a_5)
+                 (bvsmul_noudfl b_5 a_5)
+                 (bvsmul_noovfl b_6 a_6)
+                 (bvsmul_noudfl b_6 a_6))))
+(let ((a!45 (or (not (and (bvsle a!1 b_0)
+                          a!2
+                          (bvsle #x0000000000000001 b_prec)
+                          (bvsle b_prec #x0000000000000020)
+                          (bvsle a!3 a_0)
+                          a!4
+                          (bvsle #x0000000000000001 a_prec)
+                          (bvsle a_prec #x0000000000000020)
+                          (bvsle a!1 b_1)
+                          a!5
+                          (bvsle a!3 a_1)
+                          a!6
+                          (bvsle a!1 b_2)
+                          a!7
+                          (bvsle a!3 a_2)
+                          a!8
+                          (bvsle a!1 b_3)
+                          a!9
+                          (bvsle a!3 a_3)
+                          a!10
+                          (bvsle a!1 b_4)
+                          a!11
+                          (bvsle a!3 a_4)
+                          a!12
+                          (bvsle a!1 b_5)
+                          a!13
+                          (bvsle a!3 a_5)
+                          a!14
+                          (bvsle a!1 b_6)
+                          a!15
+                          (bvsle a!3 a_6)
+                          a!16
+                          (bvsle a!17 c_0)
+                          a!18
+                          (bvsle #x0000000000000001 c_prec)
+                          (bvsle c_prec #x0000000000000020)
+                          (= c2d_0 a!19)
+                          (= c2d_prec a!20)
+                          (bvsle #x0000000000000001 c2d_prec)
+                          (bvsle c2d_prec #x0000000000000020)))
+                a!44)))
+  (not a!45))))))
+===== END =====
+
+The model is unprovable
+Time: 0.048215s
+1 1 1 9
+===== Z3_PROVER =====
+(declare-fun a_8 () (_ BitVec 64))
+(declare-fun b_8 () (_ BitVec 64))
+(declare-fun a_7 () (_ BitVec 64))
+(declare-fun b_7 () (_ BitVec 64))
+(declare-fun a_6 () (_ BitVec 64))
+(declare-fun b_6 () (_ BitVec 64))
+(declare-fun a_5 () (_ BitVec 64))
+(declare-fun b_5 () (_ BitVec 64))
+(declare-fun a_4 () (_ BitVec 64))
+(declare-fun b_4 () (_ BitVec 64))
+(declare-fun a_3 () (_ BitVec 64))
+(declare-fun b_3 () (_ BitVec 64))
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvsle b_3
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!10 (bvsle a_3
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!11 (bvsle b_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!12 (bvsle a_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!13 (bvsle b_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!14 (bvsle a_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!15 (bvsle b_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!16 (bvsle a_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!17 (bvsle b_7
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!18 (bvsle a_7
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!19 (bvsle b_8
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!20 (bvsle a_8
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!21 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!22 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!23 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   c_0))
+      (a!24 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000004 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000004 a_prec b_prec))))
+      (a!25 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!26 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!27 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)))
+      (a!30 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)))
+      (a!33 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)))
+      (a!36 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)))
+      (a!39 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)))
+      (a!42 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)))
+      (a!45 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!48 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                        #x0000000000000000)))
+      (a!50 (not (bvsle #x0000000000000000
+                        (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!52 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!53 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!28 (not (and (not (bvsle a!27 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!29 (not (and (not (bvsle #x0000000000000000 a!27))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!31 (and (not (bvsle a!30 #x0000000000000000))
+                 (not (bvsle (bvmul a_8 b_8) #x0000000000000000))))
+      (a!32 (and (not (bvsle #x0000000000000000 a!30))
+                 (not (bvsle #x0000000000000000 (bvmul a_8 b_8)))))
+      (a!34 (and (not (bvsle a!33 #x0000000000000000))
+                 (not (bvsle (bvmul a_7 b_7) #x0000000000000000))))
+      (a!35 (and (not (bvsle #x0000000000000000 a!33))
+                 (not (bvsle #x0000000000000000 (bvmul a_7 b_7)))))
+      (a!37 (and (not (bvsle a!36 #x0000000000000000))
+                 (not (bvsle (bvmul a_6 b_6) #x0000000000000000))))
+      (a!38 (and (not (bvsle #x0000000000000000 a!36))
+                 (not (bvsle #x0000000000000000 (bvmul a_6 b_6)))))
+      (a!40 (and (not (bvsle a!39 #x0000000000000000))
+                 (not (bvsle (bvmul a_5 b_5) #x0000000000000000))))
+      (a!41 (and (not (bvsle #x0000000000000000 a!39))
+                 (not (bvsle #x0000000000000000 (bvmul a_5 b_5)))))
+      (a!43 (and (not (bvsle a!42 #x0000000000000000))
+                 (not (bvsle (bvmul a_4 b_4) #x0000000000000000))))
+      (a!44 (and (not (bvsle #x0000000000000000 a!42))
+                 (not (bvsle #x0000000000000000 (bvmul a_4 b_4)))))
+      (a!46 (and (not (bvsle a!45 #x0000000000000000))
+                 (not (bvsle (bvmul a_3 b_3) #x0000000000000000))))
+      (a!47 (and (not (bvsle #x0000000000000000 a!45))
+                 (not (bvsle #x0000000000000000 (bvmul a_3 b_3)))))
+      (a!49 (and a!48 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!51 (and a!50 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!54 (and (bvsle a!25 c2d_0)
+                 a!26
+                 (or a!28 (not (bvsle a!23 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!23)) a!29)
+                 (or (not a!31) (not (bvsle a!27 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!27)) (not a!32))
+                 (or (not (bvsle a!30 #x0000000000000000)) (not a!34))
+                 (or (not (bvsle #x0000000000000000 a!30)) (not a!35))
+                 (or (not a!37) (not (bvsle a!33 #x0000000000000000)))
+                 (or (not a!38) (not (bvsle #x0000000000000000 a!33)))
+                 (or (not (bvsle a!36 #x0000000000000000)) (not a!40))
+                 (or (not a!41) (not (bvsle #x0000000000000000 a!36)))
+                 (or (not a!43) (not (bvsle a!39 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!39)) (not a!44))
+                 (or (not a!46) (not (bvsle a!42 #x0000000000000000)))
+                 (or (not a!47) (not (bvsle #x0000000000000000 a!42)))
+                 (or (not (bvsle a!45 #x0000000000000000)) (not a!49))
+                 (or (not a!51) (not (bvsle #x0000000000000000 a!45)))
+                 (or (not a!52) a!48)
+                 (or (not a!53) a!50)
+                 (bvsmul_noovfl b_0 a_0)
+                 (bvsmul_noudfl b_0 a_0)
+                 (bvsmul_noovfl b_1 a_1)
+                 (bvsmul_noudfl b_1 a_1)
+                 (bvsmul_noovfl b_2 a_2)
+                 (bvsmul_noudfl b_2 a_2)
+                 (bvsmul_noovfl b_3 a_3)
+                 (bvsmul_noudfl b_3 a_3)
+                 (bvsmul_noovfl b_4 a_4)
+                 (bvsmul_noudfl b_4 a_4)
+                 (bvsmul_noovfl b_5 a_5)
+                 (bvsmul_noudfl b_5 a_5)
+                 (bvsmul_noovfl b_6 a_6)
+                 (bvsmul_noudfl b_6 a_6)
+                 (bvsmul_noovfl b_7 a_7)
+                 (bvsmul_noudfl b_7 a_7)
+                 (bvsmul_noovfl b_8 a_8)
+                 (bvsmul_noudfl b_8 a_8))))
+(let ((a!55 (or (not (and (bvsle a!1 b_0)
+                          a!2
+                          (bvsle #x0000000000000001 b_prec)
+                          (bvsle b_prec #x0000000000000020)
+                          (bvsle a!3 a_0)
+                          a!4
+                          (bvsle #x0000000000000001 a_prec)
+                          (bvsle a_prec #x0000000000000020)
+                          (bvsle a!1 b_1)
+                          a!5
+                          (bvsle a!3 a_1)
+                          a!6
+                          (bvsle a!1 b_2)
+                          a!7
+                          (bvsle a!3 a_2)
+                          a!8
+                          (bvsle a!1 b_3)
+                          a!9
+                          (bvsle a!3 a_3)
+                          a!10
+                          (bvsle a!1 b_4)
+                          a!11
+                          (bvsle a!3 a_4)
+                          a!12
+                          (bvsle a!1 b_5)
+                          a!13
+                          (bvsle a!3 a_5)
+                          a!14
+                          (bvsle a!1 b_6)
+                          a!15
+                          (bvsle a!3 a_6)
+                          a!16
+                          (bvsle a!1 b_7)
+                          a!17
+                          (bvsle a!3 a_7)
+                          a!18
+                          (bvsle a!1 b_8)
+                          a!19
+                          (bvsle a!3 a_8)
+                          a!20
+                          (bvsle a!21 c_0)
+                          a!22
+                          (bvsle #x0000000000000001 c_prec)
+                          (bvsle c_prec #x0000000000000020)
+                          (= c2d_0 a!23)
+                          (= c2d_prec a!24)
+                          (bvsle #x0000000000000001 c2d_prec)
+                          (bvsle c2d_prec #x0000000000000020)))
+                a!54)))
+  (not a!55))))))
+===== END =====
+
+The model is unprovable
+Time: 0.225469s
+1 1 5 1
+===== Z3_PROVER =====
+(declare-fun a_4 () (_ BitVec 64))
+(declare-fun b_4 () (_ BitVec 64))
+(declare-fun a_3 () (_ BitVec 64))
+(declare-fun b_3 () (_ BitVec 64))
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvsle b_3
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!10 (bvsle a_3
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!11 (bvsle b_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!12 (bvsle a_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!13 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!14 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!15 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   c_0))
+      (a!16 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000003 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000003 a_prec b_prec))))
+      (a!17 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!18 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!19 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)))
+      (a!22 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)))
+      (a!25 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!28 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                        #x0000000000000000)))
+      (a!30 (not (bvsle #x0000000000000000
+                        (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!32 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!33 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!20 (not (and (not (bvsle a!19 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!21 (not (and (not (bvsle #x0000000000000000 a!19))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!23 (and (not (bvsle a!22 #x0000000000000000))
+                 (not (bvsle (bvmul a_4 b_4) #x0000000000000000))))
+      (a!24 (and (not (bvsle #x0000000000000000 a!22))
+                 (not (bvsle #x0000000000000000 (bvmul a_4 b_4)))))
+      (a!26 (and (not (bvsle a!25 #x0000000000000000))
+                 (not (bvsle (bvmul a_3 b_3) #x0000000000000000))))
+      (a!27 (and (not (bvsle #x0000000000000000 a!25))
+                 (not (bvsle #x0000000000000000 (bvmul a_3 b_3)))))
+      (a!29 (and a!28 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!31 (and a!30 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!34 (and (bvsle a!17 c2d_0)
+                 a!18
+                 (or a!20 (not (bvsle a!15 #x0000000000000000)))
+                 (or a!21 (not (bvsle #x0000000000000000 a!15)))
+                 (or (not (bvsle a!19 #x0000000000000000)) (not a!23))
+                 (or (not (bvsle #x0000000000000000 a!19)) (not a!24))
+                 (or (not (bvsle a!22 #x0000000000000000)) (not a!26))
+                 (or (not (bvsle #x0000000000000000 a!22)) (not a!27))
+                 (or (not (bvsle a!25 #x0000000000000000)) (not a!29))
+                 (or (not a!31) (not (bvsle #x0000000000000000 a!25)))
+                 (or a!28 (not a!32))
+                 (or a!30 (not a!33))
+                 (bvsmul_noovfl b_0 a_0)
+                 (bvsmul_noudfl b_0 a_0)
+                 (bvsmul_noovfl b_1 a_1)
+                 (bvsmul_noudfl b_1 a_1)
+                 (bvsmul_noovfl b_2 a_2)
+                 (bvsmul_noudfl b_2 a_2)
+                 (bvsmul_noovfl b_3 a_3)
+                 (bvsmul_noudfl b_3 a_3)
+                 (bvsmul_noovfl b_4 a_4)
+                 (bvsmul_noudfl b_4 a_4))))
+(let ((a!35 (or (not (and (bvsle a!1 b_0)
+                          a!2
+                          (bvsle #x0000000000000001 b_prec)
+                          (bvsle b_prec #x0000000000000020)
+                          (bvsle a!3 a_0)
+                          a!4
+                          (bvsle #x0000000000000001 a_prec)
+                          (bvsle a_prec #x0000000000000020)
+                          (bvsle a!1 b_1)
+                          a!5
+                          (bvsle a!3 a_1)
+                          a!6
+                          (bvsle a!1 b_2)
+                          a!7
+                          (bvsle a!3 a_2)
+                          a!8
+                          (bvsle a!1 b_3)
+                          a!9
+                          (bvsle a!3 a_3)
+                          a!10
+                          (bvsle a!1 b_4)
+                          a!11
+                          (bvsle a!3 a_4)
+                          a!12
+                          (bvsle a!13 c_0)
+                          a!14
+                          (bvsle #x0000000000000001 c_prec)
+                          (bvsle c_prec #x0000000000000020)
+                          (= c2d_0 a!15)
+                          (= c2d_prec a!16)
+                          (bvsle #x0000000000000001 c2d_prec)
+                          (bvsle c2d_prec #x0000000000000020)))
+                a!34)))
+  (not a!35))))))
+===== END =====
+
+The model is unprovable
+Time: 0.193305s
+1 1 5 3
+===== Z3_PROVER =====
+(declare-fun a_14 () (_ BitVec 64))
+(declare-fun b_14 () (_ BitVec 64))
+(declare-fun a_13 () (_ BitVec 64))
+(declare-fun b_13 () (_ BitVec 64))
+(declare-fun a_12 () (_ BitVec 64))
+(declare-fun b_12 () (_ BitVec 64))
+(declare-fun a_11 () (_ BitVec 64))
+(declare-fun b_11 () (_ BitVec 64))
+(declare-fun a_10 () (_ BitVec 64))
+(declare-fun b_10 () (_ BitVec 64))
+(declare-fun a_9 () (_ BitVec 64))
+(declare-fun b_9 () (_ BitVec 64))
+(declare-fun a_8 () (_ BitVec 64))
+(declare-fun b_8 () (_ BitVec 64))
+(declare-fun a_7 () (_ BitVec 64))
+(declare-fun b_7 () (_ BitVec 64))
+(declare-fun a_6 () (_ BitVec 64))
+(declare-fun b_6 () (_ BitVec 64))
+(declare-fun a_5 () (_ BitVec 64))
+(declare-fun b_5 () (_ BitVec 64))
+(declare-fun a_4 () (_ BitVec 64))
+(declare-fun b_4 () (_ BitVec 64))
+(declare-fun a_3 () (_ BitVec 64))
+(declare-fun b_3 () (_ BitVec 64))
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvsle b_3
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!10 (bvsle a_3
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!11 (bvsle b_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!12 (bvsle a_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!13 (bvsle b_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!14 (bvsle a_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!15 (bvsle b_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!16 (bvsle a_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!17 (bvsle b_7
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!18 (bvsle a_7
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!19 (bvsle b_8
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!20 (bvsle a_8
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!21 (bvsle b_9
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!22 (bvsle a_9
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!23 (bvsle b_10
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!24 (bvsle a_10
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!25 (bvsle b_11
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!26 (bvsle a_11
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!27 (bvsle b_12
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!28 (bvsle a_12
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!29 (bvsle b_13
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!30 (bvsle a_13
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!31 (bvsle b_14
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!32 (bvsle a_14
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!33 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!34 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!35 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   c_0))
+      (a!36 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000004 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000004 a_prec b_prec))))
+      (a!37 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!38 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!39 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)))
+      (a!42 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)))
+      (a!45 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)))
+      (a!48 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)))
+      (a!51 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)))
+      (a!54 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)))
+      (a!57 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)))
+      (a!60 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)))
+      (a!63 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)))
+      (a!66 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)))
+      (a!69 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)))
+      (a!72 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)))
+      (a!75 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!78 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                        #x0000000000000000)))
+      (a!80 (not (bvsle #x0000000000000000
+                        (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!82 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                 (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!83 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                 (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!40 (not (and (not (bvsle a!39 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!41 (not (and (not (bvsle #x0000000000000000 a!39))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!43 (and (not (bvsle a!42 #x0000000000000000))
+                 (not (bvsle (bvmul a_14 b_14) #x0000000000000000))))
+      (a!44 (and (not (bvsle #x0000000000000000 a!42))
+                 (not (bvsle #x0000000000000000 (bvmul a_14 b_14)))))
+      (a!46 (and (not (bvsle a!45 #x0000000000000000))
+                 (not (bvsle (bvmul a_13 b_13) #x0000000000000000))))
+      (a!47 (and (not (bvsle #x0000000000000000 a!45))
+                 (not (bvsle #x0000000000000000 (bvmul a_13 b_13)))))
+      (a!49 (and (not (bvsle a!48 #x0000000000000000))
+                 (not (bvsle (bvmul a_12 b_12) #x0000000000000000))))
+      (a!50 (and (not (bvsle #x0000000000000000 a!48))
+                 (not (bvsle #x0000000000000000 (bvmul a_12 b_12)))))
+      (a!52 (and (not (bvsle a!51 #x0000000000000000))
+                 (not (bvsle (bvmul a_11 b_11) #x0000000000000000))))
+      (a!53 (and (not (bvsle #x0000000000000000 a!51))
+                 (not (bvsle #x0000000000000000 (bvmul a_11 b_11)))))
+      (a!55 (and (not (bvsle a!54 #x0000000000000000))
+                 (not (bvsle (bvmul a_10 b_10) #x0000000000000000))))
+      (a!56 (and (not (bvsle #x0000000000000000 a!54))
+                 (not (bvsle #x0000000000000000 (bvmul a_10 b_10)))))
+      (a!58 (and (not (bvsle a!57 #x0000000000000000))
+                 (not (bvsle (bvmul a_9 b_9) #x0000000000000000))))
+      (a!59 (and (not (bvsle #x0000000000000000 a!57))
+                 (not (bvsle #x0000000000000000 (bvmul a_9 b_9)))))
+      (a!61 (and (not (bvsle a!60 #x0000000000000000))
+                 (not (bvsle (bvmul a_8 b_8) #x0000000000000000))))
+      (a!62 (and (not (bvsle #x0000000000000000 a!60))
+                 (not (bvsle #x0000000000000000 (bvmul a_8 b_8)))))
+      (a!64 (and (not (bvsle a!63 #x0000000000000000))
+                 (not (bvsle (bvmul a_7 b_7) #x0000000000000000))))
+      (a!65 (and (not (bvsle #x0000000000000000 a!63))
+                 (not (bvsle #x0000000000000000 (bvmul a_7 b_7)))))
+      (a!67 (and (not (bvsle a!66 #x0000000000000000))
+                 (not (bvsle (bvmul a_6 b_6) #x0000000000000000))))
+      (a!68 (and (not (bvsle #x0000000000000000 a!66))
+                 (not (bvsle #x0000000000000000 (bvmul a_6 b_6)))))
+      (a!70 (and (not (bvsle a!69 #x0000000000000000))
+                 (not (bvsle (bvmul a_5 b_5) #x0000000000000000))))
+      (a!71 (and (not (bvsle #x0000000000000000 a!69))
+                 (not (bvsle #x0000000000000000 (bvmul a_5 b_5)))))
+      (a!73 (and (not (bvsle a!72 #x0000000000000000))
+                 (not (bvsle (bvmul a_4 b_4) #x0000000000000000))))
+      (a!74 (and (not (bvsle #x0000000000000000 a!72))
+                 (not (bvsle #x0000000000000000 (bvmul a_4 b_4)))))
+      (a!76 (and (not (bvsle a!75 #x0000000000000000))
+                 (not (bvsle (bvmul a_3 b_3) #x0000000000000000))))
+      (a!77 (and (not (bvsle #x0000000000000000 a!75))
+                 (not (bvsle #x0000000000000000 (bvmul a_3 b_3)))))
+      (a!79 (and a!78 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!81 (and a!80 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!84 (and (bvsle a!37 c2d_0)
+                 a!38
+                 (or a!40 (not (bvsle a!35 #x0000000000000000)))
+                 (or a!41 (not (bvsle #x0000000000000000 a!35)))
+                 (or (not (bvsle a!39 #x0000000000000000)) (not a!43))
+                 (or (not (bvsle #x0000000000000000 a!39)) (not a!44))
+                 (or (not (bvsle a!42 #x0000000000000000)) (not a!46))
+                 (or (not (bvsle #x0000000000000000 a!42)) (not a!47))
+                 (or (not a!49) (not (bvsle a!45 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!45)) (not a!50))
+                 (or (not a!52) (not (bvsle a!48 #x0000000000000000)))
+                 (or (not a!53) (not (bvsle #x0000000000000000 a!48)))
+                 (or (not (bvsle a!51 #x0000000000000000)) (not a!55))
+                 (or (not a!56) (not (bvsle #x0000000000000000 a!51)))
+                 (or (not a!58) (not (bvsle a!54 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!54)) (not a!59))
+                 (or (not (bvsle a!57 #x0000000000000000)) (not a!61))
+                 (or (not a!62) (not (bvsle #x0000000000000000 a!57)))
+                 (or (not (bvsle a!60 #x0000000000000000)) (not a!64))
+                 (or (not a!65) (not (bvsle #x0000000000000000 a!60)))
+                 (or (not a!67) (not (bvsle a!63 #x0000000000000000)))
+                 (or (not a!68) (not (bvsle #x0000000000000000 a!63)))
+                 (or (not (bvsle a!66 #x0000000000000000)) (not a!70))
+                 (or (not a!71) (not (bvsle #x0000000000000000 a!66)))
+                 (or (not (bvsle a!69 #x0000000000000000)) (not a!73))
+                 (or (not (bvsle #x0000000000000000 a!69)) (not a!74))
+                 (or (not a!76) (not (bvsle a!72 #x0000000000000000)))
+                 (or (not (bvsle #x0000000000000000 a!72)) (not a!77))
+                 (or (not a!79) (not (bvsle a!75 #x0000000000000000)))
+                 (or (not a!81) (not (bvsle #x0000000000000000 a!75)))
+                 (or a!78 (not a!82))
+                 (or (not a!83) a!80)
+                 (bvsmul_noovfl b_0 a_0)
+                 (bvsmul_noudfl b_0 a_0)
+                 (bvsmul_noovfl b_1 a_1)
+                 (bvsmul_noudfl b_1 a_1)
+                 (bvsmul_noovfl b_2 a_2)
+                 (bvsmul_noudfl b_2 a_2)
+                 (bvsmul_noovfl b_3 a_3)
+                 (bvsmul_noudfl b_3 a_3)
+                 (bvsmul_noovfl b_4 a_4)
+                 (bvsmul_noudfl b_4 a_4)
+                 (bvsmul_noovfl b_5 a_5)
+                 (bvsmul_noudfl b_5 a_5)
+                 (bvsmul_noovfl b_6 a_6)
+                 (bvsmul_noudfl b_6 a_6)
+                 (bvsmul_noovfl b_7 a_7)
+                 (bvsmul_noudfl b_7 a_7)
+                 (bvsmul_noovfl b_8 a_8)
+                 (bvsmul_noudfl b_8 a_8)
+                 (bvsmul_noovfl b_9 a_9)
+                 (bvsmul_noudfl b_9 a_9)
+                 (bvsmul_noovfl b_10 a_10)
+                 (bvsmul_noudfl b_10 a_10)
+                 (bvsmul_noovfl b_11 a_11)
+                 (bvsmul_noudfl b_11 a_11)
+                 (bvsmul_noovfl b_12 a_12)
+                 (bvsmul_noudfl b_12 a_12)
+                 (bvsmul_noovfl b_13 a_13)
+                 (bvsmul_noudfl b_13 a_13)
+                 (bvsmul_noovfl b_14 a_14)
+                 (bvsmul_noudfl b_14 a_14))))
+(let ((a!85 (or (not (and (bvsle a!1 b_0)
+                          a!2
+                          (bvsle #x0000000000000001 b_prec)
+                          (bvsle b_prec #x0000000000000020)
+                          (bvsle a!3 a_0)
+                          a!4
+                          (bvsle #x0000000000000001 a_prec)
+                          (bvsle a_prec #x0000000000000020)
+                          (bvsle a!1 b_1)
+                          a!5
+                          (bvsle a!3 a_1)
+                          a!6
+                          (bvsle a!1 b_2)
+                          a!7
+                          (bvsle a!3 a_2)
+                          a!8
+                          (bvsle a!1 b_3)
+                          a!9
+                          (bvsle a!3 a_3)
+                          a!10
+                          (bvsle a!1 b_4)
+                          a!11
+                          (bvsle a!3 a_4)
+                          a!12
+                          (bvsle a!1 b_5)
+                          a!13
+                          (bvsle a!3 a_5)
+                          a!14
+                          (bvsle a!1 b_6)
+                          a!15
+                          (bvsle a!3 a_6)
+                          a!16
+                          (bvsle a!1 b_7)
+                          a!17
+                          (bvsle a!3 a_7)
+                          a!18
+                          (bvsle a!1 b_8)
+                          a!19
+                          (bvsle a!3 a_8)
+                          a!20
+                          (bvsle a!1 b_9)
+                          a!21
+                          (bvsle a!3 a_9)
+                          a!22
+                          (bvsle a!1 b_10)
+                          a!23
+                          (bvsle a!3 a_10)
+                          a!24
+                          (bvsle a!1 b_11)
+                          a!25
+                          (bvsle a!3 a_11)
+                          a!26
+                          (bvsle a!1 b_12)
+                          a!27
+                          (bvsle a!3 a_12)
+                          a!28
+                          (bvsle a!1 b_13)
+                          a!29
+                          (bvsle a!3 a_13)
+                          a!30
+                          (bvsle a!1 b_14)
+                          a!31
+                          (bvsle a!3 a_14)
+                          a!32
+                          (bvsle a!33 c_0)
+                          a!34
+                          (bvsle #x0000000000000001 c_prec)
+                          (bvsle c_prec #x0000000000000020)
+                          (= c2d_0 a!35)
+                          (= c2d_prec a!36)
+                          (bvsle #x0000000000000001 c2d_prec)
+                          (bvsle c2d_prec #x0000000000000020)))
+                a!84)))
+  (not a!85))))))
+===== END =====
+
+The model is unprovable
+Time: 0.060299s
+1 1 5 5
+===== Z3_PROVER =====
+(declare-fun a_24 () (_ BitVec 64))
+(declare-fun b_24 () (_ BitVec 64))
+(declare-fun a_23 () (_ BitVec 64))
+(declare-fun b_23 () (_ BitVec 64))
+(declare-fun a_22 () (_ BitVec 64))
+(declare-fun b_22 () (_ BitVec 64))
+(declare-fun a_21 () (_ BitVec 64))
+(declare-fun b_21 () (_ BitVec 64))
+(declare-fun a_20 () (_ BitVec 64))
+(declare-fun b_20 () (_ BitVec 64))
+(declare-fun a_19 () (_ BitVec 64))
+(declare-fun b_19 () (_ BitVec 64))
+(declare-fun a_18 () (_ BitVec 64))
+(declare-fun b_18 () (_ BitVec 64))
+(declare-fun a_17 () (_ BitVec 64))
+(declare-fun b_17 () (_ BitVec 64))
+(declare-fun a_16 () (_ BitVec 64))
+(declare-fun b_16 () (_ BitVec 64))
+(declare-fun a_15 () (_ BitVec 64))
+(declare-fun b_15 () (_ BitVec 64))
+(declare-fun a_14 () (_ BitVec 64))
+(declare-fun b_14 () (_ BitVec 64))
+(declare-fun a_13 () (_ BitVec 64))
+(declare-fun b_13 () (_ BitVec 64))
+(declare-fun a_12 () (_ BitVec 64))
+(declare-fun b_12 () (_ BitVec 64))
+(declare-fun a_11 () (_ BitVec 64))
+(declare-fun b_11 () (_ BitVec 64))
+(declare-fun a_10 () (_ BitVec 64))
+(declare-fun b_10 () (_ BitVec 64))
+(declare-fun a_9 () (_ BitVec 64))
+(declare-fun b_9 () (_ BitVec 64))
+(declare-fun a_8 () (_ BitVec 64))
+(declare-fun b_8 () (_ BitVec 64))
+(declare-fun a_7 () (_ BitVec 64))
+(declare-fun b_7 () (_ BitVec 64))
+(declare-fun a_6 () (_ BitVec 64))
+(declare-fun b_6 () (_ BitVec 64))
+(declare-fun a_5 () (_ BitVec 64))
+(declare-fun b_5 () (_ BitVec 64))
+(declare-fun a_4 () (_ BitVec 64))
+(declare-fun b_4 () (_ BitVec 64))
+(declare-fun a_3 () (_ BitVec 64))
+(declare-fun b_3 () (_ BitVec 64))
+(declare-fun a_2 () (_ BitVec 64))
+(declare-fun b_2 () (_ BitVec 64))
+(declare-fun a_1 () (_ BitVec 64))
+(declare-fun b_1 () (_ BitVec 64))
+(declare-fun a_0 () (_ BitVec 64))
+(declare-fun b_0 () (_ BitVec 64))
+(declare-fun c_0 () (_ BitVec 64))
+(declare-fun c2d_prec () (_ BitVec 64))
+(declare-fun c2d_0 () (_ BitVec 64))
+(declare-fun b_prec () (_ BitVec 64))
+(declare-fun a_prec () (_ BitVec 64))
+(declare-fun c_prec () (_ BitVec 64))
+(assert (let ((a!1 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!2 (bvsle b_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!3 (bvadd #x0000000000000001
+                  (bvmul #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!4 (bvsle a_0
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!5 (bvsle b_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!6 (bvsle a_1
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!7 (bvsle b_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!8 (bvsle a_2
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff a_prec)))))
+      (a!9 (bvsle b_3
+                  (bvadd #xffffffffffffffff
+                         (bvshl #x0000000000000001
+                                (bvadd #xffffffffffffffff b_prec)))))
+      (a!10 (bvsle a_3
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!11 (bvsle b_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!12 (bvsle a_4
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!13 (bvsle b_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!14 (bvsle a_5
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!15 (bvsle b_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!16 (bvsle a_6
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!17 (bvsle b_7
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!18 (bvsle a_7
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!19 (bvsle b_8
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!20 (bvsle a_8
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!21 (bvsle b_9
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!22 (bvsle a_9
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!23 (bvsle b_10
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!24 (bvsle a_10
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!25 (bvsle b_11
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!26 (bvsle a_11
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!27 (bvsle b_12
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!28 (bvsle a_12
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!29 (bvsle b_13
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!30 (bvsle a_13
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!31 (bvsle b_14
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!32 (bvsle a_14
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!33 (bvsle b_15
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!34 (bvsle a_15
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!35 (bvsle b_16
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!36 (bvsle a_16
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!37 (bvsle b_17
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!38 (bvsle a_17
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!39 (bvsle b_18
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!40 (bvsle a_18
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!41 (bvsle b_19
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!42 (bvsle a_19
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!43 (bvsle b_20
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!44 (bvsle a_20
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!45 (bvsle b_21
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!46 (bvsle a_21
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!47 (bvsle b_22
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!48 (bvsle a_22
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!49 (bvsle b_23
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!50 (bvsle a_23
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!51 (bvsle b_24
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff b_prec)))))
+      (a!52 (bvsle a_24
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff a_prec)))))
+      (a!53 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!54 (bvsle c_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c_prec)))))
+      (a!55 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)
+                   (bvmul a_20 b_20)
+                   (bvmul a_21 b_21)
+                   (bvmul a_22 b_22)
+                   (bvmul a_23 b_23)
+                   (bvmul a_24 b_24)
+                   c_0))
+      (a!56 (bvadd #x0000000000000001
+                   (ite (bvsle (bvadd #x0000000000000005 a_prec b_prec) c_prec)
+                        c_prec
+                        (bvadd #x0000000000000005 a_prec b_prec))))
+      (a!57 (bvadd #x0000000000000001
+                   (bvmul #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!58 (bvsle c2d_0
+                   (bvadd #xffffffffffffffff
+                          (bvshl #x0000000000000001
+                                 (bvadd #xffffffffffffffff c2d_prec)))))
+      (a!59 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)
+                   (bvmul a_20 b_20)
+                   (bvmul a_21 b_21)
+                   (bvmul a_22 b_22)
+                   (bvmul a_23 b_23)
+                   (bvmul a_24 b_24)))
+      (a!62 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)
+                   (bvmul a_20 b_20)
+                   (bvmul a_21 b_21)
+                   (bvmul a_22 b_22)
+                   (bvmul a_23 b_23)))
+      (a!65 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)
+                   (bvmul a_20 b_20)
+                   (bvmul a_21 b_21)
+                   (bvmul a_22 b_22)))
+      (a!68 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)
+                   (bvmul a_20 b_20)
+                   (bvmul a_21 b_21)))
+      (a!71 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)
+                   (bvmul a_20 b_20)))
+      (a!74 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)
+                   (bvmul a_19 b_19)))
+      (a!77 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)
+                   (bvmul a_18 b_18)))
+      (a!80 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)
+                   (bvmul a_17 b_17)))
+      (a!83 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)
+                   (bvmul a_16 b_16)))
+      (a!86 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)
+                   (bvmul a_15 b_15)))
+      (a!89 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)
+                   (bvmul a_14 b_14)))
+      (a!92 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)
+                   (bvmul a_13 b_13)))
+      (a!95 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)
+                   (bvmul a_12 b_12)))
+      (a!98 (bvadd (bvmul a_0 b_0)
+                   (bvmul a_1 b_1)
+                   (bvmul a_2 b_2)
+                   (bvmul a_3 b_3)
+                   (bvmul a_4 b_4)
+                   (bvmul a_5 b_5)
+                   (bvmul a_6 b_6)
+                   (bvmul a_7 b_7)
+                   (bvmul a_8 b_8)
+                   (bvmul a_9 b_9)
+                   (bvmul a_10 b_10)
+                   (bvmul a_11 b_11)))
+      (a!101 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)
+                    (bvmul a_5 b_5)
+                    (bvmul a_6 b_6)
+                    (bvmul a_7 b_7)
+                    (bvmul a_8 b_8)
+                    (bvmul a_9 b_9)
+                    (bvmul a_10 b_10)))
+      (a!104 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)
+                    (bvmul a_5 b_5)
+                    (bvmul a_6 b_6)
+                    (bvmul a_7 b_7)
+                    (bvmul a_8 b_8)
+                    (bvmul a_9 b_9)))
+      (a!107 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)
+                    (bvmul a_5 b_5)
+                    (bvmul a_6 b_6)
+                    (bvmul a_7 b_7)
+                    (bvmul a_8 b_8)))
+      (a!110 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)
+                    (bvmul a_5 b_5)
+                    (bvmul a_6 b_6)
+                    (bvmul a_7 b_7)))
+      (a!113 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)
+                    (bvmul a_5 b_5)
+                    (bvmul a_6 b_6)))
+      (a!116 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)
+                    (bvmul a_5 b_5)))
+      (a!119 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)
+                    (bvmul a_4 b_4)))
+      (a!122 (bvadd (bvmul a_0 b_0)
+                    (bvmul a_1 b_1)
+                    (bvmul a_2 b_2)
+                    (bvmul a_3 b_3)))
+      (a!125 (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1) (bvmul a_2 b_2)))
+      (a!128 (not (bvsle (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1))
+                         #x0000000000000000)))
+      (a!130 (not (bvsle #x0000000000000000
+                         (bvadd (bvmul a_0 b_0) (bvmul a_1 b_1)))))
+      (a!132 (and (not (bvsle (bvmul a_0 b_0) #x0000000000000000))
+                  (not (bvsle (bvmul a_1 b_1) #x0000000000000000))))
+      (a!133 (and (not (bvsle #x0000000000000000 (bvmul a_0 b_0)))
+                  (not (bvsle #x0000000000000000 (bvmul a_1 b_1))))))
+(let ((a!60 (not (and (not (bvsle a!59 #x0000000000000000))
+                      (not (bvsle c_0 #x0000000000000000)))))
+      (a!61 (not (and (not (bvsle #x0000000000000000 a!59))
+                      (not (bvsle #x0000000000000000 c_0)))))
+      (a!63 (and (not (bvsle a!62 #x0000000000000000))
+                 (not (bvsle (bvmul a_24 b_24) #x0000000000000000))))
+      (a!64 (and (not (bvsle #x0000000000000000 a!62))
+                 (not (bvsle #x0000000000000000 (bvmul a_24 b_24)))))
+      (a!66 (and (not (bvsle a!65 #x0000000000000000))
+                 (not (bvsle (bvmul a_23 b_23) #x0000000000000000))))
+      (a!67 (and (not (bvsle #x0000000000000000 a!65))
+                 (not (bvsle #x0000000000000000 (bvmul a_23 b_23)))))
+      (a!69 (and (not (bvsle a!68 #x0000000000000000))
+                 (not (bvsle (bvmul a_22 b_22) #x0000000000000000))))
+      (a!70 (and (not (bvsle #x0000000000000000 a!68))
+                 (not (bvsle #x0000000000000000 (bvmul a_22 b_22)))))
+      (a!72 (and (not (bvsle a!71 #x0000000000000000))
+                 (not (bvsle (bvmul a_21 b_21) #x0000000000000000))))
+      (a!73 (and (not (bvsle #x0000000000000000 a!71))
+                 (not (bvsle #x0000000000000000 (bvmul a_21 b_21)))))
+      (a!75 (and (not (bvsle a!74 #x0000000000000000))
+                 (not (bvsle (bvmul a_20 b_20) #x0000000000000000))))
+      (a!76 (and (not (bvsle #x0000000000000000 a!74))
+                 (not (bvsle #x0000000000000000 (bvmul a_20 b_20)))))
+      (a!78 (and (not (bvsle a!77 #x0000000000000000))
+                 (not (bvsle (bvmul a_19 b_19) #x0000000000000000))))
+      (a!79 (and (not (bvsle #x0000000000000000 a!77))
+                 (not (bvsle #x0000000000000000 (bvmul a_19 b_19)))))
+      (a!81 (and (not (bvsle a!80 #x0000000000000000))
+                 (not (bvsle (bvmul a_18 b_18) #x0000000000000000))))
+      (a!82 (and (not (bvsle #x0000000000000000 a!80))
+                 (not (bvsle #x0000000000000000 (bvmul a_18 b_18)))))
+      (a!84 (and (not (bvsle a!83 #x0000000000000000))
+                 (not (bvsle (bvmul a_17 b_17) #x0000000000000000))))
+      (a!85 (and (not (bvsle #x0000000000000000 a!83))
+                 (not (bvsle #x0000000000000000 (bvmul a_17 b_17)))))
+      (a!87 (and (not (bvsle a!86 #x0000000000000000))
+                 (not (bvsle (bvmul a_16 b_16) #x0000000000000000))))
+      (a!88 (and (not (bvsle #x0000000000000000 a!86))
+                 (not (bvsle #x0000000000000000 (bvmul a_16 b_16)))))
+      (a!90 (and (not (bvsle a!89 #x0000000000000000))
+                 (not (bvsle (bvmul a_15 b_15) #x0000000000000000))))
+      (a!91 (and (not (bvsle #x0000000000000000 a!89))
+                 (not (bvsle #x0000000000000000 (bvmul a_15 b_15)))))
+      (a!93 (and (not (bvsle a!92 #x0000000000000000))
+                 (not (bvsle (bvmul a_14 b_14) #x0000000000000000))))
+      (a!94 (and (not (bvsle #x0000000000000000 a!92))
+                 (not (bvsle #x0000000000000000 (bvmul a_14 b_14)))))
+      (a!96 (and (not (bvsle a!95 #x0000000000000000))
+                 (not (bvsle (bvmul a_13 b_13) #x0000000000000000))))
+      (a!97 (and (not (bvsle #x0000000000000000 a!95))
+                 (not (bvsle #x0000000000000000 (bvmul a_13 b_13)))))
+      (a!99 (and (not (bvsle a!98 #x0000000000000000))
+                 (not (bvsle (bvmul a_12 b_12) #x0000000000000000))))
+      (a!100 (and (not (bvsle #x0000000000000000 a!98))
+                  (not (bvsle #x0000000000000000 (bvmul a_12 b_12)))))
+      (a!102 (and (not (bvsle a!101 #x0000000000000000))
+                  (not (bvsle (bvmul a_11 b_11) #x0000000000000000))))
+      (a!103 (and (not (bvsle #x0000000000000000 a!101))
+                  (not (bvsle #x0000000000000000 (bvmul a_11 b_11)))))
+      (a!105 (and (not (bvsle a!104 #x0000000000000000))
+                  (not (bvsle (bvmul a_10 b_10) #x0000000000000000))))
+      (a!106 (and (not (bvsle #x0000000000000000 a!104))
+                  (not (bvsle #x0000000000000000 (bvmul a_10 b_10)))))
+      (a!108 (and (not (bvsle a!107 #x0000000000000000))
+                  (not (bvsle (bvmul a_9 b_9) #x0000000000000000))))
+      (a!109 (and (not (bvsle #x0000000000000000 a!107))
+                  (not (bvsle #x0000000000000000 (bvmul a_9 b_9)))))
+      (a!111 (and (not (bvsle a!110 #x0000000000000000))
+                  (not (bvsle (bvmul a_8 b_8) #x0000000000000000))))
+      (a!112 (and (not (bvsle #x0000000000000000 a!110))
+                  (not (bvsle #x0000000000000000 (bvmul a_8 b_8)))))
+      (a!114 (and (not (bvsle a!113 #x0000000000000000))
+                  (not (bvsle (bvmul a_7 b_7) #x0000000000000000))))
+      (a!115 (and (not (bvsle #x0000000000000000 a!113))
+                  (not (bvsle #x0000000000000000 (bvmul a_7 b_7)))))
+      (a!117 (and (not (bvsle a!116 #x0000000000000000))
+                  (not (bvsle (bvmul a_6 b_6) #x0000000000000000))))
+      (a!118 (and (not (bvsle #x0000000000000000 a!116))
+                  (not (bvsle #x0000000000000000 (bvmul a_6 b_6)))))
+      (a!120 (and (not (bvsle a!119 #x0000000000000000))
+                  (not (bvsle (bvmul a_5 b_5) #x0000000000000000))))
+      (a!121 (and (not (bvsle #x0000000000000000 a!119))
+                  (not (bvsle #x0000000000000000 (bvmul a_5 b_5)))))
+      (a!123 (and (not (bvsle a!122 #x0000000000000000))
+                  (not (bvsle (bvmul a_4 b_4) #x0000000000000000))))
+      (a!124 (and (not (bvsle #x0000000000000000 a!122))
+                  (not (bvsle #x0000000000000000 (bvmul a_4 b_4)))))
+      (a!126 (and (not (bvsle a!125 #x0000000000000000))
+                  (not (bvsle (bvmul a_3 b_3) #x0000000000000000))))
+      (a!127 (and (not (bvsle #x0000000000000000 a!125))
+                  (not (bvsle #x0000000000000000 (bvmul a_3 b_3)))))
+      (a!129 (and a!128 (not (bvsle (bvmul a_2 b_2) #x0000000000000000))))
+      (a!131 (and a!130 (not (bvsle #x0000000000000000 (bvmul a_2 b_2))))))
+(let ((a!134 (and (bvsle a!57 c2d_0)
+                  a!58
+                  (or (not (bvsle a!55 #x0000000000000000)) a!60)
+                  (or (not (bvsle #x0000000000000000 a!55)) a!61)
+                  (or (not (bvsle a!59 #x0000000000000000)) (not a!63))
+                  (or (not a!64) (not (bvsle #x0000000000000000 a!59)))
+                  (or (not (bvsle a!62 #x0000000000000000)) (not a!66))
+                  (or (not (bvsle #x0000000000000000 a!62)) (not a!67))
+                  (or (not (bvsle a!65 #x0000000000000000)) (not a!69))
+                  (or (not a!70) (not (bvsle #x0000000000000000 a!65)))
+                  (or (not (bvsle a!68 #x0000000000000000)) (not a!72))
+                  (or (not a!73) (not (bvsle #x0000000000000000 a!68)))
+                  (or (not (bvsle a!71 #x0000000000000000)) (not a!75))
+                  (or (not (bvsle #x0000000000000000 a!71)) (not a!76))
+                  (or (not a!78) (not (bvsle a!74 #x0000000000000000)))
+                  (or (not a!79) (not (bvsle #x0000000000000000 a!74)))
+                  (or (not (bvsle a!77 #x0000000000000000)) (not a!81))
+                  (or (not (bvsle #x0000000000000000 a!77)) (not a!82))
+                  (or (not (bvsle a!80 #x0000000000000000)) (not a!84))
+                  (or (not (bvsle #x0000000000000000 a!80)) (not a!85))
+                  (or (not a!87) (not (bvsle a!83 #x0000000000000000)))
+                  (or (not (bvsle #x0000000000000000 a!83)) (not a!88))
+                  (or (not (bvsle a!86 #x0000000000000000)) (not a!90))
+                  (or (not (bvsle #x0000000000000000 a!86)) (not a!91))
+                  (or (not (bvsle a!89 #x0000000000000000)) (not a!93))
+                  (or (not (bvsle #x0000000000000000 a!89)) (not a!94))
+                  (or (not (bvsle a!92 #x0000000000000000)) (not a!96))
+                  (or (not a!97) (not (bvsle #x0000000000000000 a!92)))
+                  (or (not a!99) (not (bvsle a!95 #x0000000000000000)))
+                  (or (not (bvsle #x0000000000000000 a!95)) (not a!100))
+                  (or (not (bvsle a!98 #x0000000000000000)) (not a!102))
+                  (or (not (bvsle #x0000000000000000 a!98)) (not a!103))
+                  (or (not a!105) (not (bvsle a!101 #x0000000000000000)))
+                  (or (not (bvsle #x0000000000000000 a!101)) (not a!106))
+                  (or (not (bvsle a!104 #x0000000000000000)) (not a!108))
+                  (or (not (bvsle #x0000000000000000 a!104)) (not a!109))
+                  (or (not a!111) (not (bvsle a!107 #x0000000000000000)))
+                  (or (not a!112) (not (bvsle #x0000000000000000 a!107)))
+                  (or (not (bvsle a!110 #x0000000000000000)) (not a!114))
+                  (or (not (bvsle #x0000000000000000 a!110)) (not a!115))
+                  (or (not (bvsle a!113 #x0000000000000000)) (not a!117))
+                  (or (not (bvsle #x0000000000000000 a!113)) (not a!118))
+                  (or (not (bvsle a!116 #x0000000000000000)) (not a!120))
+                  (or (not a!121) (not (bvsle #x0000000000000000 a!116)))
+                  (or (not a!123) (not (bvsle a!119 #x0000000000000000)))
+                  (or (not a!124) (not (bvsle #x0000000000000000 a!119)))
+                  (or (not a!126) (not (bvsle a!122 #x0000000000000000)))
+                  (or (not (bvsle #x0000000000000000 a!122)) (not a!127))
+                  (or (not a!129) (not (bvsle a!125 #x0000000000000000)))
+                  (or (not a!131) (not (bvsle #x0000000000000000 a!125)))
+                  (or a!128 (not a!132))
+                  (or (not a!133) a!130)
+                  (bvsmul_noovfl b_0 a_0)
+                  (bvsmul_noudfl b_0 a_0)
+                  (bvsmul_noovfl b_1 a_1)
+                  (bvsmul_noudfl b_1 a_1)
+                  (bvsmul_noovfl b_2 a_2)
+                  (bvsmul_noudfl b_2 a_2)
+                  (bvsmul_noovfl b_3 a_3)
+                  (bvsmul_noudfl b_3 a_3)
+                  (bvsmul_noovfl b_4 a_4)
+                  (bvsmul_noudfl b_4 a_4)
+                  (bvsmul_noovfl b_5 a_5)
+                  (bvsmul_noudfl b_5 a_5)
+                  (bvsmul_noovfl b_6 a_6)
+                  (bvsmul_noudfl b_6 a_6)
+                  (bvsmul_noovfl b_7 a_7)
+                  (bvsmul_noudfl b_7 a_7)
+                  (bvsmul_noovfl b_8 a_8)
+                  (bvsmul_noudfl b_8 a_8)
+                  (bvsmul_noovfl b_9 a_9)
+                  (bvsmul_noudfl b_9 a_9)
+                  (bvsmul_noovfl b_10 a_10)
+                  (bvsmul_noudfl b_10 a_10)
+                  (bvsmul_noovfl b_11 a_11)
+                  (bvsmul_noudfl b_11 a_11)
+                  (bvsmul_noovfl b_12 a_12)
+                  (bvsmul_noudfl b_12 a_12)
+                  (bvsmul_noovfl b_13 a_13)
+                  (bvsmul_noudfl b_13 a_13)
+                  (bvsmul_noovfl b_14 a_14)
+                  (bvsmul_noudfl b_14 a_14)
+                  (bvsmul_noovfl b_15 a_15)
+                  (bvsmul_noudfl b_15 a_15)
+                  (bvsmul_noovfl b_16 a_16)
+                  (bvsmul_noudfl b_16 a_16)
+                  (bvsmul_noovfl b_17 a_17)
+                  (bvsmul_noudfl b_17 a_17)
+                  (bvsmul_noovfl b_18 a_18)
+                  (bvsmul_noudfl b_18 a_18)
+                  (bvsmul_noovfl b_19 a_19)
+                  (bvsmul_noudfl b_19 a_19)
+                  (bvsmul_noovfl b_20 a_20)
+                  (bvsmul_noudfl b_20 a_20)
+                  (bvsmul_noovfl b_21 a_21)
+                  (bvsmul_noudfl b_21 a_21)
+                  (bvsmul_noovfl b_22 a_22)
+                  (bvsmul_noudfl b_22 a_22)
+                  (bvsmul_noovfl b_23 a_23)
+                  (bvsmul_noudfl b_23 a_23)
+                  (bvsmul_noovfl b_24 a_24)
+                  (bvsmul_noudfl b_24 a_24))))
+(let ((a!135 (or (not (and (bvsle a!1 b_0)
+                           a!2
+                           (bvsle #x0000000000000001 b_prec)
+                           (bvsle b_prec #x0000000000000020)
+                           (bvsle a!3 a_0)
+                           a!4
+                           (bvsle #x0000000000000001 a_prec)
+                           (bvsle a_prec #x0000000000000020)
+                           (bvsle a!1 b_1)
+                           a!5
+                           (bvsle a!3 a_1)
+                           a!6
+                           (bvsle a!1 b_2)
+                           a!7
+                           (bvsle a!3 a_2)
+                           a!8
+                           (bvsle a!1 b_3)
+                           a!9
+                           (bvsle a!3 a_3)
+                           a!10
+                           (bvsle a!1 b_4)
+                           a!11
+                           (bvsle a!3 a_4)
+                           a!12
+                           (bvsle a!1 b_5)
+                           a!13
+                           (bvsle a!3 a_5)
+                           a!14
+                           (bvsle a!1 b_6)
+                           a!15
+                           (bvsle a!3 a_6)
+                           a!16
+                           (bvsle a!1 b_7)
+                           a!17
+                           (bvsle a!3 a_7)
+                           a!18
+                           (bvsle a!1 b_8)
+                           a!19
+                           (bvsle a!3 a_8)
+                           a!20
+                           (bvsle a!1 b_9)
+                           a!21
+                           (bvsle a!3 a_9)
+                           a!22
+                           (bvsle a!1 b_10)
+                           a!23
+                           (bvsle a!3 a_10)
+                           a!24
+                           (bvsle a!1 b_11)
+                           a!25
+                           (bvsle a!3 a_11)
+                           a!26
+                           (bvsle a!1 b_12)
+                           a!27
+                           (bvsle a!3 a_12)
+                           a!28
+                           (bvsle a!1 b_13)
+                           a!29
+                           (bvsle a!3 a_13)
+                           a!30
+                           (bvsle a!1 b_14)
+                           a!31
+                           (bvsle a!3 a_14)
+                           a!32
+                           (bvsle a!1 b_15)
+                           a!33
+                           (bvsle a!3 a_15)
+                           a!34
+                           (bvsle a!1 b_16)
+                           a!35
+                           (bvsle a!3 a_16)
+                           a!36
+                           (bvsle a!1 b_17)
+                           a!37
+                           (bvsle a!3 a_17)
+                           a!38
+                           (bvsle a!1 b_18)
+                           a!39
+                           (bvsle a!3 a_18)
+                           a!40
+                           (bvsle a!1 b_19)
+                           a!41
+                           (bvsle a!3 a_19)
+                           a!42
+                           (bvsle a!1 b_20)
+                           a!43
+                           (bvsle a!3 a_20)
+                           a!44
+                           (bvsle a!1 b_21)
+                           a!45
+                           (bvsle a!3 a_21)
+                           a!46
+                           (bvsle a!1 b_22)
+                           a!47
+                           (bvsle a!3 a_22)
+                           a!48
+                           (bvsle a!1 b_23)
+                           a!49
+                           (bvsle a!3 a_23)
+                           a!50
+                           (bvsle a!1 b_24)
+                           a!51
+                           (bvsle a!3 a_24)
+                           a!52
+                           (bvsle a!53 c_0)
+                           a!54
+                           (bvsle #x0000000000000001 c_prec)
+                           (bvsle c_prec #x0000000000000020)
+                           (= c2d_0 a!55)
+                           (= c2d_prec a!56)
+                           (bvsle #x0000000000000001 c2d_prec)
+                           (bvsle c2d_prec #x0000000000000020)))
+                 a!134)))
+  (not a!135))))))
+===== END =====
+
+The model is unprovable
+Time: 0.433164s
+1 1 5 7
