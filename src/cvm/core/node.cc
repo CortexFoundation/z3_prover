@@ -114,7 +114,6 @@ NodeEntry Node::CreateOperator(
   // Set operator attributes default value
   if (p->op()->attr_def != nullptr)
     p->op()->attr_def(p->attrs);
-
   VERIFY_EQ(p->num_inputs(), p->inputs.size())
     << "operator " << op_name << "(" << node_name << ") "
     << "inputs' size invalid, Expected " << p->num_inputs()
@@ -128,7 +127,6 @@ void Node::infer_shape() {
   VERIFY_NE(op()->infer_shape, nullptr)
     << "Node::infer_shape() " << op()->name
     << " operator has not registered FInferShape";
-
   std::vector<Shape> ishpes(inputs.size());
   for (size_t i = 0; i < inputs.size(); ++i) {
     ishpes[i] = inputs[i]->shape;
@@ -152,6 +150,9 @@ void Node::infer_precision() {
   for (size_t i = 0; i < inputs.size(); ++i) {
     iprecs[i] = inputs[i]->prec;
     ishpes[i] = inputs[i]->shape;
+  }
+  for (const auto& it : data_) {
+    ishpes.push_back(it->shape);
   }
   std::vector<z3_expr> oprecs(num_outputs(), z3_expr(0));
   std::vector<NodeAssertions> nas(num_outputs());

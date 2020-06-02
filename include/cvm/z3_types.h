@@ -152,6 +152,7 @@ class Shape : public _ShapeBase {
 
   Shape() : _ShapeBase() {}
   Shape(size_t n) : _ShapeBase(n) {}
+  Shape(size_t n, int32_t v) : _ShapeBase(n, v) {}
 
   inline bool operator==(Shape const& shp) const {
     return size() == shp.size() &&

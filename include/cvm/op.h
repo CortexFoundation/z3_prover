@@ -4,6 +4,7 @@
 #include <memory>
 #include <limits>
 #include <z3++.h>
+#include <functional>
 
 #include "base.h"
 #include "z3_types.h"

@@ -528,6 +528,48 @@ Z3_REGISTER_OP(abs)
   .set_infer_shape(AbsInferShape)
   .set_infer_precision(AbsInferPrecision);
 
+static void NegativeForward(
+    NodeAttrs const& attrs,
+    std::vector<TypePtr>& inputs,
+    std::vector<TypePtr>& outputs,
+    std::vector<std::vector<NodeAssertions> >& nas) {
+  
+  TypePtr const& x = inputs.at(0);
+
+  for (size_t i = 0; i < x->Size(); ++i) {
+    z3_expr const& v = -x->at(i);
+    outputs[0]->set_data(i, v);
+    nas[0].at(i)
+      .add_input(x, i)
+      .add_output(outputs[0], i);
+  }
+}
+
+static void NegativeInferShape(
+    NodeAttrs const& attrs,
+    std::vector<Shape> &ishpes,
+    std::vector<Shape> &oshpes) {
+  VERIFY_EQ(ishpes.size(), 1U);
+  VERIFY_EQ(oshpes.size(), 1U);
+  oshpes.at(0) = ishpes.at(0);
+}
+
+static void NegativeInferPrecision(
+    NodeAttrs const& attrs,
+    std::vector<type::Shape> &ishpes,
+    std::vector<type::z3_expr> &iprecs,
+    std::vector<type::z3_expr> &oprecs,
+    std::vector<NodeAssertions> &nas) {
+  oprecs.at(0)  = iprecs.at(0); 
+}
+
+Z3_REGISTER_OP(negative)
+  .set_num_inputs(1)
+  .set_num_outputs(1)
+  .set_forward(NegativeForward)
+  .set_infer_shape(NegativeInferShape)
+  .set_infer_precision(NegativeInferPrecision);
+
 static void CVMPrecisionForward(
     NodeAttrs const& attrs,
     std::vector<TypePtr>& inputs,

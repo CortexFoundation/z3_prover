@@ -106,8 +106,9 @@ static void TileForward(
   for (int i = 0; i < xndim; i++) {
     tmp_y_size *= y->shape[i+yndim-xndim];
   }
-
+  std::vector<int> y2x_index;
   for (uint64_t i = 0; i < tmp_y_size; i++) {
+    y2x_index.push_back(-1);
     uint64_t o_i = i, in_i = 0, shapeSize = 1;
     for (int j = xndim-1; j >= 0; j--) {
       int yj = j + yndim - xndim;
@@ -118,6 +119,7 @@ static void TileForward(
       shapeSize *= x->shape[j];
     }
     y->set_data(i, x->at(in_i));
+    y2x_index[i] = in_i;
     nas[0][i].add_input(x, in_i)
       .add_output(y, i);
   }
@@ -128,9 +130,10 @@ static void TileForward(
   }
   for (size_t i = 1; i < othery; i++) {
     for (size_t j = 0; j < tmp_y_size; j++) {
-      y->set_data(i*tmp_y_size + j, y->at(j));
+      VERIFY(y2x_index[j] != -1);
+      y->set_data(i * tmp_y_size + j, x->at(y2x_index[j]));
       nas[0].at(i*tmp_y_size+j)
-        .add_input(y, j)
+        .add_input(x, y2x_index[j])
         .add_output(y, i*tmp_y_size + j)
         .set_uid(1);
     }

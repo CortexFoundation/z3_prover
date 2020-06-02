@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10)
 project(z3_prover CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CXX_FLAGS "-g -std=c++11 -DSIMPLIFY_LEVEL=1")
+set(CMAKE_CXX_FLAGS "-g -std=c++11 -DSIMPLIFY_LEVEL=10")
 set(Z3_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/z3")
 
 include_directories("include")
